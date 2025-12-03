@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useLogin } from "@refinedev/core";
-import { IconAlertCircle } from "@tabler/icons-react";
+import { IconAlertCircle, IconLock, IconMail } from "@tabler/icons-react";
 import { useState } from "react";
 import { shouldShowTestData } from "@/config/env";
 import type { LoginCredentials } from "@/types";
@@ -87,6 +87,7 @@ export const Login = () => {
 									label="Email"
 									placeholder="seu@email.com"
 									required
+									leftSection={<IconMail size={18} />}
 									{...form.getInputProps("email")}
 								/>
 
@@ -94,6 +95,7 @@ export const Login = () => {
 									label="Senha"
 									placeholder="Sua senha"
 									required
+									leftSection={<IconLock size={18} />}
 									{...form.getInputProps("password")}
 								/>
 
