@@ -11,12 +11,19 @@ import {
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { notifications } from "@mantine/notifications";
-import { useGo } from "@refinedev/core";
+import { useGo, useList } from "@refinedev/core";
 import { useForm } from "@refinedev/mantine";
-import type { Schedule } from "@/types";
+import type { Ministry, Schedule } from "@/types";
 
 export const ScheduleCreate = () => {
 	const go = useGo();
+
+	const { data: ministriesData, isLoading: loadingMinistries } =
+		useList<Ministry>({
+			resource: "ministries",
+			pagination: { mode: "off" },
+		});
+
 	const {
 		saveButtonProps,
 		getInputProps,
@@ -41,12 +48,11 @@ export const ScheduleCreate = () => {
 		},
 	});
 
-	// Mock ministries - in real app, fetch from API
-	const ministries = [
-		{ value: "ministry-1", label: "Louvor e Adoração" },
-		{ value: "ministry-2", label: "Mídia" },
-		{ value: "ministry-3", label: "Recepção" },
-	];
+	const ministries =
+		ministriesData?.data.map((ministry) => ({
+			value: ministry.id,
+			label: ministry.name,
+		})) || [];
 
 	return (
 		<Stack gap="lg">
@@ -72,6 +78,7 @@ export const ScheduleCreate = () => {
 								data={ministries}
 								{...getInputProps("ministryId")}
 								searchable
+								disabled={loadingMinistries}
 							/>
 						</Grid.Col>
 						<Grid.Col span={12}>

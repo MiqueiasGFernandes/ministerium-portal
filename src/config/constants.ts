@@ -48,6 +48,12 @@ export const APP_CONSTANTS = {
 		SCHEDULES_EDIT: "schedules:edit",
 		SCHEDULES_DELETE: "schedules:delete",
 
+		// Ministries
+		MINISTRIES_VIEW: "ministries:view",
+		MINISTRIES_CREATE: "ministries:create",
+		MINISTRIES_EDIT: "ministries:edit",
+		MINISTRIES_DELETE: "ministries:delete",
+
 		// Settings
 		SETTINGS_VIEW: "settings:view",
 		SETTINGS_EDIT: "settings:edit",
@@ -75,6 +81,10 @@ export const APP_CONSTANTS = {
 			"schedules:create",
 			"schedules:edit",
 			"schedules:delete",
+			"ministries:view",
+			"ministries:create",
+			"ministries:edit",
+			"ministries:delete",
 			"settings:view",
 			"settings:edit",
 			"users:manage",
@@ -89,8 +99,16 @@ export const APP_CONSTANTS = {
 			"schedules:view",
 			"schedules:create",
 			"schedules:edit",
+			"ministries:view",
+			"ministries:create",
+			"ministries:edit",
 		],
-		volunteer: ["members:view", "events:view", "schedules:view"],
+		volunteer: [
+			"members:view",
+			"events:view",
+			"schedules:view",
+			"ministries:view",
+		],
 	},
 } as const;
 

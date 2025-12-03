@@ -8,6 +8,7 @@ interface FeatureToggles {
 	finance: boolean;
 	events: boolean;
 	schedules: boolean;
+	ministries: boolean;
 	customFields: boolean;
 }
 
@@ -65,6 +66,7 @@ export const config: AppConfig = {
 		finance: getEnvBool("VITE_FEATURE_FINANCE", true),
 		events: getEnvBool("VITE_FEATURE_EVENTS", true),
 		schedules: getEnvBool("VITE_FEATURE_SCHEDULES", true),
+		ministries: getEnvBool("VITE_FEATURE_MINISTRIES", true),
 		customFields: getEnvBool("VITE_FEATURE_CUSTOM_FIELDS", true),
 	},
 };

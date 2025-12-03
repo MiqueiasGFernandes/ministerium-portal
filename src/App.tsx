@@ -14,6 +14,7 @@ import {
 	IconLayoutDashboard,
 	IconSettings,
 	IconUsers,
+	IconUsersGroup,
 } from "@tabler/icons-react";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import { UnauthorizedPage } from "@/components/auth/ProtectedRoute";
@@ -34,6 +35,12 @@ import { MemberCreate } from "@/pages/members/MemberCreate";
 import { MemberEdit } from "@/pages/members/MemberEdit";
 import { MemberList } from "@/pages/members/MemberList";
 import { MemberShow } from "@/pages/members/MemberShow";
+import {
+	MinistryCreate,
+	MinistryEdit,
+	MinistryList,
+	MinistryShow,
+} from "@/pages/ministries";
 import { ScheduleCreate } from "@/pages/schedules/ScheduleCreate";
 import { ScheduleEdit } from "@/pages/schedules/ScheduleEdit";
 import { ScheduleList } from "@/pages/schedules/ScheduleList";
@@ -120,6 +127,20 @@ function App() {
 		});
 	}
 
+	if (config.features.ministries) {
+		resources.push({
+			name: "ministries",
+			list: "/ministries",
+			create: "/ministries/create",
+			edit: "/ministries/edit/:id",
+			show: "/ministries/show/:id",
+			meta: {
+				label: "Ministérios",
+				icon: <IconUsersGroup />,
+			},
+		});
+	}
+
 	resources.push({
 		name: "settings",
 		list: "/settings",
@@ -195,6 +216,16 @@ function App() {
 									<Route index element={<ScheduleList />} />
 									<Route path="create" element={<ScheduleCreate />} />
 									<Route path="edit/:id" element={<ScheduleEdit />} />
+								</Route>
+							)}
+
+							{/* Ministries Routes */}
+							{config.features.ministries && (
+								<Route path="/ministries">
+									<Route index element={<MinistryList />} />
+									<Route path="create" element={<MinistryCreate />} />
+									<Route path="edit/:id" element={<MinistryEdit />} />
+									<Route path="show/:id" element={<MinistryShow />} />
 								</Route>
 							)}
 
