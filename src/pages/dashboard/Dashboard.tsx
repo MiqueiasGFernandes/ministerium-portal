@@ -29,6 +29,7 @@ import dayjs from "dayjs";
 import type { DashboardStats } from "@/types";
 import "dayjs/locale/pt-br";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { shouldShowTestData } from "@/config/env";
 
 dayjs.extend(relativeTime);
 dayjs.locale("pt-br");
@@ -62,15 +63,17 @@ export const Dashboard = () => {
 		<Stack gap="lg">
 			<Title order={2}>Dashboard</Title>
 
-			<Alert
-				icon={<IconInfoCircle />}
-				title="Bem-vindo ao Ministerium!"
-				color="blue"
-				variant="light"
-			>
-				Este é um ambiente de demonstração com dados fake. Explore todas as
-				funcionalidades!
-			</Alert>
+			{shouldShowTestData() && (
+				<Alert
+					icon={<IconInfoCircle />}
+					title="Bem-vindo ao Ministerium!"
+					color="blue"
+					variant="light"
+				>
+					Este é um ambiente de demonstração com dados fake. Explore todas as
+					funcionalidades!
+				</Alert>
+			)}
 
 			{/* Stats Cards */}
 			<SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="lg">

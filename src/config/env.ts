@@ -73,5 +73,14 @@ export const config: AppConfig = {
 
 export const isDevelopment = config.nodeEnv === "development";
 export const isProduction = config.nodeEnv === "production";
+export const isTest = config.nodeEnv === "test";
+
+/**
+ * Checks if the application is running in a test/development environment
+ * where mock data and test credentials should be displayed
+ */
+export const shouldShowTestData = () => {
+	return isDevelopment || isTest || config.useMockData;
+};
 
 export default config;

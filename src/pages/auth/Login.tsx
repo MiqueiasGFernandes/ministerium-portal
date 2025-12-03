@@ -14,6 +14,7 @@ import { useForm } from "@mantine/form";
 import { useLogin } from "@refinedev/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { useState } from "react";
+import { shouldShowTestData } from "@/config/env";
 import type { LoginCredentials } from "@/types";
 
 export const Login = () => {
@@ -108,19 +109,22 @@ export const Login = () => {
 							</Stack>
 						</form>
 
-						<Paper p="md" radius="md" bg="gray.0">
-							<Stack gap="xs">
-								<Text size="xs" fw={600} c="dimmed">
-									Credenciais de teste:
-								</Text>
-								<Text size="xs" c="dimmed">
-									Admin: admin@ministerium.com / qualquer senha (3+ caracteres)
-								</Text>
-								<Text size="xs" c="dimmed">
-									Líder: Use qualquer email dos usuários fake
-								</Text>
-							</Stack>
-						</Paper>
+						{shouldShowTestData() && (
+							<Paper p="md" radius="md" bg="gray.0">
+								<Stack gap="xs">
+									<Text size="xs" fw={600} c="dimmed">
+										Credenciais de teste:
+									</Text>
+									<Text size="xs" c="dimmed">
+										Admin: admin@ministerium.com / qualquer senha (3+
+										caracteres)
+									</Text>
+									<Text size="xs" c="dimmed">
+										Líder: Use qualquer email dos usuários fake
+									</Text>
+								</Stack>
+							</Paper>
+						)}
 					</Stack>
 				</Paper>
 			</Container>
