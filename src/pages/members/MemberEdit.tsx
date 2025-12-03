@@ -99,7 +99,7 @@ export const MemberEdit = () => {
 
 	useEffect(() => {
 		if (values?.photo) {
-			setPhotoPreview(values.photo);
+			setPhotoPreview(values.photo as string);
 		}
 	}, [values?.photo]);
 

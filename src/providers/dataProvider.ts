@@ -1,13 +1,5 @@
 import type { DataProvider } from "@refinedev/core";
-import type {
-	Event,
-	Member,
-	Ministry,
-	PaginatedResponse,
-	Schedule,
-	Transaction,
-	User,
-} from "@/types";
+import type { PaginatedResponse } from "@/types";
 import { fakeData } from "@/utils/fakeData";
 
 /**
@@ -23,6 +15,7 @@ let storage = {
 	schedules: [...fakeData.schedules],
 	ministries: [...fakeData.ministries],
 	users: [...fakeData.users],
+	tenants: [fakeData.tenant],
 };
 
 // Helper to simulate API delay
@@ -128,6 +121,9 @@ export const localDataProvider: DataProvider = {
 			case "users":
 				data = storage.users;
 				break;
+			case "tenants":
+				data = storage.tenants;
+				break;
 			default:
 				data = [];
 		}
@@ -182,6 +178,9 @@ export const localDataProvider: DataProvider = {
 			case "users":
 				data = storage.users.find((u) => u.id === id);
 				break;
+			case "tenants":
+				data = storage.tenants.find((t) => t.id === id);
+				break;
 			default:
 				data = null;
 		}
@@ -205,29 +204,29 @@ export const localDataProvider: DataProvider = {
 			tenantId: "1",
 			createdAt: now,
 			updatedAt: now,
-		};
+		} as any;
 
 		switch (resource) {
 			case "members":
-				storage.members = [...storage.members, newItem as Member];
+				storage.members = [...storage.members, newItem];
 				break;
 			case "transactions":
-				storage.transactions = [
-					...storage.transactions,
-					newItem as Transaction,
-				];
+				storage.transactions = [...storage.transactions, newItem];
 				break;
 			case "events":
-				storage.events = [...storage.events, newItem as Event];
+				storage.events = [...storage.events, newItem];
 				break;
 			case "schedules":
-				storage.schedules = [...storage.schedules, newItem as Schedule];
+				storage.schedules = [...storage.schedules, newItem];
 				break;
 			case "ministries":
-				storage.ministries = [...storage.ministries, newItem as Ministry];
+				storage.ministries = [...storage.ministries, newItem];
 				break;
 			case "users":
-				storage.users = [...storage.users, newItem as User];
+				storage.users = [...storage.users, newItem];
+				break;
+			case "tenants":
+				storage.tenants = [...storage.tenants, newItem];
 				break;
 		}
 
@@ -278,6 +277,12 @@ export const localDataProvider: DataProvider = {
 				);
 				updatedItem = storage.users.find((u) => u.id === id);
 				break;
+			case "tenants":
+				storage.tenants = storage.tenants.map((t) =>
+					t.id === id ? { ...t, ...variables, updatedAt: now } : t,
+				);
+				updatedItem = storage.tenants.find((t) => t.id === id);
+				break;
 		}
 
 		if (!updatedItem) {
@@ -309,9 +314,12 @@ export const localDataProvider: DataProvider = {
 			case "users":
 				storage.users = storage.users.filter((u) => u.id !== id);
 				break;
+			case "tenants":
+				storage.tenants = storage.tenants.filter((t) => t.id !== id);
+				break;
 		}
 
-		return { data: { id } };
+		return { data: { id } } as any;
 	},
 
 	getApiUrl: () => {
@@ -319,7 +327,7 @@ export const localDataProvider: DataProvider = {
 	},
 
 	// Custom method to reset data
-	custom: async ({ url, method, payload }) => {
+	custom: async ({ url, method }) => {
 		await simulateDelay();
 
 		if (url === "/reset" && method === "post") {
@@ -331,6 +339,7 @@ export const localDataProvider: DataProvider = {
 				schedules: [...fakeData.schedules],
 				ministries: [...fakeData.ministries],
 				users: [...fakeData.users],
+				tenants: [fakeData.tenant],
 			};
 
 			return { data: { message: "Data reset successfully" } };
@@ -389,7 +398,7 @@ export const localDataProvider: DataProvider = {
 					upcomingEvents,
 					upcomingSchedules,
 				},
-			};
+			} as any;
 		}
 
 		throw new Error(`Custom endpoint ${url} not found`);

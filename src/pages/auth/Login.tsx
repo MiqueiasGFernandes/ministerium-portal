@@ -1,8 +1,10 @@
 import {
 	Alert,
+	Anchor,
 	Button,
 	Center,
 	Container,
+	Divider,
 	Paper,
 	PasswordInput,
 	Stack,
@@ -14,6 +16,7 @@ import { useForm } from "@mantine/form";
 import { useLogin } from "@refinedev/core";
 import { IconAlertCircle, IconLock, IconMail } from "@tabler/icons-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { shouldShowTestData } from "@/config/env";
 import type { LoginCredentials } from "@/types";
 
@@ -127,6 +130,17 @@ export const Login = () => {
 								</Stack>
 							</Paper>
 						)}
+
+						<Divider label="ou" labelPosition="center" />
+
+						<Stack gap="xs" align="center">
+							<Text size="sm" c="dimmed">
+								Não tem uma conta?
+							</Text>
+							<Anchor component={Link} to="/onboarding" size="sm" fw={500}>
+								Criar nova organização
+							</Anchor>
+						</Stack>
 					</Stack>
 				</Paper>
 			</Container>

@@ -240,3 +240,94 @@ export interface EventFilters {
 	startDate?: string;
 	endDate?: string;
 }
+
+// Onboarding Types
+export enum OnboardingStep {
+	WELCOME = "welcome",
+	TENANT_INFO = "tenant_info",
+	ADMIN_INFO = "admin_info",
+	ORGANIZATION_DETAILS = "organization_details",
+	PREFERENCES = "preferences",
+	COMPLETE = "complete",
+}
+
+export enum OnboardingStatus {
+	NOT_STARTED = "not_started",
+	IN_PROGRESS = "in_progress",
+	COMPLETED = "completed",
+}
+
+export interface OnboardingTenantData {
+	name: string;
+	subdomain: string;
+	logo?: string;
+	primaryColor: string;
+}
+
+export interface OnboardingAdminData {
+	name: string;
+	email: string;
+	password: string;
+	confirmPassword: string;
+	phone?: string;
+	avatar?: string;
+}
+
+export interface OnboardingOrganizationData {
+	address: {
+		street: string;
+		number: string;
+		complement?: string;
+		city: string;
+		state: string;
+		zipCode: string;
+	};
+	phone: string;
+	email: string;
+	website?: string;
+	foundedDate?: string;
+	description?: string;
+}
+
+export interface OnboardingPreferences {
+	features: {
+		members: boolean;
+		finance: boolean;
+		events: boolean;
+		schedules: boolean;
+		ministries: boolean;
+	};
+	notifications: {
+		email: boolean;
+		push: boolean;
+	};
+	language: string;
+	timezone: string;
+}
+
+export interface OnboardingData {
+	currentStep: OnboardingStep;
+	status: OnboardingStatus;
+	tenant: Partial<OnboardingTenantData>;
+	admin: Partial<OnboardingAdminData>;
+	organization: Partial<OnboardingOrganizationData>;
+	preferences: Partial<OnboardingPreferences>;
+	completedAt?: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface OnboardingStepProps {
+	data: OnboardingData;
+	onNext: (stepData: Partial<OnboardingData>) => void;
+	onBack?: () => void;
+	onSkip?: () => void;
+}
+
+export interface SignupCredentials {
+	email: string;
+	password: string;
+	name: string;
+	tenantName: string;
+	subdomain: string;
+}

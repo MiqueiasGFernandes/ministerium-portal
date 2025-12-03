@@ -51,7 +51,7 @@ export const FooterNav = () => {
 		>
 			<Group gap={0} justify="space-around" p="xs">
 				{visibleResources.map((resource) => {
-					const path = (typeof resource.list === "string" ? resource.list : resource.list?.() ?? "/");
+					const path = typeof resource.list === "string" ? resource.list : "/";
 					const isActive = getIsActive(path);
 
 					return (

@@ -22,6 +22,7 @@ import { Layout } from "@/components/layout/Layout";
 import { config } from "@/config/env";
 
 import { Login } from "@/pages/auth/Login";
+import { Onboarding } from "@/pages/onboarding/Onboarding";
 // Pages
 import { Dashboard } from "@/pages/dashboard/Dashboard";
 import { EventCreate } from "@/pages/events/EventCreate";
@@ -247,6 +248,9 @@ function App() {
 						>
 							<Route path="/login" element={<Login />} />
 						</Route>
+
+						{/* Onboarding Route - Public */}
+						<Route path="/onboarding" element={<Onboarding />} />
 					</Routes>
 
 					<RefineKbar />
