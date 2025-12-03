@@ -8,8 +8,9 @@ import {
 	UnstyledButton,
 	useMantineColorScheme,
 } from "@mantine/core";
-import { useGetIdentity } from "@refinedev/core";
+import { useGetIdentity, useLogout } from "@refinedev/core";
 import {
+	IconLogout,
 	IconMoon,
 	IconSettings,
 	IconSun,
@@ -19,6 +20,7 @@ import type { User } from "@/types";
 
 export const Header = () => {
 	const { data: user } = useGetIdentity<User>();
+	const { mutate: logout } = useLogout();
 	const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
 	const getRoleLabel = (role: string) => {
@@ -80,6 +82,18 @@ export const Header = () => {
 						}
 					>
 						Configurações
+					</Menu.Item>
+
+					<Menu.Divider />
+
+					<Menu.Item
+						color="error"
+						leftSection={
+							<IconLogout style={{ width: rem(14), height: rem(14) }} />
+						}
+						onClick={() => logout()}
+					>
+						Sair
 					</Menu.Item>
 				</Menu.Dropdown>
 			</Menu>
