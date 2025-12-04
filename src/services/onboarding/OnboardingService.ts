@@ -18,7 +18,6 @@ export class OnboardingService implements IOnboardingService {
 		OnboardingStep.TENANT_INFO,
 		OnboardingStep.ADMIN_INFO,
 		OnboardingStep.ORGANIZATION_DETAILS,
-		OnboardingStep.PREFERENCES,
 		OnboardingStep.COMPLETE,
 	];
 
@@ -138,15 +137,10 @@ export class OnboardingService implements IOnboardingService {
 				OnboardingStep.ADMIN_INFO,
 				data,
 			);
-			const preferencesValidation = this.validateStep(
-				OnboardingStep.PREFERENCES,
-				data,
-			);
 
 			if (
 				!tenantValidation.isValid ||
-				!adminValidation.isValid ||
-				!preferencesValidation.isValid
+				!adminValidation.isValid
 			) {
 				return {
 					success: false,

@@ -247,7 +247,6 @@ export enum OnboardingStep {
 	TENANT_INFO = "tenant_info",
 	ADMIN_INFO = "admin_info",
 	ORGANIZATION_DETAILS = "organization_details",
-	PREFERENCES = "preferences",
 	COMPLETE = "complete",
 }
 

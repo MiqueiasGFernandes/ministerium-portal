@@ -18,7 +18,6 @@ import {
 	AdminInfoStep,
 	CompleteStep,
 	OrganizationDetailsStep,
-	PreferencesStep,
 	TenantInfoStep,
 	WelcomeStep,
 } from "./steps";
@@ -48,8 +47,7 @@ export const Onboarding = () => {
 			[OnboardingStep.TENANT_INFO]: 1,
 			[OnboardingStep.ADMIN_INFO]: 2,
 			[OnboardingStep.ORGANIZATION_DETAILS]: 3,
-			[OnboardingStep.PREFERENCES]: 4,
-			[OnboardingStep.COMPLETE]: 5,
+			[OnboardingStep.COMPLETE]: 4,
 		};
 		return stepMap[step] || 0;
 	};
@@ -165,9 +163,6 @@ export const Onboarding = () => {
 			case OnboardingStep.ORGANIZATION_DETAILS:
 				return <OrganizationDetailsStep {...stepProps} />;
 
-			case OnboardingStep.PREFERENCES:
-				return <PreferencesStep {...stepProps} />;
-
 			case OnboardingStep.COMPLETE:
 				return <CompleteStep {...stepProps} />;
 
@@ -234,10 +229,6 @@ export const Onboarding = () => {
 									<Stepper.Step
 										label="Detalhes"
 										description="Informações adicionais"
-									/>
-									<Stepper.Step
-										label="Preferências"
-										description="Configurações"
 									/>
 								</Stepper>
 							</Paper>
