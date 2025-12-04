@@ -140,7 +140,7 @@ test.describe("Onboarding Flow", () => {
 		).toBeVisible();
 	});
 
-	test("should allow skipping organization details step", async ({ page }) => {
+	test("should not allow skipping organization details step", async ({ page }) => {
 		// Navigate to organization details
 		await page.getByTestId("welcome-start-button").click();
 		await page.getByTestId("autofill-button").click();
@@ -148,16 +148,8 @@ test.describe("Onboarding Flow", () => {
 		await page.getByTestId("autofill-button").click();
 		await page.getByTestId("next-button").click();
 
-		// Skip button should be visible
-		await expect(page.getByTestId("skip-button")).toBeVisible();
-
-		// Click skip
-		await page.getByTestId("skip-button").click();
-
-		// Should move to preferences
-		await expect(
-			page.getByRole("heading", { name: /Preferências do Sistema/i }),
-		).toBeVisible();
+		// Skip button should NOT be visible
+		await expect(page.getByTestId("skip-button")).not.toBeVisible();
 	});
 
 	test("should validate organization address fields", async ({ page }) => {
@@ -201,7 +193,8 @@ test.describe("Onboarding Flow", () => {
 		await page.getByTestId("next-button").click();
 		await page.getByTestId("autofill-button").click();
 		await page.getByTestId("next-button").click();
-		await page.getByTestId("skip-button").click();
+		await page.getByTestId("autofill-button").click();
+		await page.getByTestId("next-button").click();
 
 		// Uncheck all features
 		await page.getByTestId("feature-members-checkbox").uncheck();
@@ -224,7 +217,8 @@ test.describe("Onboarding Flow", () => {
 		await page.getByTestId("next-button").click();
 		await page.getByTestId("autofill-button").click();
 		await page.getByTestId("next-button").click();
-		await page.getByTestId("skip-button").click();
+		await page.getByTestId("autofill-button").click();
+		await page.getByTestId("next-button").click();
 		await page.getByTestId("autofill-button").click();
 		await page.getByTestId("next-button").click();
 
@@ -301,7 +295,8 @@ test.describe("Onboarding Flow", () => {
 		await page.getByTestId("next-button").click();
 		await page.getByTestId("autofill-button").click();
 		await page.getByTestId("next-button").click();
-		await page.getByTestId("skip-button").click();
+		await page.getByTestId("autofill-button").click();
+		await page.getByTestId("next-button").click();
 		await page.getByTestId("autofill-button").click();
 		await page.getByTestId("next-button").click();
 
