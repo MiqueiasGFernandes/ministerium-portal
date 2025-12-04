@@ -1,0 +1,5 @@
+# Run tests
+npm test -- --run
+
+# Run lint-staged (fixes lint issues and stages fixes)
+npx lint-staged
