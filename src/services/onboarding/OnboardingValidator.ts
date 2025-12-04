@@ -79,23 +79,38 @@ export class OnboardingValidator {
 		const errors: Record<string, string> = {};
 		const { organization } = data;
 
-		if (!organization?.address?.street || organization.address.street.trim().length < 3) {
+		if (
+			!organization?.address?.street ||
+			organization.address.street.trim().length < 3
+		) {
 			errors["address.street"] = "Rua deve ter pelo menos 3 caracteres";
 		}
 
-		if (!organization?.address?.number || organization.address.number.trim().length < 1) {
+		if (
+			!organization?.address?.number ||
+			organization.address.number.trim().length < 1
+		) {
 			errors["address.number"] = "Número é obrigatório";
 		}
 
-		if (!organization?.address?.city || organization.address.city.trim().length < 2) {
+		if (
+			!organization?.address?.city ||
+			organization.address.city.trim().length < 2
+		) {
 			errors["address.city"] = "Cidade deve ter pelo menos 2 caracteres";
 		}
 
-		if (!organization?.address?.state || organization.address.state.trim().length !== 2) {
+		if (
+			!organization?.address?.state ||
+			organization.address.state.trim().length !== 2
+		) {
 			errors["address.state"] = "Estado deve ter 2 caracteres (ex: SP)";
 		}
 
-		if (!organization?.address?.zipCode || !/^\d{5}-?\d{3}$/.test(organization.address.zipCode)) {
+		if (
+			!organization?.address?.zipCode ||
+			!/^\d{5}-?\d{3}$/.test(organization.address.zipCode)
+		) {
 			errors["address.zipCode"] = "CEP inválido (ex: 12345-678)";
 		}
 
@@ -113,38 +128,6 @@ export class OnboardingValidator {
 			} catch {
 				errors.website = "URL inválida (ex: https://exemplo.com)";
 			}
-		}
-
-		return errors;
-	}
-
-	/**
-	 * Validates preferences step
-	 */
-	private validatePreferences(
-		data: Partial<OnboardingData>,
-	): Record<string, string> {
-		const errors: Record<string, string> = {};
-		const { preferences } = data;
-
-		// At least one feature must be enabled
-		const hasAnyFeature =
-			preferences?.features?.members ||
-			preferences?.features?.finance ||
-			preferences?.features?.events ||
-			preferences?.features?.schedules ||
-			preferences?.features?.ministries;
-
-		if (!hasAnyFeature) {
-			errors.features = "Pelo menos uma funcionalidade deve ser ativada";
-		}
-
-		if (!preferences?.language) {
-			errors.language = "Idioma é obrigatório";
-		}
-
-		if (!preferences?.timezone) {
-			errors.timezone = "Fuso horário é obrigatório";
 		}
 
 		return errors;
@@ -175,10 +158,6 @@ export class OnboardingValidator {
 
 			case Step.ORGANIZATION_DETAILS:
 				errors = this.validateOrganizationDetails(data);
-				break;
-
-			case Step.PREFERENCES:
-				errors = this.validatePreferences(data);
 				break;
 
 			case Step.COMPLETE:

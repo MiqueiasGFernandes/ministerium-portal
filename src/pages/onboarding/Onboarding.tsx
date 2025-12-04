@@ -11,6 +11,7 @@ import {
 	useMantineTheme,
 } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { onboardingService } from "@/services/onboarding";
@@ -176,12 +177,18 @@ export const Onboarding = () => {
 	if (isSubmitting) {
 		return (
 			<Center style={{ minHeight: "100vh" }}>
-				<Stack align="center" gap="md">
-					<Loader size="xl" />
-					<Text size="lg" fw={500}>
-						Configurando sua organização...
-					</Text>
-				</Stack>
+				<motion.div
+					initial={{ opacity: 0, scale: 0.9 }}
+					animate={{ opacity: 1, scale: 1 }}
+					transition={{ duration: 0.3 }}
+				>
+					<Stack align="center" gap="md">
+						<Loader size="xl" />
+						<Text size="lg" fw={500}>
+							Configurando sua organização...
+						</Text>
+					</Stack>
+				</motion.div>
 			</Center>
 		);
 	}
@@ -199,41 +206,57 @@ export const Onboarding = () => {
 					{/* Progress Bar - Only show for non-welcome/complete steps */}
 					{onboardingData.currentStep !== OnboardingStep.WELCOME &&
 						onboardingData.currentStep !== OnboardingStep.COMPLETE && (
-							<Paper p="md" radius="md" shadow="sm">
-								<Stack gap="xs">
-									<Text size="sm" fw={500} c="dimmed">
-										Progresso: {progress}%
-									</Text>
-									<Progress
-										value={progress}
-										size="lg"
-										radius="xl"
-										data-testid="onboarding-progress"
-									/>
-								</Stack>
-							</Paper>
+							<motion.div
+								initial={{ opacity: 0, y: -10 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ duration: 0.3, delay: 0.1 }}
+							>
+								<Paper p="md" radius="md" shadow="sm">
+									<Stack gap="xs">
+										<Text size="sm" fw={500} c="dimmed">
+											Progresso: {progress}%
+										</Text>
+										<Progress
+											value={progress}
+											size="lg"
+											radius="xl"
+											data-testid="onboarding-progress"
+											style={{ transition: "all 0.5s ease" }}
+										/>
+									</Stack>
+								</Paper>
+							</motion.div>
 						)}
 
 					{/* Stepper - Only show for non-welcome/complete steps */}
 					{onboardingData.currentStep !== OnboardingStep.WELCOME &&
 						onboardingData.currentStep !== OnboardingStep.COMPLETE && (
-							<Paper p="md" radius="md" shadow="sm">
-								<Stepper
-									active={getActiveStepIndex(onboardingData.currentStep)}
-									size="sm"
-									data-testid="onboarding-stepper"
-								>
-									<Stepper.Step
-										label="Organização"
-										description="Informações básicas"
-									/>
-									<Stepper.Step label="Administrador" description="Sua conta" />
-									<Stepper.Step
-										label="Detalhes"
-										description="Informações adicionais"
-									/>
-								</Stepper>
-							</Paper>
+							<motion.div
+								initial={{ opacity: 0, y: -10 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ duration: 0.3, delay: 0.2 }}
+							>
+								<Paper p="md" radius="md" shadow="sm">
+									<Stepper
+										active={getActiveStepIndex(onboardingData.currentStep)}
+										size="sm"
+										data-testid="onboarding-stepper"
+									>
+										<Stepper.Step
+											label="Organização"
+											description="Informações básicas"
+										/>
+										<Stepper.Step
+											label="Administrador"
+											description="Sua conta"
+										/>
+										<Stepper.Step
+											label="Detalhes"
+											description="Informações adicionais"
+										/>
+									</Stepper>
+								</Paper>
+							</motion.div>
 						)}
 
 					{/* Error Alert */}
@@ -250,18 +273,36 @@ export const Onboarding = () => {
 					)}
 
 					{/* Step Content */}
-					{onboardingData.currentStep === OnboardingStep.WELCOME ? (
-						renderStep()
-					) : (
-						<Paper
-							p="xl"
-							radius="md"
-							shadow="xl"
-							data-testid="onboarding-step-content"
-						>
-							{renderStep()}
-						</Paper>
-					)}
+					<AnimatePresence mode="wait">
+						{onboardingData.currentStep === OnboardingStep.WELCOME ? (
+							<motion.div
+								key="welcome-step"
+								initial={{ opacity: 0, y: 20 }}
+								animate={{ opacity: 1, y: 0 }}
+								exit={{ opacity: 0, y: -20 }}
+								transition={{ duration: 0.3 }}
+							>
+								{renderStep()}
+							</motion.div>
+						) : (
+							<motion.div
+								key={onboardingData.currentStep}
+								initial={{ opacity: 0, x: 20 }}
+								animate={{ opacity: 1, x: 0 }}
+								exit={{ opacity: 0, x: -20 }}
+								transition={{ duration: 0.3 }}
+							>
+								<Paper
+									p="xl"
+									radius="md"
+									shadow="xl"
+									data-testid="onboarding-step-content"
+								>
+									{renderStep()}
+								</Paper>
+							</motion.div>
+						)}
+					</AnimatePresence>
 				</Stack>
 			</Container>
 		</div>
