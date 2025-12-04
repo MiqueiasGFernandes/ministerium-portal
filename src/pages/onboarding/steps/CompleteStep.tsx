@@ -37,10 +37,6 @@ export const CompleteStep = ({
 									<Text c="dimmed">{data.tenant?.name}</Text>
 								</Group>
 								<Group justify="space-between">
-									<Text fw={500}>Subdomínio:</Text>
-									<Text c="dimmed">{data.tenant?.subdomain}</Text>
-								</Group>
-								<Group justify="space-between">
 									<Text fw={500}>Administrador:</Text>
 									<Text c="dimmed">{data.admin?.name}</Text>
 								</Group>

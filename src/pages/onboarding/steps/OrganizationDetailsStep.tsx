@@ -2,6 +2,7 @@ import {
 	Button,
 	Grid,
 	Group,
+	LoadingOverlay,
 	Paper,
 	Stack,
 	Text,
@@ -19,10 +20,12 @@ import {
 	IconPhone,
 	IconWorld,
 } from "@tabler/icons-react";
-import type { OnboardingStepProps } from "@/types";
-import { onboardingService } from "@/services/onboarding";
-import { onboardingAutoFill } from "@/utils/onboardingFakeData";
+import { useState } from "react";
 import { shouldShowTestData } from "@/config/env";
+import { cepService } from "@/services/cep";
+import { onboardingService } from "@/services/onboarding";
+import type { OnboardingStepProps } from "@/types";
+import { onboardingAutoFill } from "@/utils/onboardingFakeData";
 
 /**
  * Organization Details Step Component
@@ -35,6 +38,8 @@ export const OrganizationDetailsStep = ({
 	onBack,
 	onSkip,
 }: OnboardingStepProps) => {
+	const [isLoadingCep, setIsLoadingCep] = useState(false);
+
 	const form = useForm({
 		initialValues: {
 			street: data.organization?.address?.street ?? "",
@@ -53,9 +58,7 @@ export const OrganizationDetailsStep = ({
 		},
 		validate: {
 			street: (value) =>
-				value.trim().length < 3
-					? "Rua deve ter pelo menos 3 caracteres"
-					: null,
+				value.trim().length < 3 ? "Rua deve ter pelo menos 3 caracteres" : null,
 			number: (value) =>
 				value.trim().length < 1 ? "Número é obrigatório" : null,
 			city: (value) =>
@@ -68,8 +71,7 @@ export const OrganizationDetailsStep = ({
 					: null,
 			zipCode: (value) =>
 				!/^\d{5}-?\d{3}$/.test(value) ? "CEP inválido (ex: 12345-678)" : null,
-			phone: (value) =>
-				value.length < 10 ? "Telefone é obrigatório" : null,
+			phone: (value) => (value.length < 10 ? "Telefone é obrigatório" : null),
 			email: (value) =>
 				!/^\S+@\S+\.\S+$/.test(value) ? "Email inválido" : null,
 			website: (value) => {
@@ -83,6 +85,48 @@ export const OrganizationDetailsStep = ({
 			},
 		},
 	});
+
+	const handleCepBlur = async () => {
+		const cep = form.values.zipCode;
+
+		// Only fetch if CEP is valid and fields are empty
+		if (!cepService.isValidCep(cep)) {
+			return;
+		}
+
+		setIsLoadingCep(true);
+
+		try {
+			const addressData = await cepService.fetchAddress(cep);
+
+			if (addressData) {
+				// Only fill empty fields
+				if (!form.values.street) {
+					form.setFieldValue("street", addressData.street);
+				}
+				if (!form.values.city) {
+					form.setFieldValue("city", addressData.city);
+				}
+				if (!form.values.state) {
+					form.setFieldValue("state", addressData.state);
+				}
+				// Always update zipCode with formatted version
+				form.setFieldValue("zipCode", addressData.zipCode);
+				// Clear any previous CEP error
+				form.clearFieldError("zipCode");
+			} else {
+				form.setFieldError("zipCode", "CEP não encontrado");
+			}
+		} catch (error) {
+			if (error instanceof Error) {
+				form.setFieldError("zipCode", error.message);
+			} else {
+				form.setFieldError("zipCode", "Erro ao buscar CEP");
+			}
+		} finally {
+			setIsLoadingCep(false);
+		}
+	};
 
 	const handleAutoFill = () => {
 		const fakeData = onboardingAutoFill.organization();
@@ -158,7 +202,13 @@ export const OrganizationDetailsStep = ({
 
 			<form onSubmit={form.onSubmit(handleSubmit)}>
 				<Stack gap="md">
-					<Paper p="md" withBorder>
+					<Paper p="md" withBorder pos="relative">
+						<LoadingOverlay
+							visible={isLoadingCep}
+							zIndex={1000}
+							overlayProps={{ radius: "sm", blur: 2 }}
+							loaderProps={{ color: "blue", type: "dots" }}
+						/>
 						<Stack gap="md">
 							<Title order={4}>
 								<Group gap="xs">
@@ -230,8 +280,10 @@ export const OrganizationDetailsStep = ({
 									<TextInput
 										label="CEP"
 										placeholder="12345-678"
+										description="Digite o CEP e aguarde"
 										required
 										{...form.getInputProps("zipCode")}
+										onBlur={handleCepBlur}
 										data-testid="org-zipcode-input"
 									/>
 								</Grid.Col>
