@@ -1,10 +1,6 @@
+import { type OnboardingData, OnboardingStatus, OnboardingStep } from "@/types";
 import type { IOnboardingService } from "./IOnboardingService";
 import { OnboardingValidator } from "./OnboardingValidator";
-import {
-	OnboardingStatus,
-	OnboardingStep,
-	type OnboardingData,
-} from "@/types";
 
 /**
  * Single Responsibility Principle (SRP)
@@ -27,9 +23,7 @@ export class OnboardingService implements IOnboardingService {
 	];
 
 	// Steps that can be skipped
-	private readonly skippableSteps: OnboardingStep[] = [
-		OnboardingStep.ORGANIZATION_DETAILS,
-	];
+	private readonly skippableSteps: OnboardingStep[] = [];
 
 	constructor() {
 		this.validator = new OnboardingValidator();
@@ -140,7 +134,10 @@ export class OnboardingService implements IOnboardingService {
 				OnboardingStep.TENANT_INFO,
 				data,
 			);
-			const adminValidation = this.validateStep(OnboardingStep.ADMIN_INFO, data);
+			const adminValidation = this.validateStep(
+				OnboardingStep.ADMIN_INFO,
+				data,
+			);
 			const preferencesValidation = this.validateStep(
 				OnboardingStep.PREFERENCES,
 				data,

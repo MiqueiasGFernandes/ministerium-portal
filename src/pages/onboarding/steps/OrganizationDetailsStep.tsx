@@ -30,13 +30,11 @@ import { onboardingAutoFill } from "@/utils/onboardingFakeData";
 /**
  * Organization Details Step Component
  * Single Responsibility: Collects detailed organization information
- * This step can be skipped
  */
 export const OrganizationDetailsStep = ({
 	data,
 	onNext,
 	onBack,
-	onSkip,
 }: OnboardingStepProps) => {
 	const [isLoadingCep, setIsLoadingCep] = useState(false);
 
@@ -362,20 +360,9 @@ export const OrganizationDetailsStep = ({
 							Voltar
 						</Button>
 
-						<Group gap="md">
-							{onSkip && (
-								<Button
-									variant="light"
-									onClick={onSkip}
-									data-testid="skip-button"
-								>
-									Pular
-								</Button>
-							)}
-							<Button type="submit" data-testid="next-button">
-								Próximo
-							</Button>
-						</Group>
+						<Button type="submit" data-testid="next-button">
+							Próximo
+						</Button>
 					</Group>
 				</Stack>
 			</form>
