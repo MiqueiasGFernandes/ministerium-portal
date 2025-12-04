@@ -1,5 +1,13 @@
-import { Button, Center, Paper, Stack, Text, Title } from "@mantine/core";
-import { IconRocket } from "@tabler/icons-react";
+import {
+	Button,
+	Center,
+	Group,
+	Paper,
+	Stack,
+	Text,
+	Title,
+} from "@mantine/core";
+import { IconBuildingChurch, IconRocket } from "@tabler/icons-react";
 import type { OnboardingStepProps } from "@/types";
 
 /**
@@ -15,11 +23,33 @@ export const WelcomeStep = ({ onNext }: OnboardingStepProps) => {
 		<Center style={{ minHeight: "60vh" }}>
 			<Paper p="xl" radius="md" shadow="md" maw={600}>
 				<Stack gap="xl" align="center">
-					<IconRocket size={80} stroke={1.5} color="#228BE6" />
+					<Group gap="md" align="flex-end" wrap="nowrap">
+						<IconBuildingChurch
+							size={60}
+							stroke={1.5}
+							color="#667eea"
+							style={{ flexShrink: 0 }}
+						/>
+						<Title
+							order={1}
+							style={{
+								fontFamily:
+									'"Space Grotesk", "Inter", -apple-system, sans-serif',
+								fontWeight: 800,
+								fontSize: "3rem",
+								letterSpacing: "-0.02em",
+								lineHeight: 1,
+								color: "#667eea",
+								paddingBottom: "2px",
+							}}
+						>
+							Ministerium
+						</Title>
+					</Group>
 
 					<Stack gap="md" align="center">
-						<Title order={1} ta="center">
-							Bem-vindo ao Ministerium
+						<Title order={2} ta="center" fw={600}>
+							Bem-vindo!
 						</Title>
 						<Text size="lg" c="dimmed" ta="center">
 							Estamos felizes em tê-lo aqui!
