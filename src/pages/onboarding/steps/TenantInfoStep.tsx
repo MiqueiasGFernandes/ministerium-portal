@@ -34,10 +34,10 @@ export const TenantInfoStep = ({ data, onNext, onBack }: OnboardingStepProps) =>
 
 	const form = useForm({
 		initialValues: {
-			name: data.tenant?.name || "",
-			subdomain: data.tenant?.subdomain || "",
-			logo: data.tenant?.logo || "",
-			primaryColor: data.tenant?.primaryColor || "#228BE6",
+			name: data.tenant?.name ?? "",
+			subdomain: data.tenant?.subdomain ?? "",
+			logo: data.tenant?.logo ?? "",
+			primaryColor: data.tenant?.primaryColor ?? "#228BE6",
 		},
 		validate: {
 			name: (value) =>

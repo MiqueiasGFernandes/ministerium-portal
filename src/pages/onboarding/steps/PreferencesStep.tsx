@@ -41,8 +41,8 @@ export const PreferencesStep = ({
 			ministries: data.preferences?.features?.ministries ?? true,
 			emailNotifications: data.preferences?.notifications?.email ?? true,
 			pushNotifications: data.preferences?.notifications?.push ?? false,
-			language: data.preferences?.language || "pt-BR",
-			timezone: data.preferences?.timezone || "America/Sao_Paulo",
+			language: data.preferences?.language ?? "pt-BR",
+			timezone: data.preferences?.timezone ?? "America/Sao_Paulo",
 		},
 		validate: {
 			language: (value) => (!value ? "Idioma é obrigatório" : null),

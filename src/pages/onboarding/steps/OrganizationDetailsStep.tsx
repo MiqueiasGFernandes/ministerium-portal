@@ -37,19 +37,19 @@ export const OrganizationDetailsStep = ({
 }: OnboardingStepProps) => {
 	const form = useForm({
 		initialValues: {
-			street: data.organization?.address?.street || "",
-			number: data.organization?.address?.number || "",
-			complement: data.organization?.address?.complement || "",
-			city: data.organization?.address?.city || "",
-			state: data.organization?.address?.state || "",
-			zipCode: data.organization?.address?.zipCode || "",
-			phone: data.organization?.phone || "",
-			email: data.organization?.email || "",
-			website: data.organization?.website || "",
+			street: data.organization?.address?.street ?? "",
+			number: data.organization?.address?.number ?? "",
+			complement: data.organization?.address?.complement ?? "",
+			city: data.organization?.address?.city ?? "",
+			state: data.organization?.address?.state ?? "",
+			zipCode: data.organization?.address?.zipCode ?? "",
+			phone: data.organization?.phone ?? "",
+			email: data.organization?.email ?? "",
+			website: data.organization?.website ?? "",
 			foundedDate: data.organization?.foundedDate
 				? new Date(data.organization.foundedDate)
 				: null,
-			description: data.organization?.description || "",
+			description: data.organization?.description ?? "",
 		},
 		validate: {
 			street: (value) =>
@@ -89,15 +89,15 @@ export const OrganizationDetailsStep = ({
 		form.setValues({
 			street: fakeData.address.street,
 			number: fakeData.address.number,
-			complement: fakeData.address.complement || "",
+			complement: fakeData.address.complement ?? "",
 			city: fakeData.address.city,
 			state: fakeData.address.state,
 			zipCode: fakeData.address.zipCode,
 			phone: fakeData.phone,
 			email: fakeData.email,
-			website: fakeData.website || "",
+			website: fakeData.website ?? "",
 			foundedDate: fakeData.foundedDate ? new Date(fakeData.foundedDate) : null,
-			description: fakeData.description || "",
+			description: fakeData.description ?? "",
 		});
 	};
 

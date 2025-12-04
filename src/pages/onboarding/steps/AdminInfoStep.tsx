@@ -35,12 +35,12 @@ export const AdminInfoStep = ({ data, onNext, onBack }: OnboardingStepProps) => 
 
 	const form = useForm({
 		initialValues: {
-			name: data.admin?.name || "",
-			email: data.admin?.email || "",
-			password: data.admin?.password || "",
-			confirmPassword: data.admin?.confirmPassword || "",
-			phone: data.admin?.phone || "",
-			avatar: data.admin?.avatar || "",
+			name: data.admin?.name ?? "",
+			email: data.admin?.email ?? "",
+			password: data.admin?.password ?? "",
+			confirmPassword: data.admin?.confirmPassword ?? "",
+			phone: data.admin?.phone ?? "",
+			avatar: data.admin?.avatar ?? "",
 		},
 		validate: {
 			name: (value) =>
