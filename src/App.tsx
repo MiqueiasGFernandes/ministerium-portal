@@ -165,6 +165,7 @@ function App() {
 						warnWhenUnsavedChanges: true,
 						useNewQueryKeys: true,
 						projectId: "ministerium-mvp",
+						title: { text: "Ministerium", icon: "⛪" },
 					}}
 				>
 					<Routes>
@@ -255,7 +256,26 @@ function App() {
 
 					<RefineKbar />
 					<UnsavedChangesNotifier />
-					<DocumentTitleHandler />
+					<DocumentTitleHandler handler={({ resource, action }) => {
+						let title = "Ministerium";
+
+						if (resource?.meta?.label) {
+							title = `${resource.meta.label} | ${title}`;
+						}
+
+						if (action) {
+							const actionNames: Record<string, string> = {
+								list: "Lista",
+								create: "Criar",
+								edit: "Editar",
+								show: "Visualizar",
+							};
+							const actionTitle = actionNames[action] || action;
+							title = `${actionTitle} ${resource?.meta?.label || ""} | Ministerium`;
+						}
+
+						return title;
+					}} />
 				</Refine>
 			</RefineKbarProvider>
 		</BrowserRouter>

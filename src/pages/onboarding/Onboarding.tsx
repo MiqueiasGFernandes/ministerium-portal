@@ -1,26 +1,26 @@
-import { useState } from "react";
 import {
+	Alert,
+	Center,
 	Container,
+	Loader,
 	Paper,
 	Progress,
 	Stack,
 	Stepper,
 	Text,
-	Alert,
-	Loader,
-	Center,
 } from "@mantine/core";
-import { useNavigate } from "react-router-dom";
 import { IconAlertCircle } from "@tabler/icons-react";
-import { OnboardingStep, OnboardingStatus, type OnboardingData } from "@/types";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { onboardingService } from "@/services/onboarding";
+import { type OnboardingData, OnboardingStatus, OnboardingStep } from "@/types";
 import {
-	WelcomeStep,
-	TenantInfoStep,
 	AdminInfoStep,
+	CompleteStep,
 	OrganizationDetailsStep,
 	PreferencesStep,
-	CompleteStep,
+	TenantInfoStep,
+	WelcomeStep,
 } from "./steps";
 
 /**
@@ -35,6 +35,11 @@ export const Onboarding = () => {
 	);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState<string>("");
+
+	// Set document title
+	useEffect(() => {
+		document.title = "Ministerium | Cadastro";
+	}, []);
 
 	// Get step index for Stepper component
 	const getActiveStepIndex = (step: OnboardingStep): number => {
@@ -225,10 +230,7 @@ export const Onboarding = () => {
 										label="Organização"
 										description="Informações básicas"
 									/>
-									<Stepper.Step
-										label="Administrador"
-										description="Sua conta"
-									/>
+									<Stepper.Step label="Administrador" description="Sua conta" />
 									<Stepper.Step
 										label="Detalhes"
 										description="Informações adicionais"
@@ -255,7 +257,12 @@ export const Onboarding = () => {
 					)}
 
 					{/* Step Content */}
-					<Paper p="xl" radius="md" shadow="xl" data-testid="onboarding-step-content">
+					<Paper
+						p="xl"
+						radius="md"
+						shadow="xl"
+						data-testid="onboarding-step-content"
+					>
 						{renderStep()}
 					</Paper>
 				</Stack>

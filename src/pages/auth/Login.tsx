@@ -15,7 +15,7 @@ import {
 import { useForm } from "@mantine/form";
 import { useLogin } from "@refinedev/core";
 import { IconAlertCircle, IconLock, IconMail } from "@tabler/icons-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { shouldShowTestData } from "@/config/env";
 import type { LoginCredentials } from "@/types";
@@ -23,6 +23,11 @@ import type { LoginCredentials } from "@/types";
 export const Login = () => {
 	const { mutate: login, isLoading } = useLogin<LoginCredentials>();
 	const [error, setError] = useState<string>("");
+
+	// Set document title
+	useEffect(() => {
+		document.title = "Ministerium | Login";
+	}, []);
 
 	const form = useForm({
 		initialValues: {
