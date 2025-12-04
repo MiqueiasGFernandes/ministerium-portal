@@ -13,6 +13,7 @@ import { DateInput } from "@mantine/dates";
 import { notifications } from "@mantine/notifications";
 import { useGo, useList } from "@refinedev/core";
 import { useForm } from "@refinedev/mantine";
+import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Ministry, Schedule } from "@/types";
 
 export const ScheduleCreate = () => {
@@ -89,7 +90,11 @@ export const ScheduleCreate = () => {
 						<Button variant="default" onClick={() => go({ to: "/schedules" })}>
 							Cancelar
 						</Button>
-						<Button {...saveButtonProps} loading={formLoading}>
+						<Button
+							{...saveButtonProps}
+							loading={formLoading}
+							styles={gradientButtonStyles}
+						>
 							Salvar
 						</Button>
 					</Group>

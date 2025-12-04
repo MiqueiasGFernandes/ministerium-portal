@@ -13,6 +13,7 @@ import { IconBuilding, IconPhoto } from "@tabler/icons-react";
 import { useState } from "react";
 import { shouldShowTestData } from "@/config/env";
 import { onboardingService } from "@/services/onboarding";
+import { backButtonStyles, gradientButtonStyles } from "@/styles/buttonStyles";
 import type { OnboardingStepProps } from "@/types";
 import { onboardingAutoFill } from "@/utils/onboardingFakeData";
 
@@ -144,6 +145,7 @@ export const TenantInfoStep = ({
 								variant="subtle"
 								onClick={onBack}
 								data-testid="back-button"
+								styles={backButtonStyles}
 							>
 								Voltar
 							</Button>
@@ -151,7 +153,11 @@ export const TenantInfoStep = ({
 							<div />
 						)}
 
-						<Button type="submit" data-testid="next-button">
+						<Button
+							type="submit"
+							data-testid="next-button"
+							styles={gradientButtonStyles}
+						>
 							Próximo
 						</Button>
 					</Group>

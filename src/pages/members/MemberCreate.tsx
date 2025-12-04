@@ -20,6 +20,7 @@ import { useForm } from "@refinedev/mantine";
 import { IconUpload } from "@tabler/icons-react";
 import { useState } from "react";
 import { MEMBER_STATUS_OPTIONS } from "@/config/constants";
+import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Member } from "@/types";
 import { MemberStatus } from "@/types";
 
@@ -292,7 +293,11 @@ export const MemberCreate = () => {
 						<Button variant="default" onClick={() => go({ to: "/members" })}>
 							Cancelar
 						</Button>
-						<Button {...saveButtonProps} loading={formLoading}>
+						<Button
+							{...saveButtonProps}
+							loading={formLoading}
+							styles={gradientButtonStyles}
+						>
 							Salvar
 						</Button>
 					</Group>

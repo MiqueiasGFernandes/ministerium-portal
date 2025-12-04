@@ -14,6 +14,7 @@ import {
 import { DateInput, TimeInput } from "@mantine/dates";
 import { useForm } from "@refinedev/mantine";
 import { EVENT_STATUS_OPTIONS } from "@/config/constants";
+import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Event } from "@/types";
 
 export const EventEdit = () => {
@@ -73,7 +74,11 @@ export const EventEdit = () => {
 					</Grid>
 					<Group justify="flex-end" mt="md">
 						<Button variant="default">Cancelar</Button>
-						<Button {...saveButtonProps} loading={formLoading}>
+						<Button
+							{...saveButtonProps}
+							loading={formLoading}
+							styles={gradientButtonStyles}
+						>
 							Salvar Alterações
 						</Button>
 					</Group>

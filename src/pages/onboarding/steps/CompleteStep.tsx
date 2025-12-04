@@ -1,15 +1,21 @@
-import { Button, Center, Group, Paper, Stack, Text, Title } from "@mantine/core";
+import {
+	Button,
+	Center,
+	Group,
+	Paper,
+	Stack,
+	Text,
+	Title,
+} from "@mantine/core";
 import { IconCircleCheck } from "@tabler/icons-react";
+import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { OnboardingStepProps } from "@/types";
 
 /**
  * Complete Step Component
  * Single Responsibility: Shows completion message and final action
  */
-export const CompleteStep = ({
-	data,
-	onNext,
-}: OnboardingStepProps) => {
+export const CompleteStep = ({ data, onNext }: OnboardingStepProps) => {
 	const handleFinish = () => {
 		onNext({});
 	};
@@ -59,6 +65,7 @@ export const CompleteStep = ({
 						onClick={handleFinish}
 						leftSection={<IconCircleCheck size={20} />}
 						data-testid="complete-finish-button"
+						styles={gradientButtonStyles}
 					>
 						Acessar o Sistema
 					</Button>

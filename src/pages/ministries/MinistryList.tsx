@@ -18,6 +18,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import { useMemo } from "react";
+import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Ministry } from "@/types";
 
 export const MinistryList = () => {
@@ -109,6 +110,7 @@ export const MinistryList = () => {
 				<Button
 					leftSection={<IconPlus size="1rem" />}
 					onClick={() => create("ministries")}
+					styles={gradientButtonStyles}
 				>
 					Novo Ministério
 				</Button>

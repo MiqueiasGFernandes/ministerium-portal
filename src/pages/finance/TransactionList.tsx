@@ -27,6 +27,7 @@ import { type ColumnDef, flexRender } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import { TRANSACTION_CATEGORIES } from "@/config/constants";
+import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Transaction, TransactionType } from "@/types";
 
 const formatCurrency = (value: number) =>
@@ -151,7 +152,13 @@ export const TransactionList = () => {
 						? [{ field: "type", operator: "eq" as const, value: typeFilter }]
 						: []),
 					...(categoryFilter
-						? [{ field: "category", operator: "eq" as const, value: categoryFilter }]
+						? [
+								{
+									field: "category",
+									operator: "eq" as const,
+									value: categoryFilter,
+								},
+							]
 						: []),
 				],
 			},
@@ -165,6 +172,7 @@ export const TransactionList = () => {
 				<Button
 					leftSection={<IconPlus size="1rem" />}
 					onClick={() => create("transactions")}
+					styles={gradientButtonStyles}
 				>
 					Nova Transação
 				</Button>

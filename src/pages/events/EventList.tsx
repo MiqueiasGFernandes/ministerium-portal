@@ -19,6 +19,7 @@ import { type ColumnDef, flexRender } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import { EVENT_STATUS_OPTIONS } from "@/config/constants";
+import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Event } from "@/types";
 
 export const EventList = () => {
@@ -110,7 +111,13 @@ export const EventList = () => {
 			filters: {
 				permanent: [
 					...(statusFilter
-						? [{ field: "status", operator: "eq" as const, value: statusFilter }]
+						? [
+								{
+									field: "status",
+									operator: "eq" as const,
+									value: statusFilter,
+								},
+							]
 						: []),
 				],
 			},
@@ -124,6 +131,7 @@ export const EventList = () => {
 				<Button
 					leftSection={<IconPlus size="1rem" />}
 					onClick={() => create("events")}
+					styles={gradientButtonStyles}
 				>
 					Novo Evento
 				</Button>

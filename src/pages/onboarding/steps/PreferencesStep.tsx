@@ -18,10 +18,11 @@ import {
 	IconUsers,
 	IconWorld,
 } from "@tabler/icons-react";
-import type { OnboardingStepProps } from "@/types";
-import { onboardingService } from "@/services/onboarding";
-import { onboardingAutoFill } from "@/utils/onboardingFakeData";
 import { shouldShowTestData } from "@/config/env";
+import { onboardingService } from "@/services/onboarding";
+import { backButtonStyles, gradientButtonStyles } from "@/styles/buttonStyles";
+import type { OnboardingStepProps } from "@/types";
+import { onboardingAutoFill } from "@/utils/onboardingFakeData";
 
 /**
  * Preferences Step Component
@@ -102,10 +103,7 @@ export const PreferencesStep = ({
 			values.ministries;
 
 		if (!hasAnyFeature) {
-			form.setFieldError(
-				"members",
-				"Selecione pelo menos uma funcionalidade",
-			);
+			form.setFieldError("members", "Selecione pelo menos uma funcionalidade");
 			return;
 		}
 
@@ -292,7 +290,10 @@ export const PreferencesStep = ({
 										data={[
 											{ value: "America/Sao_Paulo", label: "Brasília (UTC-3)" },
 											{ value: "America/Manaus", label: "Manaus (UTC-4)" },
-											{ value: "America/Rio_Branco", label: "Rio Branco (UTC-5)" },
+											{
+												value: "America/Rio_Branco",
+												label: "Rio Branco (UTC-5)",
+											},
 											{
 												value: "America/Noronha",
 												label: "Fernando de Noronha (UTC-2)",
@@ -307,11 +308,20 @@ export const PreferencesStep = ({
 					</Paper>
 
 					<Group justify="space-between" mt="xl">
-						<Button variant="subtle" onClick={onBack} data-testid="back-button">
+						<Button
+							variant="subtle"
+							onClick={onBack}
+							data-testid="back-button"
+							styles={backButtonStyles}
+						>
 							Voltar
 						</Button>
 
-						<Button type="submit" data-testid="next-button">
+						<Button
+							type="submit"
+							data-testid="next-button"
+							styles={gradientButtonStyles}
+						>
 							Próximo
 						</Button>
 					</Group>

@@ -12,6 +12,7 @@ import {
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useForm } from "@refinedev/mantine";
+import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Schedule } from "@/types";
 
 export const ScheduleEdit = () => {
@@ -62,7 +63,11 @@ export const ScheduleEdit = () => {
 					</Grid>
 					<Group justify="flex-end" mt="md">
 						<Button variant="default">Cancelar</Button>
-						<Button {...saveButtonProps} loading={formLoading}>
+						<Button
+							{...saveButtonProps}
+							loading={formLoading}
+							styles={gradientButtonStyles}
+						>
 							Salvar Alterações
 						</Button>
 					</Group>

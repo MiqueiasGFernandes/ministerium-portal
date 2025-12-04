@@ -12,6 +12,7 @@ import {
 import { notifications } from "@mantine/notifications";
 import { useGo, useList } from "@refinedev/core";
 import { useForm } from "@refinedev/mantine";
+import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Ministry, User } from "@/types";
 
 export const MinistryCreate = () => {
@@ -96,7 +97,11 @@ export const MinistryCreate = () => {
 						<Button variant="default" onClick={() => go({ to: "/ministries" })}>
 							Cancelar
 						</Button>
-						<Button {...saveButtonProps} loading={formLoading}>
+						<Button
+							{...saveButtonProps}
+							loading={formLoading}
+							styles={gradientButtonStyles}
+						>
 							Salvar
 						</Button>
 					</Group>

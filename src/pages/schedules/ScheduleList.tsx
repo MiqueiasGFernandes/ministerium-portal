@@ -18,6 +18,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import { useMemo } from "react";
+import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Schedule } from "@/types";
 
 export const ScheduleList = () => {
@@ -98,6 +99,7 @@ export const ScheduleList = () => {
 				<Button
 					leftSection={<IconPlus size="1rem" />}
 					onClick={() => create("schedules")}
+					styles={gradientButtonStyles}
 				>
 					Nova Escala
 				</Button>

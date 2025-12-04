@@ -14,6 +14,7 @@ import { notifications } from "@mantine/notifications";
 import { useGo } from "@refinedev/core";
 import { useForm } from "@refinedev/mantine";
 import { TRANSACTION_CATEGORIES } from "@/config/constants";
+import { gradientButtonStyles } from "@/styles/buttonStyles";
 import { type Transaction, TransactionType } from "@/types";
 
 export const TransactionCreate = () => {
@@ -96,7 +97,11 @@ export const TransactionCreate = () => {
 						<Button variant="default" onClick={() => go({ to: "/finance" })}>
 							Cancelar
 						</Button>
-						<Button {...saveButtonProps} loading={formLoading}>
+						<Button
+							{...saveButtonProps}
+							loading={formLoading}
+							styles={gradientButtonStyles}
+						>
 							Salvar
 						</Button>
 					</Group>

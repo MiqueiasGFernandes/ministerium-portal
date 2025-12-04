@@ -28,6 +28,7 @@ import {
 import { type ColumnDef, flexRender } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { MEMBER_STATUS_OPTIONS } from "@/config/constants";
+import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Member, MemberStatus } from "@/types";
 
 export const MemberList = () => {
@@ -158,10 +159,22 @@ export const MemberList = () => {
 			filters: {
 				permanent: [
 					...(search
-						? [{ field: "search", operator: "contains" as const, value: search }]
+						? [
+								{
+									field: "search",
+									operator: "contains" as const,
+									value: search,
+								},
+							]
 						: []),
 					...(statusFilter
-						? [{ field: "status", operator: "eq" as const, value: statusFilter }]
+						? [
+								{
+									field: "status",
+									operator: "eq" as const,
+									value: statusFilter,
+								},
+							]
 						: []),
 					...(tagsFilter.length > 0
 						? [{ field: "tags", operator: "in" as const, value: tagsFilter }]
@@ -190,6 +203,7 @@ export const MemberList = () => {
 				<Button
 					leftSection={<IconPlus size="1rem" />}
 					onClick={() => create("members")}
+					styles={gradientButtonStyles}
 				>
 					Novo Membro
 				</Button>

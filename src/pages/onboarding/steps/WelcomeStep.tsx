@@ -8,6 +8,7 @@ import {
 	Title,
 } from "@mantine/core";
 import { IconBuildingChurch, IconRocket } from "@tabler/icons-react";
+import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { OnboardingStepProps } from "@/types";
 
 /**
@@ -72,6 +73,7 @@ export const WelcomeStep = ({ onNext }: OnboardingStepProps) => {
 						onClick={handleStart}
 						leftSection={<IconRocket size={20} />}
 						data-testid="welcome-start-button"
+						styles={gradientButtonStyles}
 					>
 						Começar
 					</Button>

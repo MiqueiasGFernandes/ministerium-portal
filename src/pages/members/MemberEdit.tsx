@@ -21,6 +21,7 @@ import { useForm } from "@refinedev/mantine";
 import { IconUpload } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { MEMBER_STATUS_OPTIONS } from "@/config/constants";
+import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Member } from "@/types";
 
 export const MemberEdit = () => {
@@ -105,7 +106,10 @@ export const MemberEdit = () => {
 
 	// Convert birthDate string to Date object for DateInput
 	useEffect(() => {
-		if (queryResult?.data?.data?.birthDate && typeof values?.birthDate === "string") {
+		if (
+			queryResult?.data?.data?.birthDate &&
+			typeof values?.birthDate === "string"
+		) {
 			const date = new Date(values.birthDate);
 			setFieldValue("birthDate", date);
 		}
@@ -294,7 +298,11 @@ export const MemberEdit = () => {
 						<Button variant="default" onClick={() => go({ to: "/members" })}>
 							Cancelar
 						</Button>
-						<Button {...saveButtonProps} loading={formLoading}>
+						<Button
+							{...saveButtonProps}
+							loading={formLoading}
+							styles={gradientButtonStyles}
+						>
 							Salvar Alterações
 						</Button>
 					</Group>

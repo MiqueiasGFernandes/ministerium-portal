@@ -8,6 +8,7 @@ import {
 	Stack,
 	Stepper,
 	Text,
+	useMantineTheme,
 } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
@@ -29,6 +30,7 @@ import {
  */
 export const Onboarding = () => {
 	const navigate = useNavigate();
+	const theme = useMantineTheme();
 	const [onboardingData, setOnboardingData] = useState<OnboardingData>(
 		onboardingService.initialize(),
 	);
@@ -188,7 +190,7 @@ export const Onboarding = () => {
 		<div
 			style={{
 				minHeight: "100vh",
-				background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+				background: theme.other.gradients.background,
 				padding: "2rem 0",
 			}}
 		>

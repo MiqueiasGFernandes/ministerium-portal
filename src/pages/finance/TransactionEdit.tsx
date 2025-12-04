@@ -13,6 +13,7 @@ import {
 import { DateInput } from "@mantine/dates";
 import { useForm } from "@refinedev/mantine";
 import { TRANSACTION_CATEGORIES } from "@/config/constants";
+import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Transaction } from "@/types";
 
 export const TransactionEdit = () => {
@@ -77,7 +78,11 @@ export const TransactionEdit = () => {
 					</Grid>
 					<Group justify="flex-end" mt="md">
 						<Button variant="default">Cancelar</Button>
-						<Button {...saveButtonProps} loading={formLoading}>
+						<Button
+							{...saveButtonProps}
+							loading={formLoading}
+							styles={gradientButtonStyles}
+						>
 							Salvar Alterações
 						</Button>
 					</Group>

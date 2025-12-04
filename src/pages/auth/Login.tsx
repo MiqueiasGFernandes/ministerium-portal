@@ -12,6 +12,7 @@ import {
 	Text,
 	TextInput,
 	Title,
+	useMantineTheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useLogin } from "@refinedev/core";
@@ -23,11 +24,13 @@ import {
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { LoginCredentials } from "@/types";
 
 export const Login = () => {
 	const { mutate: login, isLoading } = useLogin<LoginCredentials>();
 	const [error, setError] = useState<string>("");
+	const theme = useMantineTheme();
 
 	// Set document title
 	useEffect(() => {
@@ -65,7 +68,7 @@ export const Login = () => {
 		<Box
 			style={{
 				minHeight: "100vh",
-				background: "linear-gradient(135deg, #8b9dc3 0%, #9d8fb8 100%)",
+				background: theme.other.gradients.background,
 			}}
 		>
 			{/* Desktop Grid Layout */}
@@ -134,6 +137,7 @@ export const Login = () => {
 									size="md"
 									loading={isLoading}
 									mt="xl"
+									styles={gradientButtonStyles}
 								>
 									Entrar
 								</Button>
@@ -157,8 +161,19 @@ export const Login = () => {
 								to="/onboarding"
 								size="sm"
 								fw={500}
-								c="#1971c2"
-								style={{ textDecoration: "none" }}
+								c="ministerium-link.7"
+								style={{
+									textDecoration: "none",
+									transition: "all 0.2s ease",
+								}}
+								styles={{
+									root: {
+										"&:hover": {
+											color: theme.colors["ministerium-link"][8],
+											transform: "translateY(-1px)",
+										},
+									},
+								}}
 							>
 								Criar minha Organização
 							</Anchor>
@@ -198,7 +213,7 @@ export const Login = () => {
 								flexDirection: "column",
 								alignItems: "center",
 								justifyContent: "center",
-								backgroundImage: `linear-gradient(135deg, rgba(139, 157, 195, 0.85) 0%, rgba(157, 143, 184, 0.85) 100%), url(/assets/bg-login.jpg)`,
+								backgroundImage: `${theme.other.gradients.backgroundOverlay}, url(/assets/bg-login.jpg)`,
 								backgroundSize: "cover",
 								backgroundPosition: "center",
 								backgroundBlendMode: "overlay",
@@ -320,6 +335,7 @@ export const Login = () => {
 											size="md"
 											loading={isLoading}
 											mt="xl"
+											styles={gradientButtonStyles}
 										>
 											Entrar
 										</Button>
@@ -343,8 +359,19 @@ export const Login = () => {
 										to="/onboarding"
 										size="sm"
 										fw={500}
-										c="#1971c2"
-										style={{ textDecoration: "none" }}
+										c="ministerium-link.7"
+										style={{
+											textDecoration: "none",
+											transition: "all 0.2s ease",
+										}}
+										styles={{
+											root: {
+												"&:hover": {
+													color: theme.colors["ministerium-link"][8],
+													transform: "translateY(-1px)",
+												},
+											},
+										}}
 									>
 										Criar minha Organização
 									</Anchor>

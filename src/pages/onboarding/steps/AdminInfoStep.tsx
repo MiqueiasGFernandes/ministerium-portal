@@ -19,16 +19,21 @@ import {
 	IconUser,
 } from "@tabler/icons-react";
 import { useState } from "react";
-import type { OnboardingStepProps } from "@/types";
-import { onboardingService } from "@/services/onboarding";
-import { onboardingAutoFill } from "@/utils/onboardingFakeData";
 import { shouldShowTestData } from "@/config/env";
+import { onboardingService } from "@/services/onboarding";
+import { backButtonStyles, gradientButtonStyles } from "@/styles/buttonStyles";
+import type { OnboardingStepProps } from "@/types";
+import { onboardingAutoFill } from "@/utils/onboardingFakeData";
 
 /**
  * Admin Info Step Component
  * Single Responsibility: Collects administrator user information
  */
-export const AdminInfoStep = ({ data, onNext, onBack }: OnboardingStepProps) => {
+export const AdminInfoStep = ({
+	data,
+	onNext,
+	onBack,
+}: OnboardingStepProps) => {
 	const [avatarPreview, setAvatarPreview] = useState<string | undefined>(
 		data.admin?.avatar,
 	);
@@ -222,11 +227,20 @@ export const AdminInfoStep = ({ data, onNext, onBack }: OnboardingStepProps) => 
 					</Paper>
 
 					<Group justify="space-between" mt="xl">
-						<Button variant="subtle" onClick={onBack} data-testid="back-button">
+						<Button
+							variant="subtle"
+							onClick={onBack}
+							data-testid="back-button"
+							styles={backButtonStyles}
+						>
 							Voltar
 						</Button>
 
-						<Button type="submit" data-testid="next-button">
+						<Button
+							type="submit"
+							data-testid="next-button"
+							styles={gradientButtonStyles}
+						>
 							Próximo
 						</Button>
 					</Group>

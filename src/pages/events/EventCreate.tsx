@@ -15,6 +15,7 @@ import { notifications } from "@mantine/notifications";
 import { useGo } from "@refinedev/core";
 import { useForm } from "@refinedev/mantine";
 import { EVENT_STATUS_OPTIONS } from "@/config/constants";
+import { gradientButtonStyles } from "@/styles/buttonStyles";
 import { type Event, EventStatus } from "@/types";
 
 export const EventCreate = () => {
@@ -94,7 +95,11 @@ export const EventCreate = () => {
 						<Button variant="default" onClick={() => go({ to: "/events" })}>
 							Cancelar
 						</Button>
-						<Button {...saveButtonProps} loading={formLoading}>
+						<Button
+							{...saveButtonProps}
+							loading={formLoading}
+							styles={gradientButtonStyles}
+						>
 							Salvar
 						</Button>
 					</Group>
