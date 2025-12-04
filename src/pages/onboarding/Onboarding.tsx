@@ -257,14 +257,18 @@ export const Onboarding = () => {
 					)}
 
 					{/* Step Content */}
-					<Paper
-						p="xl"
-						radius="md"
-						shadow="xl"
-						data-testid="onboarding-step-content"
-					>
-						{renderStep()}
-					</Paper>
+					{onboardingData.currentStep === OnboardingStep.WELCOME ? (
+						renderStep()
+					) : (
+						<Paper
+							p="xl"
+							radius="md"
+							shadow="xl"
+							data-testid="onboarding-step-content"
+						>
+							{renderStep()}
+						</Paper>
+					)}
 				</Stack>
 			</Container>
 		</div>

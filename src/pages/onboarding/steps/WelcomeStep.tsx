@@ -13,7 +13,7 @@ export const WelcomeStep = ({ onNext }: OnboardingStepProps) => {
 
 	return (
 		<Center style={{ minHeight: "60vh" }}>
-			<Paper p="xl" radius="md" withBorder shadow="md" maw={600}>
+			<Paper p="xl" radius="md" shadow="md" maw={600}>
 				<Stack gap="xl" align="center">
 					<IconRocket size={80} stroke={1.5} color="#228BE6" />
 
