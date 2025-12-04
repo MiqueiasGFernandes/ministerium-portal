@@ -168,7 +168,7 @@ test.describe("Onboarding Flow", () => {
 		await expect(page.locator('text=/.*Rua deve ter pelo menos.*/i')).toBeVisible();
 	});
 
-	test("should complete organization details and move to preferences", async ({ page }) => {
+	test("should complete organization details and move to complete step", async ({ page }) => {
 		// Navigate through steps
 		await page.getByTestId("welcome-start-button").click();
 		await page.getByTestId("autofill-button").click();
@@ -180,53 +180,12 @@ test.describe("Onboarding Flow", () => {
 		await page.getByTestId("autofill-button").click();
 		await page.getByTestId("next-button").click();
 
-		// Check we're on preferences
-		await expect(
-			page.getByRole("heading", { name: /Preferências do Sistema/i }),
-		).toBeVisible();
-	});
-
-	test("should require at least one feature to be selected", async ({ page }) => {
-		// Navigate to preferences
-		await page.getByTestId("welcome-start-button").click();
-		await page.getByTestId("autofill-button").click();
-		await page.getByTestId("next-button").click();
-		await page.getByTestId("autofill-button").click();
-		await page.getByTestId("next-button").click();
-		await page.getByTestId("autofill-button").click();
-		await page.getByTestId("next-button").click();
-
-		// Uncheck all features
-		await page.getByTestId("feature-members-checkbox").uncheck();
-		await page.getByTestId("feature-finance-checkbox").uncheck();
-		await page.getByTestId("feature-events-checkbox").uncheck();
-		await page.getByTestId("feature-schedules-checkbox").uncheck();
-		await page.getByTestId("feature-ministries-checkbox").uncheck();
-
-		// Try to submit
-		await page.getByTestId("next-button").click();
-
-		// Should show error
-		await expect(page.locator('text=/.*pelo menos uma funcionalidade.*/i')).toBeVisible();
-	});
-
-	test("should complete preferences and move to complete step", async ({ page }) => {
-		// Navigate through all steps
-		await page.getByTestId("welcome-start-button").click();
-		await page.getByTestId("autofill-button").click();
-		await page.getByTestId("next-button").click();
-		await page.getByTestId("autofill-button").click();
-		await page.getByTestId("next-button").click();
-		await page.getByTestId("autofill-button").click();
-		await page.getByTestId("next-button").click();
-		await page.getByTestId("autofill-button").click();
-		await page.getByTestId("next-button").click();
-
-		// Should show complete message
+		// Check we're on complete step
 		await expect(
 			page.getByRole("heading", { name: /Tudo Pronto!/i }),
 		).toBeVisible();
 	});
+
 
 	test("should complete entire onboarding flow with all steps filled", async ({ page }) => {
 		// Welcome step
@@ -244,10 +203,6 @@ test.describe("Onboarding Flow", () => {
 		await page.getByTestId("next-button").click();
 
 		// Organization details step
-		await page.getByTestId("autofill-button").click();
-		await page.getByTestId("next-button").click();
-
-		// Preferences step
 		await page.getByTestId("autofill-button").click();
 		await page.getByTestId("next-button").click();
 
@@ -291,8 +246,6 @@ test.describe("Onboarding Flow", () => {
 	test("should redirect to login after completing onboarding", async ({ page }) => {
 		// Complete entire flow
 		await page.getByTestId("welcome-start-button").click();
-		await page.getByTestId("autofill-button").click();
-		await page.getByTestId("next-button").click();
 		await page.getByTestId("autofill-button").click();
 		await page.getByTestId("next-button").click();
 		await page.getByTestId("autofill-button").click();
