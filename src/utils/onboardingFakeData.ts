@@ -29,24 +29,10 @@ export const generateFakeTenantData = (): OnboardingTenantData => {
 	];
 
 	const name = faker.helpers.arrayElement(churchNames);
-	const subdomain = name
-		.toLowerCase()
-		.normalize("NFD")
-		.replace(/[\u0300-\u036f]/g, "")
-		.replace(/[^a-z0-9]/g, "")
-		.substring(0, 20);
 
 	return {
 		name,
-		subdomain,
 		logo: faker.image.url({ width: 200, height: 200 }),
-		primaryColor: faker.helpers.arrayElement([
-			"#228BE6",
-			"#40C057",
-			"#FD7E14",
-			"#BE4BDB",
-			"#15AABF",
-		]),
 	};
 };
 

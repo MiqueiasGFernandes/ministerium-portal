@@ -19,19 +19,6 @@ export class OnboardingValidator {
 			errors.name = "Nome da organização deve ter pelo menos 3 caracteres";
 		}
 
-		if (!tenant?.subdomain || tenant.subdomain.trim().length < 3) {
-			errors.subdomain = "Subdomínio deve ter pelo menos 3 caracteres";
-		}
-
-		if (tenant?.subdomain && !/^[a-z0-9-]+$/.test(tenant.subdomain)) {
-			errors.subdomain =
-				"Subdomínio deve conter apenas letras minúsculas, números e hífens";
-		}
-
-		if (!tenant?.primaryColor || !/^#[0-9A-F]{6}$/i.test(tenant.primaryColor)) {
-			errors.primaryColor = "Cor primária inválida";
-		}
-
 		return errors;
 	}
 

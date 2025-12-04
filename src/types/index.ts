@@ -259,9 +259,7 @@ export enum OnboardingStatus {
 
 export interface OnboardingTenantData {
 	name: string;
-	subdomain: string;
 	logo?: string;
-	primaryColor: string;
 }
 
 export interface OnboardingAdminData {
