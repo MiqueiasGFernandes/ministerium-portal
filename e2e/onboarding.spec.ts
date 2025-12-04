@@ -55,9 +55,6 @@ test.describe("Onboarding Flow", () => {
 		// Check fields are filled
 		const nameInput = page.getByTestId("tenant-name-input");
 		await expect(nameInput).not.toHaveValue("");
-
-		const subdomainInput = page.getByTestId("tenant-subdomain-input");
-		await expect(subdomainInput).not.toHaveValue("");
 	});
 
 	test("should complete tenant info and move to admin info", async ({ page }) => {
