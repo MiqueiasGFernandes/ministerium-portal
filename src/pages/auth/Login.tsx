@@ -31,7 +31,7 @@ export const Login = () => {
 
 	// Set document title
 	useEffect(() => {
-		document.title = "Ministerium | Entrar";
+		document.title = "Ministerium | Acesse sua Conta";
 	}, []);
 
 	const form = useForm({
@@ -65,7 +65,7 @@ export const Login = () => {
 		<Box
 			style={{
 				minHeight: "100vh",
-				background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+				background: "linear-gradient(135deg, #8b9dc3 0%, #9d8fb8 100%)",
 			}}
 		>
 			{/* Desktop Grid Layout */}
@@ -93,11 +93,8 @@ export const Login = () => {
 						<Center>
 							<Stack gap="xs" align="center">
 								<Title order={2} ta="center" fw={700}>
-									Entrar
+									Acesse sua Conta
 								</Title>
-								<Text size="sm" c="dimmed" ta="center">
-									Acesse sua conta
-								</Text>
 							</Stack>
 						</Center>
 
@@ -114,9 +111,9 @@ export const Login = () => {
 						)}
 
 						<form onSubmit={form.onSubmit(handleSubmit)}>
-							<Stack gap="md">
+							<Stack gap="lg">
 								<TextInput
-									label="Email"
+									label="Seu Email"
 									placeholder="seu@email.com"
 									required
 									leftSection={<IconMail size={18} />}
@@ -124,8 +121,8 @@ export const Login = () => {
 								/>
 
 								<PasswordInput
-									label="Senha"
-									placeholder="Sua senha"
+									label="Sua Senha"
+									placeholder="Digite sua senha"
 									required
 									leftSection={<IconLock size={18} />}
 									{...form.getInputProps("password")}
@@ -136,21 +133,34 @@ export const Login = () => {
 									fullWidth
 									size="md"
 									loading={isLoading}
-									mt="md"
+									mt="xl"
 								>
 									Entrar
 								</Button>
 							</Stack>
 						</form>
 
-						<Divider label="ou" labelPosition="center" />
+						<Divider
+							label="ou"
+							labelPosition="center"
+							styles={{
+								label: { fontSize: "0.875rem", color: "#868e96" },
+							}}
+						/>
 
 						<Stack gap="xs" align="center">
 							<Text size="sm" c="dimmed">
-								Não tem uma conta?
+								Primeira vez aqui?
 							</Text>
-							<Anchor component={Link} to="/onboarding" size="sm" fw={500}>
-								Criar nova organização
+							<Anchor
+								component={Link}
+								to="/onboarding"
+								size="sm"
+								fw={500}
+								c="#1971c2"
+								style={{ textDecoration: "none" }}
+							>
+								Criar minha Organização
 							</Anchor>
 						</Stack>
 					</Stack>
@@ -180,7 +190,7 @@ export const Login = () => {
 					}}
 				>
 					{/* Left Side - Branding */}
-					<Grid.Col span={6}>
+					<Grid.Col span={5}>
 						<Box
 							style={{
 								height: "100%",
@@ -188,12 +198,33 @@ export const Login = () => {
 								flexDirection: "column",
 								alignItems: "center",
 								justifyContent: "center",
-								background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+								backgroundImage: `linear-gradient(135deg, rgba(139, 157, 195, 0.85) 0%, rgba(157, 143, 184, 0.85) 100%), url(/assets/bg-login.jpg)`,
+								backgroundSize: "cover",
+								backgroundPosition: "center",
+								backgroundBlendMode: "overlay",
 								padding: "4rem 3rem",
 								minHeight: "600px",
+								position: "relative",
+								overflow: "hidden",
 							}}
 						>
-							<Stack gap="xl" align="center">
+							{/* Dark overlay for better text contrast */}
+							<Box
+								style={{
+									position: "absolute",
+									top: 0,
+									left: 0,
+									right: 0,
+									bottom: 0,
+									backgroundColor: "rgba(0, 0, 0, 0.35)",
+									zIndex: 1,
+								}}
+							/>
+							<Stack
+								gap="xl"
+								align="center"
+								style={{ position: "relative", zIndex: 2 }}
+							>
 								<Group gap="md" align="flex-end" wrap="nowrap">
 									<IconBuildingChurch
 										size={68}
@@ -217,18 +248,24 @@ export const Login = () => {
 										Ministerium
 									</Title>
 								</Group>
-								<Text size="xl" c="white" ta="center" fw={500}>
-									Sistema de Gestão Ministerial
-								</Text>
-								<Text size="md" c="rgba(255,255,255,0.9)" ta="center">
-									Organize e gerencie sua igreja de forma eficiente
+								<Title order={2} c="white" ta="center" fw={600} size="1.75rem">
+									A Gestão da sua Igreja, Simplificada.
+								</Title>
+								<Text
+									size="lg"
+									c="rgba(255,255,255,0.95)"
+									ta="center"
+									maw={420}
+								>
+									Organize membros, finanças e escalas em um só lugar. Foco
+									total na Missão.
 								</Text>
 							</Stack>
 						</Box>
 					</Grid.Col>
 
 					{/* Right Side - Form */}
-					<Grid.Col span={6}>
+					<Grid.Col span={7}>
 						<Box
 							style={{
 								height: "100%",
@@ -238,15 +275,12 @@ export const Login = () => {
 								minHeight: "600px",
 							}}
 						>
-							<Stack gap="lg" style={{ width: "100%" }}>
+							<Stack gap="xl" style={{ width: "100%" }}>
 								<Center>
 									<Stack gap="xs" align="center">
 										<Title order={2} ta="center" fw={700}>
-											Entrar
+											Acesse sua Conta
 										</Title>
-										<Text size="sm" c="dimmed" ta="center">
-											Acesse sua conta
-										</Text>
 									</Stack>
 								</Center>
 
@@ -263,9 +297,9 @@ export const Login = () => {
 								)}
 
 								<form onSubmit={form.onSubmit(handleSubmit)}>
-									<Stack gap="md">
+									<Stack gap="lg">
 										<TextInput
-											label="Email"
+											label="Seu Email"
 											placeholder="seu@email.com"
 											required
 											leftSection={<IconMail size={18} />}
@@ -273,8 +307,8 @@ export const Login = () => {
 										/>
 
 										<PasswordInput
-											label="Senha"
-											placeholder="Sua senha"
+											label="Sua Senha"
+											placeholder="Digite sua senha"
 											required
 											leftSection={<IconLock size={18} />}
 											{...form.getInputProps("password")}
@@ -285,21 +319,34 @@ export const Login = () => {
 											fullWidth
 											size="md"
 											loading={isLoading}
-											mt="md"
+											mt="xl"
 										>
 											Entrar
 										</Button>
 									</Stack>
 								</form>
 
-								<Divider label="ou" labelPosition="center" />
+								<Divider
+									label="ou"
+									labelPosition="center"
+									styles={{
+										label: { fontSize: "0.875rem", color: "#868e96" },
+									}}
+								/>
 
 								<Stack gap="xs" align="center">
 									<Text size="sm" c="dimmed">
-										Não tem uma conta?
+										Primeira vez aqui?
 									</Text>
-									<Anchor component={Link} to="/onboarding" size="sm" fw={500}>
-										Criar nova organização
+									<Anchor
+										component={Link}
+										to="/onboarding"
+										size="sm"
+										fw={500}
+										c="#1971c2"
+										style={{ textDecoration: "none" }}
+									>
+										Criar minha Organização
 									</Anchor>
 								</Stack>
 							</Stack>
