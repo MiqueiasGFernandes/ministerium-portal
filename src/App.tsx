@@ -22,7 +22,6 @@ import { Layout } from "@/components/layout/Layout";
 import { config } from "@/config/env";
 
 import { Login } from "@/pages/auth/Login";
-import { Onboarding } from "@/pages/onboarding/Onboarding";
 // Pages
 import { Dashboard } from "@/pages/dashboard/Dashboard";
 import { EventCreate } from "@/pages/events/EventCreate";
@@ -42,6 +41,7 @@ import {
 	MinistryList,
 	MinistryShow,
 } from "@/pages/ministries";
+import { Onboarding } from "@/pages/onboarding/Onboarding";
 import { ScheduleCreate } from "@/pages/schedules/ScheduleCreate";
 import { ScheduleEdit } from "@/pages/schedules/ScheduleEdit";
 import { ScheduleList } from "@/pages/schedules/ScheduleList";
@@ -256,26 +256,28 @@ function App() {
 
 					<RefineKbar />
 					<UnsavedChangesNotifier />
-					<DocumentTitleHandler handler={({ resource, action }) => {
-						let title = "Ministerium";
+					<DocumentTitleHandler
+						handler={({ resource, action }) => {
+							let title = "Ministerium";
 
-						if (resource?.meta?.label) {
-							title = `${resource.meta.label} | ${title}`;
-						}
+							if (resource?.meta?.label) {
+								title = `${resource.meta.label} | ${title}`;
+							}
 
-						if (action) {
-							const actionNames: Record<string, string> = {
-								list: "Lista",
-								create: "Criar",
-								edit: "Editar",
-								show: "Visualizar",
-							};
-							const actionTitle = actionNames[action] || action;
-							title = `${actionTitle} ${resource?.meta?.label || ""} | Ministerium`;
-						}
+							if (action) {
+								const actionNames: Record<string, string> = {
+									list: "Lista",
+									create: "Criar",
+									edit: "Editar",
+									show: "Visualizar",
+								};
+								const actionTitle = actionNames[action] || action;
+								title = `${actionTitle} ${resource?.meta?.label || ""} | Ministerium`;
+							}
 
-						return title;
-					}} />
+							return title;
+						}}
+					/>
 				</Refine>
 			</RefineKbarProvider>
 		</BrowserRouter>

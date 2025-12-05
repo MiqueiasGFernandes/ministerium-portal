@@ -138,10 +138,7 @@ export class OnboardingService implements IOnboardingService {
 				data,
 			);
 
-			if (
-				!tenantValidation.isValid ||
-				!adminValidation.isValid
-			) {
+			if (!tenantValidation.isValid || !adminValidation.isValid) {
 				return {
 					success: false,
 					message: "Por favor, preencha todos os campos obrigatórios",

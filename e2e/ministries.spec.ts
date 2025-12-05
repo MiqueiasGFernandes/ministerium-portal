@@ -5,12 +5,18 @@ test.describe("Ministries Module", () => {
 		// Login before each test
 		await page.goto("/login", { waitUntil: "networkidle" });
 
-		// Wait for login form to be visible
-		await page.waitForSelector('input[type="email"]', { timeout: 10000 });
-
-		await page.fill('input[type="email"]', "admin@ministerium.com");
-		await page.fill('input[type="password"]', "admin123");
-		await page.click('button[type="submit"]');
+		// Wait for login form to be visible and fill it
+		await page
+			.locator(
+				'input[name="email"]:visible, input[placeholder*="email"]:visible',
+			)
+			.first()
+			.fill("admin@ministerium.com");
+		await page
+			.locator('input[type="password"]:visible')
+			.first()
+			.fill("admin123");
+		await page.locator('button[type="submit"]:visible').first().click();
 
 		// Wait for navigation to complete
 		await page.waitForURL("/", { timeout: 10000 });
@@ -114,9 +120,7 @@ test.describe("Ministries Module", () => {
 		await expect(page.url()).toContain("/ministries/edit/");
 
 		// Check if form title is visible
-		await expect(
-			page.locator("text=Editar Ministério").first(),
-		).toBeVisible();
+		await expect(page.locator("text=Editar Ministério").first()).toBeVisible();
 
 		// Update ministry name
 		const newName = `Ministério Editado ${Date.now()}`;
@@ -172,9 +176,7 @@ test.describe("Ministries Module", () => {
 
 		// Should navigate to edit page
 		await expect(page.url()).toContain("/ministries/edit/");
-		await expect(
-			page.locator("text=Editar Ministério").first(),
-		).toBeVisible();
+		await expect(page.locator("text=Editar Ministério").first()).toBeVisible();
 	});
 
 	test("should cancel creation and return to list", async ({ page }) => {
@@ -214,7 +216,7 @@ test.describe("Ministries Module", () => {
 		await page.waitForSelector("table tbody tr");
 
 		// Check if badge with member count is visible
-		const badge = page.locator('table tbody tr:first-child td').nth(3);
+		const badge = page.locator("table tbody tr:first-child td").nth(3);
 		await expect(badge).toBeVisible();
 
 		// Badge should contain a number
@@ -272,7 +274,9 @@ test.describe("Ministries Module", () => {
 		}
 	});
 
-	test("should have proper ministry permissions for admin", async ({ page }) => {
+	test("should have proper ministry permissions for admin", async ({
+		page,
+	}) => {
 		// Admin should see all CRUD buttons
 		await page.goto("/ministries");
 

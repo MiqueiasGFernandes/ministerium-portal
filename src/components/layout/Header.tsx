@@ -3,7 +3,6 @@ import {
 	Avatar,
 	Group,
 	Menu,
-	rem,
 	Text,
 	UnstyledButton,
 	useMantineColorScheme,
@@ -16,12 +15,15 @@ import {
 	IconSun,
 	IconUser,
 } from "@tabler/icons-react";
+import { useMemo } from "react";
+import { createHeaderStyles } from "@/styles/components";
 import type { User } from "@/types";
 
 export const Header = () => {
 	const { data: user } = useGetIdentity<User>();
 	const { mutate: logout } = useLogout();
 	const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+	const styles = useMemo(() => createHeaderStyles(), []);
 
 	const getRoleLabel = (role: string) => {
 		switch (role) {
@@ -55,7 +57,7 @@ export const Header = () => {
 					<UnstyledButton>
 						<Group gap="xs">
 							<Avatar src={user?.avatar} radius="xl" size="sm" />
-							<div style={{ flex: 1 }}>
+							<div style={styles.userInfoContainer}>
 								<Text size="sm" fw={500}>
 									{user?.name}
 								</Text>
@@ -69,18 +71,10 @@ export const Header = () => {
 
 				<Menu.Dropdown>
 					<Menu.Label>Conta</Menu.Label>
-					<Menu.Item
-						leftSection={
-							<IconUser style={{ width: rem(14), height: rem(14) }} />
-						}
-					>
+					<Menu.Item leftSection={<IconUser style={styles.iconWrapper} />}>
 						Perfil
 					</Menu.Item>
-					<Menu.Item
-						leftSection={
-							<IconSettings style={{ width: rem(14), height: rem(14) }} />
-						}
-					>
+					<Menu.Item leftSection={<IconSettings style={styles.iconWrapper} />}>
 						Configurações
 					</Menu.Item>
 
@@ -88,9 +82,7 @@ export const Header = () => {
 
 					<Menu.Item
 						color="error"
-						leftSection={
-							<IconLogout style={{ width: rem(14), height: rem(14) }} />
-						}
+						leftSection={<IconLogout style={styles.iconWrapper} />}
 						onClick={() => logout()}
 					>
 						Sair

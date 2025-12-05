@@ -11,8 +11,8 @@ import {
 	Text,
 	Title,
 } from "@mantine/core";
-import { useGo, useOne, useList } from "@refinedev/core";
-import { IconEdit, IconUsers, IconUser } from "@tabler/icons-react";
+import { useGo, useList, useOne } from "@refinedev/core";
+import { IconEdit, IconUser, IconUsers } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useParams } from "react-router-dom";
 import type { Ministry, User } from "@/types";

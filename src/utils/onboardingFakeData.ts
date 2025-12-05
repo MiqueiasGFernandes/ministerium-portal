@@ -1,11 +1,11 @@
 import { faker } from "@faker-js/faker/locale/pt_BR";
 import {
-	OnboardingStatus,
-	OnboardingStep,
 	type OnboardingAdminData,
 	type OnboardingData,
 	type OnboardingOrganizationData,
 	type OnboardingPreferences,
+	OnboardingStatus,
+	OnboardingStep,
 	type OnboardingTenantData,
 } from "@/types";
 
@@ -68,14 +68,19 @@ export const generateFakeOrganizationData = (): OnboardingOrganizationData => {
 		address: {
 			street: faker.location.street(),
 			number: faker.location.buildingNumber(),
-			complement: faker.helpers.maybe(() => `Sala ${faker.number.int({ min: 1, max: 20 })}`, { probability: 0.3 }),
+			complement: faker.helpers.maybe(
+				() => `Sala ${faker.number.int({ min: 1, max: 20 })}`,
+				{ probability: 0.3 },
+			),
 			city: faker.location.city(),
 			state: faker.location.state({ abbreviated: true }),
 			zipCode: faker.location.zipCode("#####-###"),
 		},
 		phone: faker.phone.number("(##) ####-####"),
 		email: faker.internet.email({ provider: "igreja.com.br" }).toLowerCase(),
-		website: faker.helpers.maybe(() => faker.internet.url(), { probability: 0.7 }),
+		website: faker.helpers.maybe(() => faker.internet.url(), {
+			probability: 0.7,
+		}),
 		foundedDate: faker.date.past({ years: 50 }).toISOString().split("T")[0],
 		description: faker.lorem.paragraph(),
 	};

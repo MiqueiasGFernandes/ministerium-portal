@@ -23,15 +23,18 @@ import {
 	IconMail,
 } from "@tabler/icons-react";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { gradientButtonStyles } from "@/styles/buttonStyles";
+import { createLoginStyles, gradientButtonStyles } from "@/styles/components";
 import type { LoginCredentials } from "@/types";
 
 export const Login = () => {
 	const { mutate: login, isLoading } = useLogin<LoginCredentials>();
 	const [error, setError] = useState<string>("");
 	const theme = useMantineTheme();
+
+	// Create styles instance
+	const styles = useMemo(() => createLoginStyles(theme), [theme]);
 
 	// Set document title
 	useEffect(() => {
@@ -66,40 +69,16 @@ export const Login = () => {
 	};
 
 	return (
-		<Box
-			style={{
-				minHeight: "100vh",
-				background: theme.other.gradients.background,
-			}}
-		>
+		<Box style={styles.container}>
 			{/* Mobile Layout */}
-			<Box
-				hiddenFrom="sm"
-				style={{
-					minHeight: "100vh",
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "center",
-					padding: "2rem",
-				}}
-			>
+			<Box hiddenFrom="sm" style={styles.mobileWrapper}>
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.5 }}
 					style={{ width: "100%" }}
 				>
-					<Box
-						style={{
-							width: "100%",
-							maxWidth: "460px",
-							background: "white",
-							borderRadius: "12px",
-							padding: "2rem",
-							boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
-							margin: "0 auto",
-						}}
-					>
+					<Box style={styles.mobileCard}>
 						<Stack gap="lg">
 							<Center>
 								<Stack gap="xs" align="center">
@@ -156,7 +135,7 @@ export const Login = () => {
 								label="ou"
 								labelPosition="center"
 								styles={{
-									label: { fontSize: "0.875rem", color: "#868e96" },
+									label: styles.dividerLabel,
 								}}
 							/>
 
@@ -170,16 +149,10 @@ export const Login = () => {
 									size="sm"
 									fw={500}
 									c="ministerium-link.7"
-									style={{
-										textDecoration: "none",
-										transition: "all 0.2s ease",
-									}}
+									style={styles.linkStyle}
 									styles={{
 										root: {
-											"&:hover": {
-												color: theme.colors["ministerium-link"][8],
-												transform: "translateY(-1px)",
-											},
+											"&:hover": styles.getLinkHoverStyle(),
 										},
 									}}
 								>
@@ -192,68 +165,20 @@ export const Login = () => {
 			</Box>
 
 			{/* Desktop Grid Layout */}
-			<Box
-				visibleFrom="sm"
-				style={{
-					minHeight: "100vh",
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "center",
-					padding: "2rem",
-				}}
-			>
+			<Box visibleFrom="sm" style={styles.desktopWrapper}>
 				<motion.div
 					initial={{ opacity: 0, scale: 0.95 }}
 					animate={{ opacity: 1, scale: 1 }}
 					transition={{ duration: 0.5 }}
-					style={{ width: "100%", maxWidth: "1200px" }}
+					style={styles.desktopGridWrapper}
 				>
-					<Grid
-						gutter={0}
-						style={{
-							width: "100%",
-							background: "white",
-							borderRadius: "12px",
-							overflow: "hidden",
-							boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
-						}}
-					>
+					<Grid gutter={0} style={styles.desktopCard}>
 						{/* Left Side - Branding */}
 						<Grid.Col span={5}>
-							<Box
-								style={{
-									height: "100%",
-									display: "flex",
-									flexDirection: "column",
-									alignItems: "center",
-									justifyContent: "center",
-									backgroundImage: `${theme.other.gradients.backgroundOverlay}, url(/assets/bg-login.jpg)`,
-									backgroundSize: "cover",
-									backgroundPosition: "center",
-									backgroundBlendMode: "overlay",
-									padding: "4rem 3rem",
-									minHeight: "600px",
-									position: "relative",
-									overflow: "hidden",
-								}}
-							>
+							<Box style={styles.brandingSection}>
 								{/* Dark overlay for better text contrast */}
-								<Box
-									style={{
-										position: "absolute",
-										top: 0,
-										left: 0,
-										right: 0,
-										bottom: 0,
-										backgroundColor: "rgba(0, 0, 0, 0.35)",
-										zIndex: 1,
-									}}
-								/>
-								<Stack
-									gap="xl"
-									align="center"
-									style={{ position: "relative", zIndex: 2 }}
-								>
+								<Box style={styles.brandingOverlay} />
+								<Stack gap="xl" align="center" style={styles.brandingContent}>
 									<Group gap="md" align="flex-end" wrap="nowrap">
 										<IconBuildingChurch
 											size={68}
@@ -261,19 +186,7 @@ export const Login = () => {
 											color="white"
 											style={{ flexShrink: 0 }}
 										/>
-										<Title
-											order={1}
-											c="white"
-											style={{
-												fontFamily:
-													'"Space Grotesk", "Inter", -apple-system, sans-serif',
-												fontWeight: 800,
-												fontSize: "3.5rem",
-												letterSpacing: "-0.02em",
-												lineHeight: 1,
-												paddingBottom: "2px",
-											}}
-										>
+										<Title order={1} c="white" style={styles.logoText}>
 											Ministerium
 										</Title>
 									</Group>
@@ -301,16 +214,8 @@ export const Login = () => {
 
 						{/* Right Side - Form */}
 						<Grid.Col span={7}>
-							<Box
-								style={{
-									height: "100%",
-									display: "flex",
-									alignItems: "center",
-									padding: "4rem 3rem",
-									minHeight: "600px",
-								}}
-							>
-								<Stack gap="xl" style={{ width: "100%" }}>
+							<Box style={styles.formSection}>
+								<Stack gap="xl" style={styles.formWrapper}>
 									<Center>
 										<Stack gap="xs" align="center">
 											<Title order={2} ta="center" fw={700}>
@@ -366,7 +271,7 @@ export const Login = () => {
 										label="ou"
 										labelPosition="center"
 										styles={{
-											label: { fontSize: "0.875rem", color: "#868e96" },
+											label: styles.dividerLabel,
 										}}
 									/>
 
@@ -380,16 +285,10 @@ export const Login = () => {
 											size="sm"
 											fw={500}
 											c="ministerium-link.7"
-											style={{
-												textDecoration: "none",
-												transition: "all 0.2s ease",
-											}}
+											style={styles.linkStyle}
 											styles={{
 												root: {
-													"&:hover": {
-														color: theme.colors["ministerium-link"][8],
-														transform: "translateY(-1px)",
-													},
+													"&:hover": styles.getLinkHoverStyle(),
 												},
 											}}
 										>

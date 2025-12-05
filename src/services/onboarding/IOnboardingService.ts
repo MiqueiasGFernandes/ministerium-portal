@@ -21,7 +21,10 @@ export interface IOnboardingService {
 	/**
 	 * Validates data for a specific step
 	 */
-	validateStep(step: OnboardingStep, data: Partial<OnboardingData>): {
+	validateStep(
+		step: OnboardingStep,
+		data: Partial<OnboardingData>,
+	): {
 		isValid: boolean;
 		errors: Record<string, string>;
 	};
