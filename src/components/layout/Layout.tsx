@@ -25,7 +25,7 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
 					/>
 				)}
 				Sider={() => (
-					<Box visibleFrom="sm">
+					<Box visibleFrom="sm" data-tour="sidebar-navigation">
 						<ThemedSiderV2 />
 					</Box>
 				)}

@@ -19,7 +19,9 @@ import {
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import { UnauthorizedPage } from "@/components/auth/ProtectedRoute";
 import { Layout } from "@/components/layout/Layout";
+import { TourTooltip } from "@/components/tour/TourTooltip";
 import { config } from "@/config/env";
+import { TourProvider } from "@/contexts/TourContext";
 
 import { Login } from "@/pages/auth/Login";
 // Pages
@@ -154,131 +156,134 @@ function App() {
 	return (
 		<BrowserRouter>
 			<RefineKbarProvider>
-				<Refine
-					dataProvider={localDataProvider}
-					authProvider={authProvider}
-					routerProvider={routerBindings}
-					notificationProvider={useNotificationProvider}
-					resources={resources}
-					options={{
-						syncWithLocation: true,
-						warnWhenUnsavedChanges: true,
-						useNewQueryKeys: true,
-						projectId: "ministerium-mvp",
-						title: { text: "Ministerium", icon: "⛪" },
-					}}
-				>
-					<Routes>
-						<Route
-							element={
-								<Authenticated
-									key="authenticated-routes"
-									fallback={<CatchAllNavigate to="/login" />}
-								>
-									<Layout>
-										<Outlet />
-									</Layout>
-								</Authenticated>
-							}
-						>
-							<Route index element={<Dashboard />} />
-
-							{/* Members Routes */}
-							{config.features.members && (
-								<Route path="/members">
-									<Route index element={<MemberList />} />
-									<Route path="create" element={<MemberCreate />} />
-									<Route path="edit/:id" element={<MemberEdit />} />
-									<Route path="show/:id" element={<MemberShow />} />
-								</Route>
-							)}
-
-							{/* Finance Routes */}
-							{config.features.finance && (
-								<Route path="/finance">
-									<Route index element={<TransactionList />} />
-									<Route path="create" element={<TransactionCreate />} />
-									<Route path="edit/:id" element={<TransactionEdit />} />
-								</Route>
-							)}
-
-							{/* Events Routes */}
-							{config.features.events && (
-								<Route path="/events">
-									<Route index element={<EventList />} />
-									<Route path="create" element={<EventCreate />} />
-									<Route path="edit/:id" element={<EventEdit />} />
-									<Route path="show/:id" element={<EventShow />} />
-								</Route>
-							)}
-
-							{/* Schedules Routes */}
-							{config.features.schedules && (
-								<Route path="/schedules">
-									<Route index element={<ScheduleList />} />
-									<Route path="create" element={<ScheduleCreate />} />
-									<Route path="edit/:id" element={<ScheduleEdit />} />
-								</Route>
-							)}
-
-							{/* Ministries Routes */}
-							{config.features.ministries && (
-								<Route path="/ministries">
-									<Route index element={<MinistryList />} />
-									<Route path="create" element={<MinistryCreate />} />
-									<Route path="edit/:id" element={<MinistryEdit />} />
-									<Route path="show/:id" element={<MinistryShow />} />
-								</Route>
-							)}
-
-							{/* Settings */}
-							<Route path="/settings" element={<Settings />} />
-
-							{/* Error Pages */}
-							<Route path="/unauthorized" element={<UnauthorizedPage />} />
-							<Route path="*" element={<ErrorComponent />} />
-						</Route>
-
-						{/* Auth Routes */}
-						<Route
-							element={
-								<Authenticated key="auth-pages" fallback={<Outlet />}>
-									<NavigateToResource />
-								</Authenticated>
-							}
-						>
-							<Route path="/login" element={<Login />} />
-						</Route>
-
-						{/* Onboarding Route - Public */}
-						<Route path="/onboarding" element={<Onboarding />} />
-					</Routes>
-
-					<RefineKbar />
-					<UnsavedChangesNotifier />
-					<DocumentTitleHandler
-						handler={({ resource, action }) => {
-							let title = "Ministerium";
-
-							if (resource?.meta?.label) {
-								title = `${resource.meta.label} | ${title}`;
-							}
-
-							if (action) {
-								const actionNames: Record<string, string> = {
-									list: "Lista",
-									create: "Criar",
-									edit: "Editar",
-									show: "Visualizar",
-								};
-								const actionTitle = actionNames[action] || action;
-								title = `${actionTitle} ${resource?.meta?.label || ""} | Ministerium`;
-							}
-
-							return title;
+				<TourProvider>
+					<Refine
+						dataProvider={localDataProvider}
+						authProvider={authProvider}
+						routerProvider={routerBindings}
+						notificationProvider={useNotificationProvider}
+						resources={resources}
+						options={{
+							syncWithLocation: true,
+							warnWhenUnsavedChanges: true,
+							useNewQueryKeys: true,
+							projectId: "ministerium-mvp",
+							title: { text: "Ministerium", icon: "⛪" },
 						}}
-					/>
-				</Refine>
+					>
+						<Routes>
+							<Route
+								element={
+									<Authenticated
+										key="authenticated-routes"
+										fallback={<CatchAllNavigate to="/login" />}
+									>
+										<Layout>
+											<Outlet />
+										</Layout>
+									</Authenticated>
+								}
+							>
+								<Route index element={<Dashboard />} />
+
+								{/* Members Routes */}
+								{config.features.members && (
+									<Route path="/members">
+										<Route index element={<MemberList />} />
+										<Route path="create" element={<MemberCreate />} />
+										<Route path="edit/:id" element={<MemberEdit />} />
+										<Route path="show/:id" element={<MemberShow />} />
+									</Route>
+								)}
+
+								{/* Finance Routes */}
+								{config.features.finance && (
+									<Route path="/finance">
+										<Route index element={<TransactionList />} />
+										<Route path="create" element={<TransactionCreate />} />
+										<Route path="edit/:id" element={<TransactionEdit />} />
+									</Route>
+								)}
+
+								{/* Events Routes */}
+								{config.features.events && (
+									<Route path="/events">
+										<Route index element={<EventList />} />
+										<Route path="create" element={<EventCreate />} />
+										<Route path="edit/:id" element={<EventEdit />} />
+										<Route path="show/:id" element={<EventShow />} />
+									</Route>
+								)}
+
+								{/* Schedules Routes */}
+								{config.features.schedules && (
+									<Route path="/schedules">
+										<Route index element={<ScheduleList />} />
+										<Route path="create" element={<ScheduleCreate />} />
+										<Route path="edit/:id" element={<ScheduleEdit />} />
+									</Route>
+								)}
+
+								{/* Ministries Routes */}
+								{config.features.ministries && (
+									<Route path="/ministries">
+										<Route index element={<MinistryList />} />
+										<Route path="create" element={<MinistryCreate />} />
+										<Route path="edit/:id" element={<MinistryEdit />} />
+										<Route path="show/:id" element={<MinistryShow />} />
+									</Route>
+								)}
+
+								{/* Settings */}
+								<Route path="/settings" element={<Settings />} />
+
+								{/* Error Pages */}
+								<Route path="/unauthorized" element={<UnauthorizedPage />} />
+								<Route path="*" element={<ErrorComponent />} />
+							</Route>
+
+							{/* Auth Routes */}
+							<Route
+								element={
+									<Authenticated key="auth-pages" fallback={<Outlet />}>
+										<NavigateToResource />
+									</Authenticated>
+								}
+							>
+								<Route path="/login" element={<Login />} />
+							</Route>
+
+							{/* Onboarding Route - Public */}
+							<Route path="/onboarding" element={<Onboarding />} />
+						</Routes>
+
+						<RefineKbar />
+						<UnsavedChangesNotifier />
+						<DocumentTitleHandler
+							handler={({ resource, action }) => {
+								let title = "Ministerium";
+
+								if (resource?.meta?.label) {
+									title = `${resource.meta.label} | ${title}`;
+								}
+
+								if (action) {
+									const actionNames: Record<string, string> = {
+										list: "Lista",
+										create: "Criar",
+										edit: "Editar",
+										show: "Visualizar",
+									};
+									const actionTitle = actionNames[action] || action;
+									title = `${actionTitle} ${resource?.meta?.label || ""} | Ministerium`;
+								}
+
+								return title;
+							}}
+						/>
+					</Refine>
+					<TourTooltip />
+				</TourProvider>
 			</RefineKbarProvider>
 		</BrowserRouter>
 	);

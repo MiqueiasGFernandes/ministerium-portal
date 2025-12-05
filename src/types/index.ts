@@ -328,3 +328,6 @@ export interface SignupCredentials {
 	tenantName: string;
 	subdomain: string;
 }
+
+// Tour Types
+export * from "./tour";

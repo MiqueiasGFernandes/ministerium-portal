@@ -54,7 +54,7 @@ export const Header = () => {
 
 			<Menu shadow="md" width={200}>
 				<Menu.Target>
-					<UnstyledButton>
+					<UnstyledButton data-tour="user-menu">
 						<Group gap="xs">
 							<Avatar src={user?.avatar} radius="xl" size="sm" />
 							<div style={styles.userInfoContainer}>

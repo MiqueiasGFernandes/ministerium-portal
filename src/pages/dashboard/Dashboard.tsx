@@ -30,6 +30,7 @@ import type { DashboardStats } from "@/types";
 import "dayjs/locale/pt-br";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { shouldShowTestData } from "@/config/env";
+import { useDashboardTour } from "@/hooks/useDashboardTour";
 
 dayjs.extend(relativeTime);
 dayjs.locale("pt-br");
@@ -46,6 +47,9 @@ export const Dashboard = () => {
 
 	const stats = data?.data;
 
+	// Initialize dashboard tour
+	useDashboardTour();
+
 	const formatCurrency = (value: number) => {
 		return new Intl.NumberFormat("pt-BR", {
 			style: "currency",
@@ -61,7 +65,9 @@ export const Dashboard = () => {
 
 	return (
 		<Stack gap="lg">
-			<Title order={2}>Dashboard</Title>
+			<Title order={2} data-tour="dashboard-title">
+				Dashboard
+			</Title>
 
 			{shouldShowTestData() && (
 				<Alert
@@ -76,7 +82,11 @@ export const Dashboard = () => {
 			)}
 
 			{/* Stats Cards */}
-			<SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="lg">
+			<SimpleGrid
+				cols={{ base: 1, sm: 2, lg: 4 }}
+				spacing="lg"
+				data-tour="dashboard-stats"
+			>
 				{/* Total Members */}
 				<Card shadow="sm" padding="lg" radius="md" withBorder>
 					<Group justify="apart">
@@ -196,7 +206,14 @@ export const Dashboard = () => {
 			<Grid>
 				{/* Upcoming Events */}
 				<Grid.Col span={{ base: 12, md: 6 }}>
-					<Paper shadow="sm" p="lg" radius="md" withBorder h="100%">
+					<Paper
+						shadow="sm"
+						p="lg"
+						radius="md"
+						withBorder
+						h="100%"
+						data-tour="upcoming-events"
+					>
 						<Group mb="md">
 							<ThemeIcon size="lg" radius="md" variant="light" color="violet">
 								<IconCalendarEvent size="1.2rem" />
