@@ -127,6 +127,64 @@ export const authProvider: RefineAuthProvider = {
 		};
 	},
 
+	forgotPassword: async ({ email }: { email: string }) => {
+		console.log("AuthProvider: forgotPassword called with", { email });
+		await simulateDelay();
+
+		// In mock mode, always succeed
+		// In production, this would send a reset code via email
+		const code = Math.floor(100000 + Math.random() * 900000).toString();
+		console.log("AuthProvider: generated reset code (mock):", code);
+
+		// Store code in session storage for demo purposes
+		sessionStorage.setItem("reset-code-mock", code);
+
+		return {
+			success: true,
+			message: "Código de recuperação enviado para seu email",
+		};
+	},
+
+	updatePassword: async ({
+		password,
+		confirmPassword,
+	}: {
+		password: string;
+		confirmPassword: string;
+	}) => {
+		console.log("AuthProvider: updatePassword called");
+		await simulateDelay();
+
+		if (password !== confirmPassword) {
+			return {
+				success: false,
+				error: {
+					name: "UpdatePasswordError",
+					message: "As senhas não coincidem",
+				},
+			};
+		}
+
+		if (password.length < 8) {
+			return {
+				success: false,
+				error: {
+					name: "UpdatePasswordError",
+					message: "Senha deve ter no mínimo 8 caracteres",
+				},
+			};
+		}
+
+		// In mock mode, just succeed
+		// In production, this would update the password in the database
+		console.log("AuthProvider: password updated successfully (mock)");
+
+		return {
+			success: true,
+			redirectTo: "/login",
+		};
+	},
+
 	logout: async () => {
 		await simulateDelay(200);
 

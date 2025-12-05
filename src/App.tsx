@@ -21,8 +21,10 @@ import { Layout } from "@/components/layout/Layout";
 import { TourTooltip } from "@/components/tour/TourTooltip";
 import { config } from "@/config/env";
 import { TourProvider } from "@/contexts/TourContext";
-
+import { ForgotPassword } from "@/pages/auth/ForgotPassword";
 import { Login } from "@/pages/auth/Login";
+import { ResetPassword } from "@/pages/auth/ResetPassword";
+import { VerifyCode } from "@/pages/auth/VerifyCode";
 // Pages
 import { Dashboard } from "@/pages/dashboard/Dashboard";
 import { EventCreate } from "@/pages/events/EventCreate";
@@ -241,6 +243,9 @@ function App() {
 								}
 							>
 								<Route path="/login" element={<Login />} />
+								<Route path="/forgot-password" element={<ForgotPassword />} />
+								<Route path="/verify-code" element={<VerifyCode />} />
+								<Route path="/reset-password" element={<ResetPassword />} />
 							</Route>
 
 							{/* Onboarding Route - Public */}

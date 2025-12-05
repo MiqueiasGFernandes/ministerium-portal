@@ -1,13 +1,10 @@
 import {
 	Alert,
-	Anchor,
 	Box,
 	Button,
 	Center,
-	Divider,
 	Grid,
 	Group,
-	PasswordInput,
 	Stack,
 	Text,
 	TextInput,
@@ -15,57 +12,59 @@ import {
 	useMantineTheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useLogin } from "@refinedev/core";
 import {
 	IconAlertCircle,
+	IconArrowLeft,
 	IconBuildingChurch,
-	IconLock,
 	IconMail,
 } from "@tabler/icons-react";
 import { motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { shouldShowTestData } from "@/config/env";
 import { createLoginStyles, gradientButtonStyles } from "@/styles/components";
-import type { LoginCredentials } from "@/types";
 
-export const Login = () => {
-	const { mutate: login, isLoading } = useLogin<LoginCredentials>();
+export const ForgotPassword = () => {
 	const [error, setError] = useState<string>("");
+	const [isLoading, setIsLoading] = useState(false);
 	const theme = useMantineTheme();
+	const navigate = useNavigate();
 
 	// Create styles instance
 	const styles = useMemo(() => createLoginStyles(theme), [theme]);
 
 	// Set document title
 	useEffect(() => {
-		document.title = "Ministerium | Acesse sua Conta";
+		document.title = "Ministerium | Recuperar Senha";
 	}, []);
 
 	const form = useForm({
 		initialValues: {
-			email: "admin@ministerium.com",
-			password: "admin123",
+			email: shouldShowTestData() ? "teste@ministerium.com" : "",
 		},
 		validate: {
 			email: (value) => (/^\S+@\S+$/.test(value) ? null : "Email inválido"),
-			password: (value) =>
-				value.length >= 3 ? null : "Senha deve ter no mínimo 3 caracteres",
 		},
 	});
 
-	const handleSubmit = (values: LoginCredentials) => {
+	const handleSubmit = async (values: { email: string }) => {
 		setError("");
-		console.log("Submitting login with:", values);
+		setIsLoading(true);
 
-		login(values, {
-			onSuccess: (data) => {
-				console.log("Login successful:", data);
-			},
-			onError: (error) => {
-				console.error("Login error:", error);
-				setError(error.message || "Erro ao fazer login");
-			},
-		});
+		try {
+			// Simular envio de código
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+
+			// Armazenar email para próxima etapa
+			sessionStorage.setItem("reset-email", values.email);
+
+			// Navegar para página de verificação de código
+			navigate("/verify-code");
+		} catch (err) {
+			setError("Erro ao enviar código. Tente novamente.");
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	return (
@@ -83,8 +82,11 @@ export const Login = () => {
 							<Center>
 								<Stack gap="xs" align="center">
 									<Title order={2} ta="center" fw={700}>
-										Acesse sua Conta
+										Recuperar Senha
 									</Title>
+									<Text size="sm" c="dimmed" ta="center">
+										Digite seu email para receber o código de verificação
+									</Text>
 								</Stack>
 							</Center>
 
@@ -110,26 +112,6 @@ export const Login = () => {
 										{...form.getInputProps("email")}
 									/>
 
-									<Box>
-										<PasswordInput
-											label="Sua Senha"
-											placeholder="Digite sua senha"
-											required
-											leftSection={<IconLock size={18} />}
-											{...form.getInputProps("password")}
-										/>
-										<Group justify="flex-end" mt="xs">
-											<Anchor
-												component={Link}
-												to="/forgot-password"
-												size="xs"
-												c="dimmed"
-											>
-												Esqueci minha senha
-											</Anchor>
-										</Group>
-									</Box>
-
 									<Button
 										type="submit"
 										fullWidth
@@ -138,39 +120,21 @@ export const Login = () => {
 										mt="xl"
 										styles={gradientButtonStyles}
 									>
-										Entrar
+										Enviar Código
 									</Button>
 								</Stack>
 							</form>
 
-							<Divider
-								label="ou"
-								labelPosition="center"
-								styles={{
-									label: styles.dividerLabel,
-								}}
-							/>
-
-							<Stack gap="xs" align="center">
-								<Text size="sm" c="dimmed">
-									Primeira vez aqui?
-								</Text>
-								<Anchor
+							<Group justify="center">
+								<Button
 									component={Link}
-									to="/onboarding"
-									size="sm"
-									fw={500}
-									c="ministerium-link.7"
-									style={styles.linkStyle}
-									styles={{
-										root: {
-											"&:hover": styles.getLinkHoverStyle(),
-										},
-									}}
+									to="/login"
+									variant="subtle"
+									leftSection={<IconArrowLeft size={18} />}
 								>
-									Criar minha Organização
-								</Anchor>
-							</Stack>
+									Voltar para Login
+								</Button>
+							</Group>
 						</Stack>
 					</Box>
 				</motion.div>
@@ -231,8 +195,11 @@ export const Login = () => {
 									<Center>
 										<Stack gap="xs" align="center">
 											<Title order={2} ta="center" fw={700}>
-												Acesse sua Conta
+												Recuperar Senha
 											</Title>
+											<Text size="sm" c="dimmed" ta="center" maw={400}>
+												Digite seu email para receber o código de verificação
+											</Text>
 										</Stack>
 									</Center>
 
@@ -258,26 +225,6 @@ export const Login = () => {
 												{...form.getInputProps("email")}
 											/>
 
-											<Box>
-												<PasswordInput
-													label="Sua Senha"
-													placeholder="Digite sua senha"
-													required
-													leftSection={<IconLock size={18} />}
-													{...form.getInputProps("password")}
-												/>
-												<Group justify="flex-end" mt="xs">
-													<Anchor
-														component={Link}
-														to="/forgot-password"
-														size="xs"
-														c="dimmed"
-													>
-														Esqueci minha senha
-													</Anchor>
-												</Group>
-											</Box>
-
 											<Button
 												type="submit"
 												fullWidth
@@ -286,39 +233,21 @@ export const Login = () => {
 												mt="xl"
 												styles={gradientButtonStyles}
 											>
-												Entrar
+												Enviar Código
 											</Button>
 										</Stack>
 									</form>
 
-									<Divider
-										label="ou"
-										labelPosition="center"
-										styles={{
-											label: styles.dividerLabel,
-										}}
-									/>
-
-									<Stack gap="xs" align="center">
-										<Text size="sm" c="dimmed">
-											Primeira vez aqui?
-										</Text>
-										<Anchor
+									<Group justify="center">
+										<Button
 											component={Link}
-											to="/onboarding"
-											size="sm"
-											fw={500}
-											c="ministerium-link.7"
-											style={styles.linkStyle}
-											styles={{
-												root: {
-													"&:hover": styles.getLinkHoverStyle(),
-												},
-											}}
+											to="/login"
+											variant="subtle"
+											leftSection={<IconArrowLeft size={18} />}
 										>
-											Criar minha Organização
-										</Anchor>
-									</Stack>
+											Voltar para Login
+										</Button>
+									</Group>
 								</Stack>
 							</Box>
 						</Grid.Col>
@@ -329,4 +258,4 @@ export const Login = () => {
 	);
 };
 
-export default Login;
+export default ForgotPassword;
