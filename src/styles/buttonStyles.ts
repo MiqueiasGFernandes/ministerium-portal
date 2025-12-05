@@ -12,11 +12,12 @@ export const useGradientButtonStyles = (): ButtonProps["styles"] => {
 			background: theme.other.gradients.primary,
 			border: "none",
 			boxShadow: theme.other.shadows.primaryGlow,
-			transition: "all 0.3s ease",
+			transition: "all 0.5s ease",
 			"&:hover:not([data-disabled])": {
 				background: `${theme.other.gradients.primaryHover} !important`,
 				boxShadow: `${theme.other.shadows.primaryGlowHover} !important`,
 				transform: "translateY(-2px)",
+				filter: "brightness(1.15)",
 			},
 			"&:active:not([data-disabled])": {
 				transform: "translateY(0)",
@@ -52,13 +53,14 @@ export const gradientButtonStyles: ButtonProps["styles"] = {
 		border: "none",
 		boxShadow:
 			"0 4px 15px rgba(102, 126, 234, 0.4), 0 0 20px rgba(118, 75, 162, 0.3)",
-		transition: "all 0.3s ease",
+		transition: "all 0.5s ease",
 		"&:hover:not([data-disabled])": {
 			background:
-				"linear-gradient(135deg, #7c8ef0 0%, #8b5fb8 100%) !important",
+				"linear-gradient(135deg, #8a9ff5 0%, #a077d4 100%) !important",
 			boxShadow:
-				"0 6px 25px rgba(102, 126, 234, 0.65), 0 0 35px rgba(118, 75, 162, 0.6) !important",
+				"0 8px 35px rgba(102, 126, 234, 0.75), 0 0 50px rgba(118, 75, 162, 0.7) !important",
 			transform: "translateY(-2px)",
+			filter: "brightness(1.15)",
 		},
 		"&:active:not([data-disabled])": {
 			transform: "translateY(0)",

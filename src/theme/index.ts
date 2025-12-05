@@ -84,11 +84,31 @@ export const ministeriumTheme = createTheme({
 			defaultProps: {
 				color: "ministerium-primary",
 			},
+			styles: () => ({
+				root: {
+					transition: "all 0.5s ease !important",
+					"&:hover:not([data-disabled]):not([data-loading])": {
+						transform: "translateY(-1px) !important",
+						filter: "brightness(1.1) !important",
+					},
+				},
+			}),
 		},
 		Anchor: {
 			defaultProps: {
 				c: "ministerium-link.7",
 			},
+		},
+		ActionIcon: {
+			styles: () => ({
+				root: {
+					transition: "all 0.5s ease !important",
+					"&:hover:not([data-disabled])": {
+						transform: "scale(1.05) !important",
+						filter: "brightness(1.1) !important",
+					},
+				},
+			}),
 		},
 	},
 
@@ -96,7 +116,7 @@ export const ministeriumTheme = createTheme({
 	other: {
 		gradients: {
 			primary: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-			primaryHover: "linear-gradient(135deg, #7c8ef0 0%, #8b5fb8 100%)",
+			primaryHover: "linear-gradient(135deg, #8a9ff5 0%, #a077d4 100%)",
 			background: "linear-gradient(135deg, #8b9dc3 0%, #9d8fb8 100%)",
 			backgroundOverlay:
 				"linear-gradient(135deg, rgba(139, 157, 195, 0.85) 0%, rgba(157, 143, 184, 0.85) 100%)",
@@ -105,7 +125,7 @@ export const ministeriumTheme = createTheme({
 			primaryGlow:
 				"0 4px 15px rgba(102, 126, 234, 0.4), 0 0 20px rgba(118, 75, 162, 0.3)",
 			primaryGlowHover:
-				"0 6px 25px rgba(102, 126, 234, 0.65), 0 0 35px rgba(118, 75, 162, 0.6)",
+				"0 8px 35px rgba(102, 126, 234, 0.75), 0 0 50px rgba(118, 75, 162, 0.7)",
 		},
 	},
 });
