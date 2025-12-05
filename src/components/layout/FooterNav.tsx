@@ -5,7 +5,6 @@ import {
 	IconCash,
 	IconClipboardList,
 	IconLayoutDashboard,
-	IconSettings,
 	IconUsers,
 } from "@tabler/icons-react";
 import { useLocation } from "react-router-dom";
@@ -16,7 +15,6 @@ const iconMap: Record<string, React.ReactNode> = {
 	transactions: <IconCash size="1.5rem" />,
 	events: <IconCalendarEvent size="1.5rem" />,
 	schedules: <IconClipboardList size="1.5rem" />,
-	settings: <IconSettings size="1.5rem" />,
 };
 
 export const FooterNav = () => {

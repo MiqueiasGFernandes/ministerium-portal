@@ -12,7 +12,6 @@ import {
 	IconCash,
 	IconClipboardList,
 	IconLayoutDashboard,
-	IconSettings,
 	IconUsers,
 	IconUsersGroup,
 } from "@tabler/icons-react";
@@ -143,15 +142,6 @@ function App() {
 			},
 		});
 	}
-
-	resources.push({
-		name: "settings",
-		list: "/settings",
-		meta: {
-			label: "Configurações",
-			icon: <IconSettings />,
-		},
-	});
 
 	return (
 		<BrowserRouter>

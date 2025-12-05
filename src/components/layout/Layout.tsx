@@ -26,7 +26,11 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
 				)}
 				Sider={() => (
 					<Box visibleFrom="sm" data-tour="sidebar-navigation">
-						<ThemedSiderV2 />
+						<ThemedSiderV2
+							render={({ items }) => {
+								return <>{items}</>;
+							}}
+						/>
 					</Box>
 				)}
 			>
