@@ -1,4 +1,5 @@
 import {
+	ActionIcon,
 	Button,
 	Center,
 	Group,
@@ -7,7 +8,12 @@ import {
 	Text,
 	Title,
 } from "@mantine/core";
-import { IconBuildingChurch, IconRocket } from "@tabler/icons-react";
+import {
+	IconArrowLeft,
+	IconBuildingChurch,
+	IconRocket,
+} from "@tabler/icons-react";
+import { useNavigate } from "react-router-dom";
 import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { OnboardingStepProps } from "@/types";
 
@@ -16,13 +22,35 @@ import type { OnboardingStepProps } from "@/types";
  * Single Responsibility: Displays welcome message and starts onboarding
  */
 export const WelcomeStep = ({ onNext }: OnboardingStepProps) => {
+	const navigate = useNavigate();
+
 	const handleStart = () => {
 		onNext({});
 	};
 
+	const handleBackToLogin = () => {
+		navigate("/login");
+	};
+
 	return (
 		<Center style={{ minHeight: "60vh" }}>
-			<Paper p="xl" radius="md" shadow="md" maw={600}>
+			<Paper p="xl" radius="md" shadow="md" maw={600} pos="relative">
+				{/* Back to Login Button */}
+				<ActionIcon
+					variant="subtle"
+					color="gray"
+					size="lg"
+					onClick={handleBackToLogin}
+					style={{
+						position: "absolute",
+						top: 16,
+						left: 16,
+					}}
+					aria-label="Voltar para o login"
+				>
+					<IconArrowLeft size={20} />
+				</ActionIcon>
+
 				<Stack gap="xl" align="center">
 					<Group gap="md" align="flex-end" wrap="nowrap">
 						<IconBuildingChurch
