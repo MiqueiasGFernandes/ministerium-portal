@@ -327,7 +327,7 @@ export const localDataProvider: DataProvider = {
 	},
 
 	// Custom method to reset data
-	custom: async ({ url, method }) => {
+	custom: async ({ url, method, query }) => {
 		await simulateDelay();
 
 		if (url === "/reset" && method === "post") {
@@ -381,6 +381,97 @@ export const localDataProvider: DataProvider = {
 				.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 				.slice(0, 5);
 
+			// Calculate historical data for analytics charts
+			// Determine period from query param (defaults to 12 months)
+			const period =
+				(query as Record<string, unknown> | undefined)?.period || "12months";
+			let monthsBack = 11; // 12 months including current
+			if (period === "6months") monthsBack = 5;
+			else if (period === "currentYear") {
+				monthsBack = now.getMonth(); // Months from Jan to current
+			}
+
+			// Generate historical financial data
+			const historicalFinancialData = [];
+			for (let i = monthsBack; i >= 0; i--) {
+				const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+				const monthEnd = new Date(
+					monthDate.getFullYear(),
+					monthDate.getMonth() + 1,
+					0,
+				);
+				const monthKey = `${monthDate.getFullYear()}-${String(monthDate.getMonth() + 1).padStart(2, "0")}`;
+
+				const transactions = storage.transactions.filter((t) => {
+					const date = new Date(t.date);
+					return (
+						date >= monthDate &&
+						date <= monthEnd &&
+						date.getFullYear() === monthDate.getFullYear() &&
+						date.getMonth() === monthDate.getMonth()
+					);
+				});
+
+				const income = transactions
+					.filter((t) => t.type === "income")
+					.reduce((sum, t) => sum + t.amount, 0);
+
+				const expense = transactions
+					.filter((t) => t.type === "expense")
+					.reduce((sum, t) => sum + t.amount, 0);
+
+				historicalFinancialData.push({
+					month: monthKey,
+					monthLabel: monthDate.toLocaleDateString("pt-BR", {
+						month: "short",
+						year: "numeric",
+					}),
+					income,
+					expense,
+					balance: income - expense,
+				});
+			}
+
+			// Generate historical members data
+			const historicalMembersData = [];
+			for (let i = monthsBack; i >= 0; i--) {
+				const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+				const monthEnd = new Date(
+					monthDate.getFullYear(),
+					monthDate.getMonth() + 1,
+					0,
+				);
+				const monthKey = `${monthDate.getFullYear()}-${String(monthDate.getMonth() + 1).padStart(2, "0")}`;
+
+				// Count members created up to this month
+				const membersUpToMonth = storage.members.filter((m) => {
+					const createdDate = new Date(m.createdAt);
+					return createdDate <= monthEnd;
+				});
+
+				const active = membersUpToMonth.filter(
+					(m) => m.status === "active",
+				).length;
+				const inactive = membersUpToMonth.filter(
+					(m) => m.status === "inactive",
+				).length;
+				const visitorsCount = membersUpToMonth.filter(
+					(m) => m.status === "visitor",
+				).length;
+
+				historicalMembersData.push({
+					month: monthKey,
+					monthLabel: monthDate.toLocaleDateString("pt-BR", {
+						month: "short",
+						year: "numeric",
+					}),
+					active,
+					inactive,
+					visitors: visitorsCount,
+					total: membersUpToMonth.length,
+				});
+			}
+
 			return {
 				data: {
 					totalMembers,
@@ -397,6 +488,8 @@ export const localDataProvider: DataProvider = {
 					},
 					upcomingEvents,
 					upcomingSchedules,
+					historicalFinancialData,
+					historicalMembersData,
 				},
 			} as any;
 		}

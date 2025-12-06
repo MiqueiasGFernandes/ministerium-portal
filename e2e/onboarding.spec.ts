@@ -13,9 +13,7 @@ test.describe("Onboarding Flow", () => {
 		).toBeVisible();
 
 		// Check start button exists
-		await expect(
-			page.getByTestId("welcome-start-button"),
-		).toBeVisible();
+		await expect(page.getByTestId("welcome-start-button")).toBeVisible();
 	});
 
 	test("should navigate from welcome to tenant info step", async ({ page }) => {
@@ -34,7 +32,9 @@ test.describe("Onboarding Flow", () => {
 		await expect(page.getByTestId("onboarding-progress")).toBeVisible();
 	});
 
-	test("should validate required fields on tenant info step", async ({ page }) => {
+	test("should validate required fields on tenant info step", async ({
+		page,
+	}) => {
 		// Go to tenant info step
 		await page.getByTestId("welcome-start-button").click();
 
@@ -42,7 +42,9 @@ test.describe("Onboarding Flow", () => {
 		await page.getByTestId("next-button").click();
 
 		// Check error messages appear
-		await expect(page.locator('text="Nome deve ter pelo menos 3 caracteres"')).toBeVisible();
+		await expect(
+			page.locator('text="Nome deve ter pelo menos 3 caracteres"'),
+		).toBeVisible();
 	});
 
 	test("should auto-fill tenant info with test data", async ({ page }) => {
@@ -57,7 +59,9 @@ test.describe("Onboarding Flow", () => {
 		await expect(nameInput).not.toHaveValue("");
 	});
 
-	test("should complete tenant info and move to admin info", async ({ page }) => {
+	test("should complete tenant info and move to admin info", async ({
+		page,
+	}) => {
 		// Go to tenant info step
 		await page.getByTestId("welcome-start-button").click();
 
@@ -71,7 +75,9 @@ test.describe("Onboarding Flow", () => {
 		).toBeVisible();
 	});
 
-	test("should validate password requirements on admin info step", async ({ page }) => {
+	test("should validate password requirements on admin info step", async ({
+		page,
+	}) => {
 		// Navigate to admin info step
 		await page.getByTestId("welcome-start-button").click();
 		await page.getByTestId("autofill-button").click();
@@ -87,7 +93,9 @@ test.describe("Onboarding Flow", () => {
 		await page.getByTestId("next-button").click();
 
 		// Should show password error
-		await expect(page.locator('text=/.*Senha deve ter pelo menos 8 caracteres.*/i')).toBeVisible();
+		await expect(
+			page.locator("text=/.*Senha deve ter pelo menos 8 caracteres.*/i"),
+		).toBeVisible();
 	});
 
 	test("should validate password confirmation match", async ({ page }) => {
@@ -106,10 +114,14 @@ test.describe("Onboarding Flow", () => {
 		await page.getByTestId("next-button").click();
 
 		// Should show confirmation error
-		await expect(page.locator('text=/.*Senhas não coincidem.*/i')).toBeVisible();
+		await expect(
+			page.locator("text=/.*Senhas não coincidem.*/i"),
+		).toBeVisible();
 	});
 
-	test("should navigate back from admin info to tenant info", async ({ page }) => {
+	test("should navigate back from admin info to tenant info", async ({
+		page,
+	}) => {
 		// Navigate to admin info step
 		await page.getByTestId("welcome-start-button").click();
 		await page.getByTestId("autofill-button").click();
@@ -124,7 +136,9 @@ test.describe("Onboarding Flow", () => {
 		).toBeVisible();
 	});
 
-	test("should complete admin info and move to organization details", async ({ page }) => {
+	test("should complete admin info and move to organization details", async ({
+		page,
+	}) => {
 		// Navigate through steps
 		await page.getByTestId("welcome-start-button").click();
 		await page.getByTestId("autofill-button").click();
@@ -140,7 +154,9 @@ test.describe("Onboarding Flow", () => {
 		).toBeVisible();
 	});
 
-	test("should not allow skipping organization details step", async ({ page }) => {
+	test("should not allow skipping organization details step", async ({
+		page,
+	}) => {
 		// Navigate to organization details
 		await page.getByTestId("welcome-start-button").click();
 		await page.getByTestId("autofill-button").click();
@@ -165,10 +181,14 @@ test.describe("Onboarding Flow", () => {
 		await page.getByTestId("next-button").click();
 
 		// Should show validation error
-		await expect(page.locator('text=/.*Rua deve ter pelo menos.*/i')).toBeVisible();
+		await expect(
+			page.locator("text=/.*Rua deve ter pelo menos.*/i"),
+		).toBeVisible();
 	});
 
-	test("should complete organization details and move to complete step", async ({ page }) => {
+	test("should complete organization details and move to complete step", async ({
+		page,
+	}) => {
 		// Navigate through steps
 		await page.getByTestId("welcome-start-button").click();
 		await page.getByTestId("autofill-button").click();
@@ -186,8 +206,9 @@ test.describe("Onboarding Flow", () => {
 		).toBeVisible();
 	});
 
-
-	test("should complete entire onboarding flow with all steps filled", async ({ page }) => {
+	test("should complete entire onboarding flow with all steps filled", async ({
+		page,
+	}) => {
 		// Welcome step
 		await page.getByTestId("welcome-start-button").click();
 
@@ -220,7 +241,9 @@ test.describe("Onboarding Flow", () => {
 		await expect(page.getByTestId("complete-finish-button")).toBeVisible();
 	});
 
-	test("should show progress bar that increases through steps", async ({ page }) => {
+	test("should show progress bar that increases through steps", async ({
+		page,
+	}) => {
 		// Start onboarding
 		await page.getByTestId("welcome-start-button").click();
 
@@ -243,7 +266,9 @@ test.describe("Onboarding Flow", () => {
 		await expect(progressBar).toBeVisible();
 	});
 
-	test("should redirect to login after completing onboarding", async ({ page }) => {
+	test("should redirect to login after completing onboarding", async ({
+		page,
+	}) => {
 		// Complete entire flow
 		await page.getByTestId("welcome-start-button").click();
 		await page.getByTestId("autofill-button").click();

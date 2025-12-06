@@ -203,6 +203,8 @@ export interface DashboardStats {
 	financialSummary: FinancialSummary;
 	upcomingEvents: Event[];
 	upcomingSchedules: Schedule[];
+	historicalFinancialData?: MonthlyFinancialData[];
+	historicalMembersData?: MonthlyMembersData[];
 }
 
 // Pagination Types
