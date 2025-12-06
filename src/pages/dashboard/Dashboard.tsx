@@ -15,7 +15,7 @@ import {
 	Timeline,
 	Title,
 } from "@mantine/core";
-import { useCustom } from "@refinedev/core";
+import { useCustom, useList } from "@refinedev/core";
 import {
 	IconCalendarEvent,
 	IconCash,
@@ -26,11 +26,17 @@ import {
 	IconUsers,
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
-import type { DashboardStats } from "@/types";
+import type { DashboardStats, Member, Transaction } from "@/types";
 import "dayjs/locale/pt-br";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { useCallback, useMemo, useState } from "react";
+import { FinancialChart } from "@/components/analytics/FinancialChart";
+import { MembersEvolutionChart } from "@/components/analytics/MembersEvolutionChart";
 import { shouldShowTestData } from "@/config/env";
 import { useDashboardTour } from "@/hooks/useDashboardTour";
+import { usePermissions } from "@/hooks/usePermissions";
+import { analyticsService } from "@/services/analytics/analyticsService";
+import type { PeriodFilter } from "@/types";
 
 dayjs.extend(relativeTime);
 dayjs.locale("pt-br");
@@ -49,6 +55,61 @@ export const Dashboard = () => {
 
 	// Initialize dashboard tour
 	useDashboardTour();
+
+	// RBAC - Check if user can view analytics
+	const { canView } = usePermissions();
+	const canViewAnalytics = canView("analytics");
+
+	// Analytics state
+	const [financialPeriod, setFinancialPeriod] =
+		useState<PeriodFilter>("12months");
+	const [membersPeriod, setMembersPeriod] = useState<PeriodFilter>("12months");
+
+	// Fetch transactions data for analytics (only if user has permission)
+	const { data: transactionsData, isLoading: transactionsLoading } =
+		useList<Transaction>({
+			resource: "transactions",
+			pagination: { mode: "off" },
+			queryOptions: {
+				enabled: canViewAnalytics,
+			},
+		});
+
+	// Fetch members data for analytics (only if user has permission)
+	const { data: membersData, isLoading: membersLoading } = useList<Member>({
+		resource: "members",
+		pagination: { mode: "off" },
+		queryOptions: {
+			enabled: canViewAnalytics,
+		},
+	});
+
+	// Calculate analytics data using memoization for performance
+	const financialAnalytics = useMemo(() => {
+		if (!transactionsData?.data) return [];
+
+		const period = analyticsService.getPeriodRange(financialPeriod);
+		return analyticsService.aggregateFinancialData(
+			transactionsData.data,
+			period,
+		);
+	}, [transactionsData?.data, financialPeriod]);
+
+	const membersAnalytics = useMemo(() => {
+		if (!membersData?.data) return [];
+
+		const period = analyticsService.getPeriodRange(membersPeriod);
+		return analyticsService.aggregateMembersData(membersData.data, period);
+	}, [membersData?.data, membersPeriod]);
+
+	// Handlers with useCallback to prevent unnecessary re-renders
+	const handleFinancialPeriodChange = useCallback((period: PeriodFilter) => {
+		setFinancialPeriod(period);
+	}, []);
+
+	const handleMembersPeriodChange = useCallback((period: PeriodFilter) => {
+		setMembersPeriod(period);
+	}, []);
 
 	const formatCurrency = (value: number) => {
 		return new Intl.NumberFormat("pt-BR", {
@@ -315,6 +376,35 @@ export const Dashboard = () => {
 					</Paper>
 				</Grid.Col>
 			</Grid>
+
+			{/* Analytics Charts - Only visible for admins and leaders */}
+			{canViewAnalytics && (
+				<Grid>
+					{/* Financial Chart */}
+					<Grid.Col span={{ base: 12, lg: 6 }}>
+						{transactionsLoading ? (
+							<Skeleton height={450} />
+						) : (
+							<FinancialChart
+								data={financialAnalytics}
+								onPeriodChange={handleFinancialPeriodChange}
+							/>
+						)}
+					</Grid.Col>
+
+					{/* Members Evolution Chart */}
+					<Grid.Col span={{ base: 12, lg: 6 }}>
+						{membersLoading ? (
+							<Skeleton height={450} />
+						) : (
+							<MembersEvolutionChart
+								data={membersAnalytics}
+								onPeriodChange={handleMembersPeriodChange}
+							/>
+						)}
+					</Grid.Col>
+				</Grid>
+			)}
 		</Stack>
 	);
 };
