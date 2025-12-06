@@ -60,6 +60,9 @@ export const APP_CONSTANTS = {
 
 		// Users
 		USERS_MANAGE: "users:manage",
+
+		// Analytics
+		ANALYTICS_VIEW: "analytics:view",
 	},
 
 	// Role permissions mapping
@@ -70,6 +73,7 @@ export const APP_CONSTANTS = {
 			"members:create",
 			"events:*", // Full access to events
 			"schedules:*", // Full access to schedules
+			"analytics:view", // Leaders can view analytics
 		],
 		volunteer: [
 			"events:view",

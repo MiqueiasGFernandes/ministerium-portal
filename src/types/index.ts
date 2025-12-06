@@ -329,5 +329,34 @@ export interface SignupCredentials {
 	subdomain: string;
 }
 
+// Analytics Types
+export interface MonthlyFinancialData {
+	month: string; // YYYY-MM format
+	monthLabel: string; // MMM/YYYY display format
+	income: number;
+	expense: number;
+	balance: number;
+}
+
+export interface MonthlyMembersData {
+	month: string; // YYYY-MM format
+	monthLabel: string; // MMM/YYYY display format
+	active: number;
+	inactive: number;
+	visitors: number;
+	total: number;
+}
+
+export type PeriodFilter = "6months" | "12months" | "currentYear";
+
+export interface AnalyticsData {
+	financialData: MonthlyFinancialData[];
+	membersData: MonthlyMembersData[];
+	period: {
+		start: string;
+		end: string;
+	};
+}
+
 // Tour Types
 export * from "./tour";
