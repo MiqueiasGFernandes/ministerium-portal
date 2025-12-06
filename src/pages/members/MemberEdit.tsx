@@ -37,6 +37,7 @@ export const MemberEdit = () => {
 	} = useForm<Member>({
 		refineCoreProps: {
 			action: "edit",
+			resource: "members",
 			onMutationSuccess: () => {
 				notifications.show({
 					title: "Sucesso!",
@@ -98,22 +99,28 @@ export const MemberEdit = () => {
 		"TO",
 	];
 
+	// Initialize form values when data is loaded
+	useEffect(() => {
+		const data = queryResult?.data?.data;
+		if (data && Object.keys(values).length === 0) {
+			// Convert birthDate string to Date object if needed
+			if (data.birthDate && typeof data.birthDate === "string") {
+				setFieldValue("birthDate", new Date(data.birthDate));
+			}
+			// Set all other fields
+			Object.keys(data).forEach((key) => {
+				if (key !== "birthDate") {
+					setFieldValue(key as keyof Member, data[key as keyof Member]);
+				}
+			});
+		}
+	}, [queryResult?.data?.data, values, setFieldValue]);
+
 	useEffect(() => {
 		if (values?.photo) {
 			setPhotoPreview(values.photo as string);
 		}
 	}, [values?.photo]);
-
-	// Convert birthDate string to Date object for DateInput
-	useEffect(() => {
-		if (
-			queryResult?.data?.data?.birthDate &&
-			typeof values?.birthDate === "string"
-		) {
-			const date = new Date(values.birthDate);
-			setFieldValue("birthDate", date);
-		}
-	}, [queryResult?.data?.data, values?.birthDate, setFieldValue]);
 
 	const handlePhotoChange = (file: File | null) => {
 		if (file) {

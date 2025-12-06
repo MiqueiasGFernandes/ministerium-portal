@@ -103,6 +103,7 @@ export const Login = () => {
 							<form onSubmit={form.onSubmit(handleSubmit)}>
 								<Stack gap="lg">
 									<TextInput
+										name="email"
 										label="Seu Email"
 										placeholder="seu@email.com"
 										required
@@ -112,6 +113,7 @@ export const Login = () => {
 
 									<Box>
 										<PasswordInput
+											name="password"
 											label="Sua Senha"
 											placeholder="Digite sua senha"
 											required
@@ -251,6 +253,7 @@ export const Login = () => {
 									<form onSubmit={form.onSubmit(handleSubmit)}>
 										<Stack gap="lg">
 											<TextInput
+												name="email"
 												label="Seu Email"
 												placeholder="seu@email.com"
 												required
@@ -260,6 +263,7 @@ export const Login = () => {
 
 											<Box>
 												<PasswordInput
+													name="password"
 													label="Sua Senha"
 													placeholder="Digite sua senha"
 													required

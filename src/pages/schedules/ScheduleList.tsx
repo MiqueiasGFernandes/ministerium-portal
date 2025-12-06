@@ -11,18 +11,77 @@ import {
 	Text,
 	Title,
 } from "@mantine/core";
-import { useNavigation } from "@refinedev/core";
+import { modals } from "@mantine/modals";
+import { notifications } from "@mantine/notifications";
+import { useDelete, useInvalidate, useNavigation } from "@refinedev/core";
 import { useTable } from "@refinedev/react-table";
-import { IconEdit, IconPlus, IconTrash } from "@tabler/icons-react";
+import {
+	IconEdit,
+	IconEye,
+	IconPlus,
+	IconTrash,
+	IconUserPlus,
+	IconUsers,
+} from "@tabler/icons-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
 import dayjs from "dayjs";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
+import { CanCreate, CanDelete, CanEdit } from "@/components/auth/Can";
+import { usePermissions } from "@/hooks/usePermissions";
 import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Schedule } from "@/types";
 
 export const ScheduleList = () => {
-	const { create, edit } = useNavigation();
+	const { create, edit, show, push } = useNavigation();
+	const { isVolunteer, isAdmin, isLeader } = usePermissions();
+	const { mutate: deleteSchedule } = useDelete();
+	const invalidate = useInvalidate();
+
+	const handleDelete = useCallback(
+		(id: string, title: string) => {
+			modals.openConfirmModal({
+				title: "Confirmar exclusão",
+				children: (
+					<Text size="sm">
+						Tem certeza que deseja excluir a escala <strong>{title}</strong>?
+						Esta ação não pode ser desfeita.
+					</Text>
+				),
+				labels: { confirm: "Excluir", cancel: "Cancelar" },
+				confirmProps: { color: "red" },
+				onConfirm: () => {
+					deleteSchedule(
+						{
+							resource: "schedules",
+							id,
+						},
+						{
+							onSuccess: () => {
+								notifications.show({
+									title: "Sucesso",
+									message: "Escala excluída com sucesso!",
+									color: "green",
+								});
+								invalidate({
+									resource: "schedules",
+									invalidates: ["list"],
+								});
+							},
+							onError: () => {
+								notifications.show({
+									title: "Erro",
+									message: "Erro ao excluir escala",
+									color: "red",
+								});
+							},
+						},
+					);
+				},
+			});
+		},
+		[deleteSchedule, invalidate],
+	);
 
 	const columns = useMemo<ColumnDef<Schedule>[]>(
 		() => [
@@ -68,19 +127,49 @@ export const ScheduleList = () => {
 					<Group gap="xs">
 						<ActionIcon
 							variant="light"
-							color="orange"
-							onClick={() => edit("schedules", row.original.id)}
+							color="blue"
+							onClick={() => show("schedules", row.original.id)}
+							title="Visualizar"
 						>
-							<IconEdit size="1rem" />
+							<IconEye size="1rem" />
 						</ActionIcon>
-						<ActionIcon variant="light" color="red">
-							<IconTrash size="1rem" />
-						</ActionIcon>
+						{(isAdmin() || isLeader()) && (
+							<ActionIcon
+								variant="light"
+								color="teal"
+								onClick={() => push(`/schedules/manage/${row.original.id}`)}
+								title="Gerenciar Voluntários"
+							>
+								<IconUsers size="1rem" />
+							</ActionIcon>
+						)}
+						<CanEdit resource="schedules">
+							<ActionIcon
+								variant="light"
+								color="orange"
+								onClick={() => edit("schedules", row.original.id)}
+								title="Editar"
+							>
+								<IconEdit size="1rem" />
+							</ActionIcon>
+						</CanEdit>
+						<CanDelete resource="schedules">
+							<ActionIcon
+								variant="light"
+								color="red"
+								title="Excluir"
+								onClick={() =>
+									handleDelete(row.original.id, row.original.title)
+								}
+							>
+								<IconTrash size="1rem" />
+							</ActionIcon>
+						</CanDelete>
 					</Group>
 				),
 			},
 		],
-		[edit],
+		[edit, show, push, isAdmin, isLeader, handleDelete],
 	);
 
 	const {
@@ -96,13 +185,27 @@ export const ScheduleList = () => {
 		<Stack gap="lg">
 			<Group justify="space-between">
 				<Title order={2}>Escalas</Title>
-				<Button
-					leftSection={<IconPlus size="1rem" />}
-					onClick={() => create("schedules")}
-					styles={gradientButtonStyles}
-				>
-					Nova Escala
-				</Button>
+				<Group>
+					{isVolunteer() && (
+						<Button
+							variant="light"
+							color="teal"
+							leftSection={<IconUserPlus size="1rem" />}
+							onClick={() => push("/schedules/signup")}
+						>
+							Auto-inscrição
+						</Button>
+					)}
+					<CanCreate resource="schedules">
+						<Button
+							leftSection={<IconPlus size="1rem" />}
+							onClick={() => create("schedules")}
+							styles={gradientButtonStyles}
+						>
+							Nova Escala
+						</Button>
+					</CanCreate>
+				</Group>
 			</Group>
 			<Paper shadow="xs" radius="md" withBorder>
 				<Box style={{ overflowX: "auto" }}>

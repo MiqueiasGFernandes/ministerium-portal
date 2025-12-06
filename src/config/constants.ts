@@ -64,52 +64,21 @@ export const APP_CONSTANTS = {
 
 	// Role permissions mapping
 	ROLE_PERMISSIONS: {
-		admin: [
+		admin: ["*"], // Admin has access to everything
+		leader: [
 			"members:view",
 			"members:create",
-			"members:edit",
-			"members:delete",
-			"finance:view",
-			"finance:create",
-			"finance:edit",
-			"finance:delete",
+			"events:*", // Full access to events
+			"schedules:*", // Full access to schedules
+		],
+		volunteer: [
 			"events:view",
-			"events:create",
-			"events:edit",
-			"events:delete",
 			"schedules:view",
 			"schedules:create",
 			"schedules:edit",
 			"schedules:delete",
-			"ministries:view",
-			"ministries:create",
-			"ministries:edit",
-			"ministries:delete",
-			"settings:view",
-			"settings:edit",
-			"users:manage",
 		],
-		leader: [
-			"members:view",
-			"members:create",
-			"members:edit",
-			"events:view",
-			"events:create",
-			"events:edit",
-			"schedules:view",
-			"schedules:create",
-			"schedules:edit",
-			"ministries:view",
-			"ministries:create",
-			"ministries:edit",
-		],
-		volunteer: [
-			"members:view",
-			"events:view",
-			"schedules:view",
-			"ministries:view",
-		],
-	},
+	} as Record<string, string[]>,
 } as const;
 
 export const TRANSACTION_CATEGORIES = [

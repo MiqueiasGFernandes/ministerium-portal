@@ -13,6 +13,7 @@ import {
 import { notifications } from "@mantine/notifications";
 import { useGo, useList } from "@refinedev/core";
 import { useForm } from "@refinedev/mantine";
+import { useEffect } from "react";
 import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Ministry, User } from "@/types";
 
@@ -34,9 +35,13 @@ export const MinistryEdit = () => {
 	const {
 		saveButtonProps,
 		getInputProps,
+		setFieldValue,
+		values,
 		refineCore: { formLoading, queryResult },
 	} = useForm<Ministry>({
 		refineCoreProps: {
+			action: "edit",
+			resource: "ministries",
 			onMutationSuccess: () => {
 				notifications.show({
 					title: "Sucesso!",
@@ -47,6 +52,16 @@ export const MinistryEdit = () => {
 			},
 		},
 	});
+
+	// Initialize form values when data is loaded
+	useEffect(() => {
+		const data = queryResult?.data?.data;
+		if (data && Object.keys(values).length === 0) {
+			Object.keys(data).forEach((key) => {
+				setFieldValue(key as keyof Ministry, data[key as keyof Ministry]);
+			});
+		}
+	}, [queryResult?.data?.data, values, setFieldValue]);
 
 	const leaderOptions =
 		usersData?.data.map((user) => ({

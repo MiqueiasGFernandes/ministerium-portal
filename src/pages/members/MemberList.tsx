@@ -1,5 +1,6 @@
 import {
 	ActionIcon,
+	Alert,
 	Avatar,
 	Badge,
 	Box,
@@ -16,23 +17,76 @@ import {
 	TextInput,
 	Title,
 } from "@mantine/core";
-import { useNavigation } from "@refinedev/core";
+import { modals } from "@mantine/modals";
+import { notifications } from "@mantine/notifications";
+import { useDelete, useInvalidate, useNavigation } from "@refinedev/core";
 import { useTable } from "@refinedev/react-table";
 import {
 	IconEdit,
 	IconEye,
+	IconLock,
 	IconPlus,
 	IconSearch,
 	IconTrash,
 } from "@tabler/icons-react";
 import { type ColumnDef, flexRender } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { CanCreate, CanDelete, CanEdit } from "@/components/auth/Can";
 import { MEMBER_STATUS_OPTIONS } from "@/config/constants";
+import { usePermissions } from "@/hooks/usePermissions";
 import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Member, MemberStatus } from "@/types";
 
 export const MemberList = () => {
 	const { create, edit, show } = useNavigation();
+	const { mutate: deleteMember } = useDelete();
+	const invalidate = useInvalidate();
+	const { isVolunteer, canView } = usePermissions();
+
+	const handleDelete = useCallback(
+		(id: string, name: string) => {
+			modals.openConfirmModal({
+				title: "Confirmar exclusão",
+				children: (
+					<Text size="sm">
+						Tem certeza que deseja excluir o membro <strong>{name}</strong>?
+						Esta ação não pode ser desfeita.
+					</Text>
+				),
+				labels: { confirm: "Excluir", cancel: "Cancelar" },
+				confirmProps: { color: "red" },
+				onConfirm: () => {
+					deleteMember(
+						{
+							resource: "members",
+							id,
+						},
+						{
+							onSuccess: () => {
+								notifications.show({
+									title: "Sucesso",
+									message: "Membro excluído com sucesso!",
+									color: "green",
+								});
+								invalidate({
+									resource: "members",
+									invalidates: ["list"],
+								});
+							},
+							onError: () => {
+								notifications.show({
+									title: "Erro",
+									message: "Erro ao excluir membro",
+									color: "red",
+								});
+							},
+						},
+					);
+				},
+			});
+		},
+		[deleteMember, invalidate],
+	);
 
 	// Filters state
 	const [search, setSearch] = useState("");
@@ -129,21 +183,29 @@ export const MemberList = () => {
 						>
 							<IconEye size="1rem" />
 						</ActionIcon>
-						<ActionIcon
-							variant="light"
-							color="orange"
-							onClick={() => edit("members", row.original.id)}
-						>
-							<IconEdit size="1rem" />
-						</ActionIcon>
-						<ActionIcon variant="light" color="red">
-							<IconTrash size="1rem" />
-						</ActionIcon>
+						<CanEdit resource="members">
+							<ActionIcon
+								variant="light"
+								color="orange"
+								onClick={() => edit("members", row.original.id)}
+							>
+								<IconEdit size="1rem" />
+							</ActionIcon>
+						</CanEdit>
+						<CanDelete resource="members">
+							<ActionIcon
+								variant="light"
+								color="red"
+								onClick={() => handleDelete(row.original.id, row.original.name)}
+							>
+								<IconTrash size="1rem" />
+							</ActionIcon>
+						</CanDelete>
 					</Group>
 				),
 			},
 		],
-		[show, edit],
+		[show, edit, handleDelete],
 	);
 
 	const {
@@ -196,17 +258,36 @@ export const MemberList = () => {
 		"Membro",
 	];
 
+	// Protect member data from volunteers
+	if (isVolunteer() || !canView("members")) {
+		return (
+			<Stack gap="lg">
+				<Title order={2}>Membros</Title>
+				<Alert
+					icon={<IconLock size="1rem" />}
+					title="Acesso Restrito"
+					color="red"
+				>
+					Você não tem permissão para visualizar dados de membros. Esta área
+					contém informações sensíveis e pessoais protegidas.
+				</Alert>
+			</Stack>
+		);
+	}
+
 	return (
 		<Stack gap="lg">
 			<Group justify="space-between">
 				<Title order={2}>Membros</Title>
-				<Button
-					leftSection={<IconPlus size="1rem" />}
-					onClick={() => create("members")}
-					styles={gradientButtonStyles}
-				>
-					Novo Membro
-				</Button>
+				<CanCreate resource="members">
+					<Button
+						leftSection={<IconPlus size="1rem" />}
+						onClick={() => create("members")}
+						styles={gradientButtonStyles}
+					>
+						Novo Membro
+					</Button>
+				</CanCreate>
 			</Group>
 
 			{/* Filters */}

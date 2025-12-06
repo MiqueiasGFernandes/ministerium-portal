@@ -48,7 +48,11 @@ import { Onboarding } from "@/pages/onboarding/Onboarding";
 import { ScheduleCreate } from "@/pages/schedules/ScheduleCreate";
 import { ScheduleEdit } from "@/pages/schedules/ScheduleEdit";
 import { ScheduleList } from "@/pages/schedules/ScheduleList";
+import { ScheduleManageVolunteers } from "@/pages/schedules/ScheduleManageVolunteers";
+import { ScheduleShow } from "@/pages/schedules/ScheduleShow";
+import { ScheduleSignup } from "@/pages/schedules/ScheduleSignup";
 import { Settings } from "@/pages/settings/Settings";
+import { accessControlProvider } from "@/providers/accessControlProvider";
 import { authProvider } from "@/providers/authProvider";
 import { localDataProvider } from "@/providers/dataProvider";
 
@@ -152,6 +156,7 @@ function App() {
 					<Refine
 						dataProvider={localDataProvider}
 						authProvider={authProvider}
+						accessControlProvider={accessControlProvider}
 						routerProvider={routerBindings}
 						notificationProvider={useNotificationProvider}
 						resources={resources}
@@ -213,6 +218,12 @@ function App() {
 										<Route index element={<ScheduleList />} />
 										<Route path="create" element={<ScheduleCreate />} />
 										<Route path="edit/:id" element={<ScheduleEdit />} />
+										<Route path="show/:id" element={<ScheduleShow />} />
+										<Route path="signup" element={<ScheduleSignup />} />
+										<Route
+											path="manage/:scheduleId"
+											element={<ScheduleManageVolunteers />}
+										/>
 									</Route>
 								)}
 

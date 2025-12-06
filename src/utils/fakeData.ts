@@ -41,16 +41,53 @@ export const generateUsers = (count: number = 10): User[] => {
 		UserRole.VOLUNTEER,
 	];
 
-	return Array.from({ length: count }, (_, index) => ({
-		id: `user-${index + 1}`,
+	// Create specific test users with fixed credentials
+	const testUsers: User[] = [
+		{
+			id: "user-1",
+			email: "admin@ministerium.com",
+			name: "Admin Teste",
+			role: UserRole.ADMIN,
+			tenantId: "1",
+			avatar: faker.image.avatar(),
+			createdAt: faker.date.past({ years: 1 }).toISOString(),
+			updatedAt: faker.date.recent().toISOString(),
+		},
+		{
+			id: "user-2",
+			email: "lider@ministerium.com",
+			name: "Líder Teste",
+			role: UserRole.LEADER,
+			tenantId: "1",
+			avatar: faker.image.avatar(),
+			createdAt: faker.date.past({ years: 1 }).toISOString(),
+			updatedAt: faker.date.recent().toISOString(),
+		},
+		{
+			id: "user-3",
+			email: "voluntario@ministerium.com",
+			name: "Voluntário Teste",
+			role: UserRole.VOLUNTEER,
+			tenantId: "1",
+			avatar: faker.image.avatar(),
+			createdAt: faker.date.past({ years: 1 }).toISOString(),
+			updatedAt: faker.date.recent().toISOString(),
+		},
+	];
+
+	// Generate additional random users
+	const randomUsers = Array.from({ length: count - 3 }, (_, index) => ({
+		id: `user-${index + 4}`,
 		email: faker.internet.email(),
 		name: faker.person.fullName(),
-		role: index === 0 ? UserRole.ADMIN : faker.helpers.arrayElement(roles),
+		role: faker.helpers.arrayElement(roles),
 		tenantId: "1",
 		avatar: faker.image.avatar(),
 		createdAt: faker.date.past({ years: 1 }).toISOString(),
 		updatedAt: faker.date.recent().toISOString(),
 	}));
+
+	return [...testUsers, ...randomUsers];
 };
 
 // Generate Members

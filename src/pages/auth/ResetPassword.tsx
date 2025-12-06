@@ -79,7 +79,7 @@ export const ResetPassword = () => {
 		},
 	});
 
-	const handleSubmit = async (values: {
+	const handleSubmit = async (_values: {
 		password: string;
 		confirmPassword: string;
 	}) => {
@@ -98,7 +98,7 @@ export const ResetPassword = () => {
 			navigate("/login", {
 				state: { message: "Senha redefinida com sucesso! Faça login." },
 			});
-		} catch (err) {
+		} catch (_err) {
 			setError("Erro ao redefinir senha. Tente novamente.");
 		} finally {
 			setIsLoading(false);

@@ -1,4 +1,5 @@
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -12,14 +13,19 @@ import "@mantine/notifications/styles.css";
 import "@mantine/dropzone/styles.css";
 import "./styles/global.css";
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+const rootElement = document.getElementById("root");
+if (!rootElement) throw new Error("Root element not found");
+
+ReactDOM.createRoot(rootElement).render(
 	<React.StrictMode>
 		<ColorSchemeScript defaultColorScheme="light" />
 		<MantineProvider theme={ministeriumTheme} defaultColorScheme="light">
-			<ThemeProvider>
-				<Notifications position="top-right" zIndex={1000} />
-				<App />
-			</ThemeProvider>
+			<ModalsProvider>
+				<ThemeProvider>
+					<Notifications position="top-right" zIndex={1000} />
+					<App />
+				</ThemeProvider>
+			</ModalsProvider>
 		</MantineProvider>
 	</React.StrictMode>,
 );

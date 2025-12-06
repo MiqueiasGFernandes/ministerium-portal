@@ -11,18 +11,67 @@ import {
 	Text,
 	Title,
 } from "@mantine/core";
-import { useNavigation } from "@refinedev/core";
+import { modals } from "@mantine/modals";
+import { notifications } from "@mantine/notifications";
+import { useDelete, useInvalidate, useNavigation } from "@refinedev/core";
 import { useTable } from "@refinedev/react-table";
 import { IconEdit, IconEye, IconPlus, IconTrash } from "@tabler/icons-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
 import dayjs from "dayjs";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Ministry } from "@/types";
 
 export const MinistryList = () => {
 	const { create, edit, show } = useNavigation();
+	const { mutate: deleteMinistry } = useDelete();
+	const invalidate = useInvalidate();
+
+	const handleDelete = useCallback(
+		(id: string, name: string) => {
+			modals.openConfirmModal({
+				title: "Confirmar exclusão",
+				children: (
+					<Text size="sm">
+						Tem certeza que deseja excluir o ministério <strong>{name}</strong>?
+						Esta ação não pode ser desfeita.
+					</Text>
+				),
+				labels: { confirm: "Excluir", cancel: "Cancelar" },
+				confirmProps: { color: "red" },
+				onConfirm: () => {
+					deleteMinistry(
+						{
+							resource: "ministries",
+							id,
+						},
+						{
+							onSuccess: () => {
+								notifications.show({
+									title: "Sucesso",
+									message: "Ministério excluído com sucesso!",
+									color: "green",
+								});
+								invalidate({
+									resource: "ministries",
+									invalidates: ["list"],
+								});
+							},
+							onError: () => {
+								notifications.show({
+									title: "Erro",
+									message: "Erro ao excluir ministério",
+									color: "red",
+								});
+							},
+						},
+					);
+				},
+			});
+		},
+		[deleteMinistry, invalidate],
+	);
 
 	const columns = useMemo<ColumnDef<Ministry>[]>(
 		() => [
@@ -84,14 +133,18 @@ export const MinistryList = () => {
 						>
 							<IconEdit size="1rem" />
 						</ActionIcon>
-						<ActionIcon variant="light" color="red">
+						<ActionIcon
+							variant="light"
+							color="red"
+							onClick={() => handleDelete(row.original.id, row.original.name)}
+						>
 							<IconTrash size="1rem" />
 						</ActionIcon>
 					</Group>
 				),
 			},
 		],
-		[edit, show],
+		[edit, show, handleDelete],
 	);
 
 	const {

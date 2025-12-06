@@ -12,19 +12,44 @@ import {
 	Title,
 } from "@mantine/core";
 import { DateInput, TimeInput } from "@mantine/dates";
+import { useNavigation } from "@refinedev/core";
 import { useForm } from "@refinedev/mantine";
+import { useEffect } from "react";
 import { EVENT_STATUS_OPTIONS } from "@/config/constants";
 import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Event } from "@/types";
 
 export const EventEdit = () => {
+	const { list } = useNavigation();
 	const {
 		saveButtonProps,
 		getInputProps,
+		setFieldValue,
+		values,
 		refineCore: { formLoading, queryResult },
 	} = useForm<Event>({
-		refineCoreProps: { action: "edit" },
+		refineCoreProps: {
+			action: "edit",
+			resource: "events",
+		},
 	});
+
+	// Initialize form values when data is loaded
+	useEffect(() => {
+		const data = queryResult?.data?.data;
+		if (data && Object.keys(values).length === 0) {
+			// Convert date string to Date object if needed
+			if (data.date && typeof data.date === "string") {
+				setFieldValue("date", new Date(data.date));
+			}
+			// Set all other fields
+			Object.keys(data).forEach((key) => {
+				if (key !== "date") {
+					setFieldValue(key as keyof Event, data[key as keyof Event]);
+				}
+			});
+		}
+	}, [queryResult?.data?.data, values, setFieldValue]);
 
 	return (
 		<Stack gap="lg" pos="relative">
@@ -73,7 +98,9 @@ export const EventEdit = () => {
 						</Grid.Col>
 					</Grid>
 					<Group justify="flex-end" mt="md">
-						<Button variant="default">Cancelar</Button>
+						<Button variant="default" onClick={() => list("events")}>
+							Cancelar
+						</Button>
 						<Button
 							{...saveButtonProps}
 							loading={formLoading}

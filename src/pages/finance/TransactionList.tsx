@@ -14,7 +14,9 @@ import {
 	Title,
 } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
-import { useNavigation } from "@refinedev/core";
+import { modals } from "@mantine/modals";
+import { notifications } from "@mantine/notifications";
+import { useDelete, useInvalidate, useNavigation } from "@refinedev/core";
 import { useTable } from "@refinedev/react-table";
 import {
 	IconEdit,
@@ -25,7 +27,7 @@ import {
 } from "@tabler/icons-react";
 import { type ColumnDef, flexRender } from "@tanstack/react-table";
 import dayjs from "dayjs";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { TRANSACTION_CATEGORIES } from "@/config/constants";
 import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Transaction, TransactionType } from "@/types";
@@ -38,6 +40,8 @@ const formatCurrency = (value: number) =>
 
 export const TransactionList = () => {
 	const { create, edit } = useNavigation();
+	const { mutate: deleteTransaction } = useDelete();
+	const invalidate = useInvalidate();
 
 	const [typeFilter, setTypeFilter] = useState<string | undefined>(undefined);
 	const [categoryFilter, setCategoryFilter] = useState<string | undefined>(
@@ -47,6 +51,51 @@ export const TransactionList = () => {
 		null,
 		null,
 	]);
+
+	const handleDelete = useCallback(
+		(id: string, description: string) => {
+			modals.openConfirmModal({
+				title: "Confirmar exclusão",
+				children: (
+					<Text size="sm">
+						Tem certeza que deseja excluir a transação{" "}
+						<strong>{description}</strong>? Esta ação não pode ser desfeita.
+					</Text>
+				),
+				labels: { confirm: "Excluir", cancel: "Cancelar" },
+				confirmProps: { color: "red" },
+				onConfirm: () => {
+					deleteTransaction(
+						{
+							resource: "transactions",
+							id,
+						},
+						{
+							onSuccess: () => {
+								notifications.show({
+									title: "Sucesso",
+									message: "Transação excluída com sucesso!",
+									color: "green",
+								});
+								invalidate({
+									resource: "transactions",
+									invalidates: ["list"],
+								});
+							},
+							onError: () => {
+								notifications.show({
+									title: "Erro",
+									message: "Erro ao excluir transação",
+									color: "red",
+								});
+							},
+						},
+					);
+				},
+			});
+		},
+		[deleteTransaction, invalidate],
+	);
 
 	const columns = useMemo<ColumnDef<Transaction>[]>(
 		() => [
@@ -126,14 +175,20 @@ export const TransactionList = () => {
 						>
 							<IconEdit size="1rem" />
 						</ActionIcon>
-						<ActionIcon variant="light" color="red">
+						<ActionIcon
+							variant="light"
+							color="red"
+							onClick={() =>
+								handleDelete(row.original.id, row.original.description)
+							}
+						>
 							<IconTrash size="1rem" />
 						</ActionIcon>
 					</Group>
 				),
 			},
 		],
-		[edit],
+		[edit, handleDelete],
 	);
 
 	const {

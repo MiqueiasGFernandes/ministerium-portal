@@ -12,20 +12,70 @@ import {
 	Text,
 	Title,
 } from "@mantine/core";
-import { useNavigation } from "@refinedev/core";
+import { modals } from "@mantine/modals";
+import { notifications } from "@mantine/notifications";
+import { useDelete, useInvalidate, useNavigation } from "@refinedev/core";
 import { useTable } from "@refinedev/react-table";
 import { IconEdit, IconEye, IconPlus, IconTrash } from "@tabler/icons-react";
 import { type ColumnDef, flexRender } from "@tanstack/react-table";
 import dayjs from "dayjs";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { CanCreate } from "@/components/auth/Can";
 import { EVENT_STATUS_OPTIONS } from "@/config/constants";
 import { gradientButtonStyles } from "@/styles/buttonStyles";
-import type { Event } from "@/types";
+import type { Event, EventAttendee } from "@/types";
 
 export const EventList = () => {
 	const { create, edit, show } = useNavigation();
+	const { mutate: deleteEvent } = useDelete();
+	const invalidate = useInvalidate();
 	const [statusFilter, setStatusFilter] = useState<string | undefined>(
 		undefined,
+	);
+
+	const handleDelete = useCallback(
+		(id: string, title: string) => {
+			modals.openConfirmModal({
+				title: "Confirmar exclusão",
+				children: (
+					<Text size="sm">
+						Tem certeza que deseja excluir o evento <strong>{title}</strong>?
+						Esta ação não pode ser desfeita.
+					</Text>
+				),
+				labels: { confirm: "Excluir", cancel: "Cancelar" },
+				confirmProps: { color: "red" },
+				onConfirm: () => {
+					deleteEvent(
+						{
+							resource: "events",
+							id,
+						},
+						{
+							onSuccess: () => {
+								notifications.show({
+									title: "Sucesso",
+									message: "Evento excluído com sucesso!",
+									color: "green",
+								});
+								invalidate({
+									resource: "events",
+									invalidates: ["list"],
+								});
+							},
+							onError: () => {
+								notifications.show({
+									title: "Erro",
+									message: "Erro ao excluir evento",
+									color: "red",
+								});
+							},
+						},
+					);
+				},
+			});
+		},
+		[deleteEvent, invalidate],
 	);
 
 	const columns = useMemo<ColumnDef<Event>[]>(
@@ -67,7 +117,10 @@ export const EventList = () => {
 				id: "attendees",
 				header: "Inscritos",
 				accessorKey: "attendees",
-				cell: ({ getValue }) => <Badge>{(getValue() as any[]).length}</Badge>,
+				cell: ({ getValue }) => {
+					const attendees = getValue() as EventAttendee[];
+					return <Badge>{attendees.length}</Badge>;
+				},
 			},
 			{
 				id: "actions",
@@ -88,14 +141,18 @@ export const EventList = () => {
 						>
 							<IconEdit size="1rem" />
 						</ActionIcon>
-						<ActionIcon variant="light" color="red">
+						<ActionIcon
+							variant="light"
+							color="red"
+							onClick={() => handleDelete(row.original.id, row.original.title)}
+						>
 							<IconTrash size="1rem" />
 						</ActionIcon>
 					</Group>
 				),
 			},
 		],
-		[show, edit],
+		[show, edit, handleDelete],
 	);
 
 	const {
@@ -128,13 +185,15 @@ export const EventList = () => {
 		<Stack gap="lg">
 			<Group justify="space-between">
 				<Title order={2}>Eventos</Title>
-				<Button
-					leftSection={<IconPlus size="1rem" />}
-					onClick={() => create("events")}
-					styles={gradientButtonStyles}
-				>
-					Novo Evento
-				</Button>
+				<CanCreate resource="events">
+					<Button
+						leftSection={<IconPlus size="1rem" />}
+						onClick={() => create("events")}
+						styles={gradientButtonStyles}
+					>
+						Novo Evento
+					</Button>
+				</CanCreate>
 			</Group>
 			<Paper shadow="xs" p="md" radius="md" withBorder>
 				<Select
