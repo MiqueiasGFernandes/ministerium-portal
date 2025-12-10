@@ -45,9 +45,10 @@ dayjs.locale("pt-br");
  * Main dashboard with statistics and widgets
  */
 export const Dashboard = () => {
-	// RBAC - Check if user can view analytics
-	const { canView } = usePermissions();
+	// RBAC - Check permissions
+	const { canView, isAdmin } = usePermissions();
 	const canViewAnalytics = canView("analytics");
+	const canViewFinancialChart = isAdmin(); // Only admins can view financial chart
 
 	// Analytics state - controls which period to fetch from backend
 	const [analyticsPeriod, setAnalyticsPeriod] =
@@ -340,23 +341,30 @@ export const Dashboard = () => {
 				</Grid.Col>
 			</Grid>
 
-			{/* Analytics Charts - Only visible for admins and leaders */}
+			{/* Analytics Charts */}
 			{canViewAnalytics && (
 				<Grid>
-					{/* Financial Chart */}
-					<Grid.Col span={{ base: 12, lg: 6 }}>
-						{isLoading ? (
-							<Skeleton height={450} />
-						) : (
-							<FinancialChart
-								data={stats?.historicalFinancialData || []}
-								onPeriodChange={handlePeriodChange}
-							/>
-						)}
-					</Grid.Col>
+					{/* Financial Chart - Only visible for admins */}
+					{canViewFinancialChart && (
+						<Grid.Col span={{ base: 12, lg: canViewAnalytics ? 6 : 12 }}>
+							{isLoading ? (
+								<Skeleton height={450} />
+							) : (
+								<FinancialChart
+									data={stats?.historicalFinancialData || []}
+									onPeriodChange={handlePeriodChange}
+								/>
+							)}
+						</Grid.Col>
+					)}
 
-					{/* Members Evolution Chart */}
-					<Grid.Col span={{ base: 12, lg: 6 }}>
+					{/* Members Evolution Chart - Visible for admins and leaders */}
+					<Grid.Col
+						span={{
+							base: 12,
+							lg: canViewFinancialChart ? 6 : 12,
+						}}
+					>
 						{isLoading ? (
 							<Skeleton height={450} />
 						) : (

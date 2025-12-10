@@ -10,7 +10,6 @@ import routerBindings, {
 import {
 	IconCalendarEvent,
 	IconCash,
-	IconChartBar,
 	IconClipboardList,
 	IconLayoutDashboard,
 	IconUsers,
@@ -22,7 +21,6 @@ import { Layout } from "@/components/layout/Layout";
 import { TourTooltip } from "@/components/tour/TourTooltip";
 import { config } from "@/config/env";
 import { TourProvider } from "@/contexts/TourContext";
-import { Analytics } from "@/pages/analytics/Analytics";
 import { ForgotPassword } from "@/pages/auth/ForgotPassword";
 import { Login } from "@/pages/auth/Login";
 import { ResetPassword } from "@/pages/auth/ResetPassword";
@@ -151,16 +149,6 @@ function App() {
 		});
 	}
 
-	// Analytics resource - accessible only by admins and leaders
-	resources.push({
-		name: "analytics",
-		list: "/analytics",
-		meta: {
-			label: "Analytics",
-			icon: <IconChartBar />,
-		},
-	});
-
 	return (
 		<BrowserRouter>
 			<RefineKbarProvider>
@@ -248,9 +236,6 @@ function App() {
 										<Route path="show/:id" element={<MinistryShow />} />
 									</Route>
 								)}
-
-								{/* Analytics Route - Protected by RBAC */}
-								<Route path="/analytics" element={<Analytics />} />
 
 								{/* Settings */}
 								<Route path="/settings" element={<Settings />} />

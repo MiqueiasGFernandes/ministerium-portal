@@ -386,10 +386,8 @@ export const localDataProvider: DataProvider = {
 			const period =
 				(query as Record<string, unknown> | undefined)?.period || "12months";
 			let monthsBack = 11; // 12 months including current
-			if (period === "6months") monthsBack = 5;
-			else if (period === "currentYear") {
-				monthsBack = now.getMonth(); // Months from Jan to current
-			}
+			if (period === "3months") monthsBack = 2;
+			else if (period === "6months") monthsBack = 5;
 
 			// Generate historical financial data
 			const historicalFinancialData = [];

@@ -349,7 +349,7 @@ export interface MonthlyMembersData {
 	total: number;
 }
 
-export type PeriodFilter = "6months" | "12months" | "currentYear";
+export type PeriodFilter = "3months" | "6months" | "12months";
 
 export interface AnalyticsData {
 	financialData: MonthlyFinancialData[];

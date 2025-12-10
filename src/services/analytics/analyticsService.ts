@@ -22,14 +22,14 @@ export class AnalyticsService {
 		let start: dayjs.Dayjs;
 
 		switch (filter) {
+			case "3months":
+				start = now.subtract(2, "month").startOf("month");
+				break;
 			case "6months":
 				start = now.subtract(5, "month").startOf("month");
 				break;
 			case "12months":
 				start = now.subtract(11, "month").startOf("month");
-				break;
-			case "currentYear":
-				start = now.startOf("year");
 				break;
 			default:
 				start = now.subtract(11, "month").startOf("month");

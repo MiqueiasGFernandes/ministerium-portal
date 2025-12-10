@@ -129,9 +129,9 @@ export const FinancialChart = ({
 						value={period}
 						onChange={handlePeriodChange}
 						data={[
+							{ value: "3months", label: "Últimos 3 meses" },
 							{ value: "6months", label: "Últimos 6 meses" },
 							{ value: "12months", label: "Últimos 12 meses" },
-							{ value: "currentYear", label: "Ano atual" },
 						]}
 						disabled={isLoading}
 						w={180}
