@@ -19,8 +19,11 @@ import { notifications } from "@mantine/notifications";
 import { useDelete, useInvalidate, useNavigation } from "@refinedev/core";
 import { useTable } from "@refinedev/react-table";
 import {
+	IconArrowDown,
+	IconArrowUp,
 	IconEdit,
 	IconPlus,
+	IconSelector,
 	IconTrash,
 	IconTrendingDown,
 	IconTrendingUp,
@@ -103,6 +106,7 @@ export const TransactionList = () => {
 				id: "date",
 				header: "Data",
 				accessorKey: "date",
+				enableSorting: true,
 				cell: ({ getValue }) =>
 					dayjs(getValue() as string).format("DD/MM/YYYY"),
 			},
@@ -110,6 +114,7 @@ export const TransactionList = () => {
 				id: "type",
 				header: "Tipo",
 				accessorKey: "type",
+				enableSorting: true,
 				cell: ({ getValue }) => {
 					const type = getValue() as TransactionType;
 					return (
@@ -133,6 +138,7 @@ export const TransactionList = () => {
 				id: "category",
 				header: "Categoria",
 				accessorKey: "category",
+				enableSorting: true,
 				cell: ({ getValue }) => {
 					const category = getValue() as string;
 					const cat = TRANSACTION_CATEGORIES.find((c) => c.value === category);
@@ -143,6 +149,7 @@ export const TransactionList = () => {
 				id: "description",
 				header: "Descrição",
 				accessorKey: "description",
+				enableSorting: true,
 				cell: ({ getValue }) => (
 					<Text size="sm" lineClamp={1}>
 						{getValue() as string}
@@ -153,6 +160,7 @@ export const TransactionList = () => {
 				id: "amount",
 				header: "Valor",
 				accessorKey: "amount",
+				enableSorting: true,
 				cell: ({ row, getValue }) => {
 					const type = row.original.type;
 					const amount = getValue() as number;
@@ -166,6 +174,7 @@ export const TransactionList = () => {
 			{
 				id: "actions",
 				header: "Ações",
+				enableSorting: false,
 				cell: ({ row }) => (
 					<Group gap="xs">
 						<ActionIcon
@@ -194,7 +203,7 @@ export const TransactionList = () => {
 	const {
 		getHeaderGroups,
 		getRowModel,
-		refineCore: { setCurrent, pageCount, current },
+		refineCore: { setCurrent, pageCount, current, sorters, setSorters },
 		setPageSize,
 		getState,
 	} = useTable({
@@ -218,7 +227,36 @@ export const TransactionList = () => {
 				],
 			},
 		},
+		enableSorting: true,
+		manualSorting: true,
 	});
+
+	// Helper to get sort icon
+	const getSortIcon = (columnId: string) => {
+		const sort = sorters?.find((s) => s.field === columnId);
+		if (!sort) return <IconSelector size="0.9rem" />;
+		return sort.order === "asc" ? (
+			<IconArrowUp size="0.9rem" />
+		) : (
+			<IconArrowDown size="0.9rem" />
+		);
+	};
+
+	// Handle column sort
+	const handleSort = useCallback(
+		(columnId: string) => {
+			const currentSort = sorters?.find((s) => s.field === columnId);
+
+			if (!currentSort) {
+				setSorters([{ field: columnId, order: "asc" }]);
+			} else if (currentSort.order === "asc") {
+				setSorters([{ field: columnId, order: "desc" }]);
+			} else {
+				setSorters([]);
+			}
+		},
+		[sorters, setSorters],
+	);
 
 	return (
 		<Stack gap="lg">
@@ -276,14 +314,28 @@ export const TransactionList = () => {
 						<Table.Thead>
 							{getHeaderGroups().map((headerGroup) => (
 								<Table.Tr key={headerGroup.id}>
-									{headerGroup.headers.map((header) => (
-										<Table.Th key={header.id}>
-											{flexRender(
-												header.column.columnDef.header,
-												header.getContext(),
-											)}
-										</Table.Th>
-									))}
+									{headerGroup.headers.map((header) => {
+										const canSort =
+											header.column.columnDef.enableSorting !== false;
+										return (
+											<Table.Th
+												key={header.id}
+												style={{
+													cursor: canSort ? "pointer" : "default",
+													userSelect: "none",
+												}}
+												onClick={() => canSort && handleSort(header.column.id)}
+											>
+												<Group gap="xs" wrap="nowrap">
+													{flexRender(
+														header.column.columnDef.header,
+														header.getContext(),
+													)}
+													{canSort && getSortIcon(header.column.id)}
+												</Group>
+											</Table.Th>
+										);
+									})}
 								</Table.Tr>
 							))}
 						</Table.Thead>

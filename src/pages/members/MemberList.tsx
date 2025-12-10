@@ -1,10 +1,12 @@
 import {
 	ActionIcon,
 	Alert,
+	Autocomplete,
 	Avatar,
 	Badge,
 	Box,
 	Button,
+	CloseButton,
 	Grid,
 	Group,
 	MultiSelect,
@@ -14,7 +16,6 @@ import {
 	Stack,
 	Table,
 	Text,
-	TextInput,
 	Title,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
@@ -22,18 +23,22 @@ import { notifications } from "@mantine/notifications";
 import { useDelete, useInvalidate, useNavigation } from "@refinedev/core";
 import { useTable } from "@refinedev/react-table";
 import {
+	IconArrowDown,
+	IconArrowUp,
 	IconEdit,
 	IconEye,
 	IconLock,
 	IconPlus,
 	IconSearch,
+	IconSelector,
 	IconTrash,
 } from "@tabler/icons-react";
 import { type ColumnDef, flexRender } from "@tanstack/react-table";
-import { useCallback, useMemo, useState } from "react";
+import { type KeyboardEvent, useCallback, useMemo, useState } from "react";
 import { CanCreate, CanDelete, CanEdit } from "@/components/auth/Can";
 import { MEMBER_STATUS_OPTIONS } from "@/config/constants";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useSearchHistory } from "@/hooks/useSearchHistory";
 import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Member, MemberStatus } from "@/types";
 
@@ -89,11 +94,35 @@ export const MemberList = () => {
 	);
 
 	// Filters state
-	const [search, setSearch] = useState("");
+	const [searchInput, setSearchInput] = useState("");
+	const [searchQuery, setSearchQuery] = useState("");
 	const [statusFilter, setStatusFilter] = useState<string | undefined>(
 		undefined,
 	);
 	const [tagsFilter, setTagsFilter] = useState<string[]>([]);
+
+	// Search history
+	const { history, addToHistory } = useSearchHistory("members-search-history");
+
+	// Handle search submission on Enter key
+	const handleSearchKeyDown = useCallback(
+		(event: KeyboardEvent<HTMLInputElement>) => {
+			if (event.key === "Enter") {
+				const value = searchInput.trim();
+				setSearchQuery(value);
+				if (value) {
+					addToHistory(value);
+				}
+			}
+		},
+		[searchInput, addToHistory],
+	);
+
+	// Handle search clear
+	const handleClearSearch = useCallback(() => {
+		setSearchInput("");
+		setSearchQuery("");
+	}, []);
 
 	const columns = useMemo<ColumnDef<Member>[]>(
 		() => [
@@ -101,44 +130,59 @@ export const MemberList = () => {
 				id: "photo",
 				header: "Foto",
 				accessorKey: "photo",
-				cell: ({ getValue }) => (
-					<Avatar src={getValue() as string} radius="xl" size="md" />
-				),
+				enableSorting: false,
+				cell: ({ getValue }) => {
+					const photo = getValue() as string;
+					return <Avatar src={photo} radius="xl" size="md" />;
+				},
 			},
 			{
 				id: "name",
 				header: "Nome",
 				accessorKey: "name",
-				cell: ({ getValue }) => (
-					<Text size="sm" fw={500}>
-						{getValue() as string}
-					</Text>
-				),
+				enableSorting: true,
+				cell: ({ getValue }) => {
+					const name = getValue() as string;
+					return (
+						<Text size="sm" fw={500}>
+							{name}
+						</Text>
+					);
+				},
 			},
 			{
 				id: "email",
 				header: "Email",
 				accessorKey: "email",
-				cell: ({ getValue }) => (
-					<Text size="sm" c="dimmed">
-						{getValue() as string}
-					</Text>
-				),
+				enableSorting: true,
+				cell: ({ getValue }) => {
+					const email = getValue() as string;
+					return (
+						<Text size="sm" c="dimmed">
+							{email}
+						</Text>
+					);
+				},
 			},
 			{
 				id: "phone",
 				header: "Telefone",
 				accessorKey: "phone",
-				cell: ({ getValue }) => (
-					<Text size="sm" c="dimmed">
-						{getValue() as string}
-					</Text>
-				),
+				enableSorting: false,
+				cell: ({ getValue }) => {
+					const phone = getValue() as string;
+					return (
+						<Text size="sm" c="dimmed">
+							{phone}
+						</Text>
+					);
+				},
 			},
 			{
 				id: "status",
 				header: "Status",
 				accessorKey: "status",
+				enableSorting: true,
 				cell: ({ getValue }) => {
 					const status = getValue() as MemberStatus;
 					const option = MEMBER_STATUS_OPTIONS.find((o) => o.value === status);
@@ -153,8 +197,10 @@ export const MemberList = () => {
 				id: "tags",
 				header: "Tags",
 				accessorKey: "tags",
+				enableSorting: false,
 				cell: ({ getValue }) => {
 					const tags = getValue() as string[];
+					if (!tags || tags.length === 0) return null;
 					return (
 						<Group gap="xs">
 							{tags.slice(0, 2).map((tag) => (
@@ -174,6 +220,7 @@ export const MemberList = () => {
 			{
 				id: "actions",
 				header: "Ações",
+				enableSorting: false,
 				cell: ({ row }) => (
 					<Group gap="xs">
 						<ActionIcon
@@ -211,7 +258,7 @@ export const MemberList = () => {
 	const {
 		getHeaderGroups,
 		getRowModel,
-		refineCore: { setCurrent, pageCount, current },
+		refineCore: { setCurrent, pageCount, current, sorters, setSorters },
 		setPageSize,
 		getState,
 	} = useTable({
@@ -220,12 +267,12 @@ export const MemberList = () => {
 			resource: "members",
 			filters: {
 				permanent: [
-					...(search
+					...(searchQuery
 						? [
 								{
 									field: "search",
 									operator: "contains" as const,
-									value: search,
+									value: searchQuery,
 								},
 							]
 						: []),
@@ -244,7 +291,36 @@ export const MemberList = () => {
 				],
 			},
 		},
+		enableSorting: true,
+		manualSorting: true,
 	});
+
+	// Helper to get sort icon
+	const getSortIcon = (columnId: string) => {
+		const sort = sorters?.find((s) => s.field === columnId);
+		if (!sort) return <IconSelector size="0.9rem" />;
+		return sort.order === "asc" ? (
+			<IconArrowUp size="0.9rem" />
+		) : (
+			<IconArrowDown size="0.9rem" />
+		);
+	};
+
+	// Handle column sort
+	const handleSort = useCallback(
+		(columnId: string) => {
+			const currentSort = sorters?.find((s) => s.field === columnId);
+
+			if (!currentSort) {
+				setSorters([{ field: columnId, order: "asc" }]);
+			} else if (currentSort.order === "asc") {
+				setSorters([{ field: columnId, order: "desc" }]);
+			} else {
+				setSorters([]);
+			}
+		},
+		[sorters, setSorters],
+	);
 
 	const availableTags = [
 		"Líder",
@@ -294,19 +370,30 @@ export const MemberList = () => {
 			<Paper shadow="xs" p="md" radius="md" withBorder>
 				<Grid>
 					<Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
-						<TextInput
-							placeholder="Buscar por nome, email..."
+						<Autocomplete
+							placeholder="Buscar por nome, email... (Pressione Enter)"
 							leftSection={<IconSearch size="1rem" />}
-							value={search}
-							onChange={(e) => setSearch(e.currentTarget.value)}
+							value={searchInput}
+							onChange={setSearchInput}
+							onKeyDown={handleSearchKeyDown}
+							data={history}
+							rightSection={
+								searchInput ? (
+									<CloseButton
+										size="sm"
+										onClick={handleClearSearch}
+										aria-label="Limpar busca"
+									/>
+								) : null
+							}
 						/>
 					</Grid.Col>
 					<Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
 						<Select
 							placeholder="Filtrar por status"
 							data={MEMBER_STATUS_OPTIONS}
-							value={statusFilter}
-							onChange={(value) => setStatusFilter(value ?? undefined)}
+							value={statusFilter || null}
+							onChange={(value) => setStatusFilter(value || undefined)}
 							clearable
 						/>
 					</Grid.Col>
@@ -315,7 +402,7 @@ export const MemberList = () => {
 							placeholder="Filtrar por tags"
 							data={availableTags}
 							value={tagsFilter}
-							onChange={setTagsFilter}
+							onChange={(value) => setTagsFilter(value || [])}
 							clearable
 						/>
 					</Grid.Col>
@@ -329,14 +416,28 @@ export const MemberList = () => {
 						<Table.Thead>
 							{getHeaderGroups().map((headerGroup) => (
 								<Table.Tr key={headerGroup.id}>
-									{headerGroup.headers.map((header) => (
-										<Table.Th key={header.id}>
-											{flexRender(
-												header.column.columnDef.header,
-												header.getContext(),
-											)}
-										</Table.Th>
-									))}
+									{headerGroup.headers.map((header) => {
+										const canSort =
+											header.column.columnDef.enableSorting !== false;
+										return (
+											<Table.Th
+												key={header.id}
+												style={{
+													cursor: canSort ? "pointer" : "default",
+													userSelect: "none",
+												}}
+												onClick={() => canSort && handleSort(header.column.id)}
+											>
+												<Group gap="xs" wrap="nowrap">
+													{flexRender(
+														header.column.columnDef.header,
+														header.getContext(),
+													)}
+													{canSort && getSortIcon(header.column.id)}
+												</Group>
+											</Table.Th>
+										);
+									})}
 								</Table.Tr>
 							))}
 						</Table.Thead>

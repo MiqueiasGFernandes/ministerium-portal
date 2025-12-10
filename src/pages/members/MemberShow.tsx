@@ -1,4 +1,5 @@
 import {
+	ActionIcon,
 	Avatar,
 	Badge,
 	Button,
@@ -14,6 +15,7 @@ import {
 } from "@mantine/core";
 import { useShow } from "@refinedev/core";
 import {
+	IconArrowLeft,
 	IconCalendar,
 	IconEdit,
 	IconMail,
@@ -44,7 +46,18 @@ export const MemberShow = () => {
 			<LoadingOverlay visible={isLoading} />
 
 			<Group justify="space-between">
-				<Title order={2}>Detalhes do Membro</Title>
+				<Group gap="md">
+					<ActionIcon
+						variant="subtle"
+						color="gray"
+						size="lg"
+						onClick={() => navigate("/members")}
+						aria-label="Voltar para lista de membros"
+					>
+						<IconArrowLeft size="1.2rem" />
+					</ActionIcon>
+					<Title order={2}>Detalhes do Membro</Title>
+				</Group>
 				<Button
 					leftSection={<IconEdit size="1rem" />}
 					onClick={() => navigate(`/members/edit/${member?.id}`)}
@@ -166,18 +179,35 @@ export const MemberShow = () => {
 
 										<Grid>
 											{Object.entries(member.customFields).map(
-												([key, value]) => (
-													<Grid.Col key={key} span={{ base: 12, sm: 6 }}>
-														<Stack gap="xs">
-															<Text size="sm" fw={600} tt="capitalize">
-																{key}:
-															</Text>
-															<Text size="sm" c="dimmed">
-																{String(value)}
-															</Text>
-														</Stack>
-													</Grid.Col>
-												),
+												([key, value]) => {
+													// Handle date fields specially
+													const isDateField =
+														key.toLowerCase().includes("data") ||
+														key.toLowerCase().includes("date") ||
+														key.toLowerCase().includes("batismo");
+
+													const displayValue =
+														value === undefined || value === null
+															? "Não informado"
+															: isDateField && typeof value === "string"
+																? dayjs(value).isValid()
+																	? dayjs(value).format("DD/MM/YYYY")
+																	: value
+																: String(value);
+
+													return (
+														<Grid.Col key={key} span={{ base: 12, sm: 6 }}>
+															<Stack gap="xs">
+																<Text size="sm" fw={600} tt="capitalize">
+																	{key.replace(/_/g, " ")}:
+																</Text>
+																<Text size="sm" c="dimmed">
+																	{displayValue}
+																</Text>
+															</Stack>
+														</Grid.Col>
+													);
+												},
 											)}
 										</Grid>
 									</Paper>
