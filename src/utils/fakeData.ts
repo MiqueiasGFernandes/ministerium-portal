@@ -16,6 +16,7 @@ import {
 	ScheduleStatus,
 	TransactionCategory,
 	TransactionType,
+	UserAccessStatus,
 	UserRole,
 } from "@/types";
 
@@ -38,6 +39,8 @@ export const generateUsers = (count: number = 10): User[] => {
 	const roles: UserRole[] = [
 		UserRole.ADMIN,
 		UserRole.LEADER,
+		UserRole.FINANCIAL,
+		UserRole.SECRETARY,
 		UserRole.VOLUNTEER,
 	];
 
@@ -50,6 +53,7 @@ export const generateUsers = (count: number = 10): User[] => {
 			role: UserRole.ADMIN,
 			tenantId: "1",
 			avatar: faker.image.avatar(),
+			status: UserAccessStatus.ACTIVE,
 			createdAt: faker.date.past({ years: 1 }).toISOString(),
 			updatedAt: faker.date.recent().toISOString(),
 		},
@@ -60,29 +64,54 @@ export const generateUsers = (count: number = 10): User[] => {
 			role: UserRole.LEADER,
 			tenantId: "1",
 			avatar: faker.image.avatar(),
+			status: UserAccessStatus.ACTIVE,
 			createdAt: faker.date.past({ years: 1 }).toISOString(),
 			updatedAt: faker.date.recent().toISOString(),
 		},
 		{
 			id: "user-3",
+			email: "financeiro@ministerium.com",
+			name: "Financeiro Teste",
+			role: UserRole.FINANCIAL,
+			tenantId: "1",
+			avatar: faker.image.avatar(),
+			status: UserAccessStatus.ACTIVE,
+			createdAt: faker.date.past({ years: 1 }).toISOString(),
+			updatedAt: faker.date.recent().toISOString(),
+		},
+		{
+			id: "user-4",
+			email: "secretaria@ministerium.com",
+			name: "Secretária Teste",
+			role: UserRole.SECRETARY,
+			tenantId: "1",
+			avatar: faker.image.avatar(),
+			status: UserAccessStatus.ACTIVE,
+			createdAt: faker.date.past({ years: 1 }).toISOString(),
+			updatedAt: faker.date.recent().toISOString(),
+		},
+		{
+			id: "user-5",
 			email: "voluntario@ministerium.com",
 			name: "Voluntário Teste",
 			role: UserRole.VOLUNTEER,
 			tenantId: "1",
 			avatar: faker.image.avatar(),
+			status: UserAccessStatus.ACTIVE,
 			createdAt: faker.date.past({ years: 1 }).toISOString(),
 			updatedAt: faker.date.recent().toISOString(),
 		},
 	];
 
 	// Generate additional random users
-	const randomUsers = Array.from({ length: count - 3 }, (_, index) => ({
-		id: `user-${index + 4}`,
+	const randomUsers = Array.from({ length: count - 5 }, (_, index) => ({
+		id: `user-${index + 6}`,
 		email: faker.internet.email(),
 		name: faker.person.fullName(),
 		role: faker.helpers.arrayElement(roles),
 		tenantId: "1",
 		avatar: faker.image.avatar(),
+		status: UserAccessStatus.ACTIVE,
 		createdAt: faker.date.past({ years: 1 }).toISOString(),
 		updatedAt: faker.date.recent().toISOString(),
 	}));
@@ -378,6 +407,7 @@ export const findOrCreateUser = (email: string): User => {
 		role: UserRole.ADMIN, // Give admin role for testing
 		tenantId: "1",
 		avatar: faker.image.avatar(),
+		status: UserAccessStatus.ACTIVE,
 		createdAt: new Date().toISOString(),
 		updatedAt: new Date().toISOString(),
 	};

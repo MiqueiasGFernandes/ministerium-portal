@@ -2,7 +2,16 @@
 export enum UserRole {
 	ADMIN = "admin",
 	LEADER = "leader",
+	FINANCIAL = "financial",
+	SECRETARY = "secretary",
 	VOLUNTEER = "volunteer",
+}
+
+export enum UserAccessStatus {
+	PENDING = "pending",
+	ACTIVE = "active",
+	REVOKED = "revoked",
+	DENIED = "denied",
 }
 
 export enum MemberStatus {
@@ -56,8 +65,23 @@ export interface User {
 	role: UserRole;
 	tenantId: string;
 	avatar?: string;
+	status: UserAccessStatus;
 	createdAt: string;
 	updatedAt: string;
+}
+
+export interface AccessRequest {
+	id: string;
+	email: string;
+	name: string;
+	phone?: string;
+	reason?: string;
+	status: UserAccessStatus;
+	tenantId: string;
+	requestedAt: string;
+	respondedAt?: string;
+	respondedBy?: string;
+	assignedRole?: UserRole;
 }
 
 export interface LoginCredentials {

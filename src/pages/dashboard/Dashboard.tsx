@@ -48,7 +48,7 @@ export const Dashboard = () => {
 	// RBAC - Check permissions
 	const { canView, isAdmin } = usePermissions();
 	const canViewAnalytics = canView("analytics");
-	const canViewFinancialChart = isAdmin(); // Only admins can view financial chart
+	const canViewFinancialChart = isAdmin() || canView("finance"); // Admins and financial users can view financial chart
 
 	// Analytics state - controls which period to fetch from backend
 	const [analyticsPeriod, setAnalyticsPeriod] =

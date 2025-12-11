@@ -12,6 +12,7 @@ import {
 	IconCash,
 	IconClipboardList,
 	IconLayoutDashboard,
+	IconShield,
 	IconUsers,
 	IconUsersGroup,
 } from "@tabler/icons-react";
@@ -23,6 +24,7 @@ import { config } from "@/config/env";
 import { TourProvider } from "@/contexts/TourContext";
 import { ForgotPassword } from "@/pages/auth/ForgotPassword";
 import { Login } from "@/pages/auth/Login";
+import { RequestAccess } from "@/pages/auth/RequestAccess";
 import { ResetPassword } from "@/pages/auth/ResetPassword";
 import { VerifyCode } from "@/pages/auth/VerifyCode";
 // Pages
@@ -52,6 +54,7 @@ import { ScheduleManageVolunteers } from "@/pages/schedules/ScheduleManageVolunt
 import { ScheduleShow } from "@/pages/schedules/ScheduleShow";
 import { ScheduleSignup } from "@/pages/schedules/ScheduleSignup";
 import { Settings } from "@/pages/settings/Settings";
+import { UserManagement } from "@/pages/users";
 import { accessControlProvider } from "@/providers/accessControlProvider";
 import { authProvider } from "@/providers/authProvider";
 import { localDataProvider } from "@/providers/dataProvider";
@@ -149,6 +152,16 @@ function App() {
 		});
 	}
 
+	// Admin-only resource for user management
+	resources.push({
+		name: "users",
+		list: "/admin/users",
+		meta: {
+			label: "Usuários",
+			icon: <IconShield />,
+		},
+	});
+
 	return (
 		<BrowserRouter>
 			<RefineKbarProvider>
@@ -240,6 +253,9 @@ function App() {
 								{/* Settings */}
 								<Route path="/settings" element={<Settings />} />
 
+								{/* Admin Routes */}
+								<Route path="/admin/users" element={<UserManagement />} />
+
 								{/* Error Pages */}
 								<Route path="/unauthorized" element={<UnauthorizedPage />} />
 								<Route path="*" element={<ErrorComponent />} />
@@ -259,7 +275,11 @@ function App() {
 								<Route path="/reset-password" element={<ResetPassword />} />
 							</Route>
 
-							{/* Onboarding Route - Public */}
+							{/* Public Routes */}
+							<Route
+								path="/request-access/:tenantId"
+								element={<RequestAccess />}
+							/>
 							<Route path="/onboarding" element={<Onboarding />} />
 						</Routes>
 

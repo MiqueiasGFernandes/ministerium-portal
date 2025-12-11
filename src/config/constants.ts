@@ -60,6 +60,10 @@ export const APP_CONSTANTS = {
 
 		// Users
 		USERS_MANAGE: "users:manage",
+		USERS_VIEW: "users:view",
+		USERS_APPROVE: "users:approve",
+		USERS_REVOKE: "users:revoke",
+		USERS_EDIT_ROLE: "users:edit_role",
 
 		// Analytics
 		ANALYTICS_VIEW: "analytics:view",
@@ -74,6 +78,15 @@ export const APP_CONSTANTS = {
 			"events:*", // Full access to events
 			"schedules:*", // Full access to schedules
 			"analytics:view", // Leaders can view analytics
+		],
+		financial: [
+			"finance:*", // Full access to finance
+			"analytics:view",
+		],
+		secretary: [
+			"members:*", // Full access to members
+			"events:view",
+			"schedules:view",
 		],
 		volunteer: [
 			"events:view",
@@ -111,4 +124,39 @@ export const SCHEDULE_STATUS_OPTIONS = [
 	{ value: "pending", label: "Pendente", color: "yellow" },
 	{ value: "confirmed", label: "Confirmado", color: "green" },
 	{ value: "declined", label: "Recusado", color: "red" },
+];
+
+export const USER_ROLE_OPTIONS = [
+	{
+		value: "admin",
+		label: "Administrador",
+		description: "Acesso total ao sistema",
+	},
+	{
+		value: "leader",
+		label: "Líder",
+		description: "Gerencia membros, eventos e escalas",
+	},
+	{
+		value: "financial",
+		label: "Financeiro",
+		description: "Acesso total ao módulo financeiro",
+	},
+	{
+		value: "secretary",
+		label: "Secretaria",
+		description: "Gerencia membros e visualiza eventos",
+	},
+	{
+		value: "volunteer",
+		label: "Voluntário",
+		description: "Visualiza e gerencia escalas",
+	},
+];
+
+export const USER_ACCESS_STATUS_OPTIONS = [
+	{ value: "pending", label: "Pendente", color: "yellow" },
+	{ value: "active", label: "Ativo", color: "green" },
+	{ value: "revoked", label: "Revogado", color: "red" },
+	{ value: "denied", label: "Negado", color: "gray" },
 ];

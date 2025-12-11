@@ -1,5 +1,5 @@
 import type { DataProvider } from "@refinedev/core";
-import type { PaginatedResponse } from "@/types";
+import type { AccessRequest, PaginatedResponse } from "@/types";
 import { fakeData } from "@/utils/fakeData";
 
 /**
@@ -16,6 +16,7 @@ let storage = {
 	ministries: [...fakeData.ministries],
 	users: [...fakeData.users],
 	tenants: [fakeData.tenant],
+	accessRequests: [] as AccessRequest[], // Will be initialized from localStorage
 };
 
 // Helper to simulate API delay
@@ -124,6 +125,13 @@ export const localDataProvider: DataProvider = {
 			case "tenants":
 				data = storage.tenants;
 				break;
+			case "access-requests": {
+				// Sync with localStorage
+				const requests = localStorage.getItem("accessRequests");
+				storage.accessRequests = requests ? JSON.parse(requests) : [];
+				data = storage.accessRequests;
+				break;
+			}
 			default:
 				data = [];
 		}
@@ -181,6 +189,12 @@ export const localDataProvider: DataProvider = {
 			case "tenants":
 				data = storage.tenants.find((t) => t.id === id);
 				break;
+			case "access-requests": {
+				const requests = localStorage.getItem("accessRequests");
+				storage.accessRequests = requests ? JSON.parse(requests) : [];
+				data = storage.accessRequests.find((r) => r.id === id);
+				break;
+			}
 			default:
 				data = null;
 		}
@@ -228,6 +242,14 @@ export const localDataProvider: DataProvider = {
 			case "tenants":
 				storage.tenants = [...storage.tenants, newItem];
 				break;
+			case "access-requests": {
+				const requests = localStorage.getItem("accessRequests");
+				const existingRequests = requests ? JSON.parse(requests) : [];
+				const updatedRequests = [...existingRequests, newItem];
+				localStorage.setItem("accessRequests", JSON.stringify(updatedRequests));
+				storage.accessRequests = updatedRequests;
+				break;
+			}
 		}
 
 		return { data: newItem };
@@ -271,18 +293,32 @@ export const localDataProvider: DataProvider = {
 				);
 				updatedItem = storage.ministries.find((m) => m.id === id);
 				break;
-			case "users":
+			case "users": {
 				storage.users = storage.users.map((u) =>
 					u.id === id ? { ...u, ...variables, updatedAt: now } : u,
 				);
 				updatedItem = storage.users.find((u) => u.id === id);
+				// Sync with localStorage
+				localStorage.setItem("users", JSON.stringify(storage.users));
 				break;
+			}
 			case "tenants":
 				storage.tenants = storage.tenants.map((t) =>
 					t.id === id ? { ...t, ...variables, updatedAt: now } : t,
 				);
 				updatedItem = storage.tenants.find((t) => t.id === id);
 				break;
+			case "access-requests": {
+				const requests = localStorage.getItem("accessRequests");
+				const existingRequests = requests ? JSON.parse(requests) : [];
+				const updatedRequests = existingRequests.map((r: AccessRequest) =>
+					r.id === id ? { ...r, ...variables } : r,
+				);
+				localStorage.setItem("accessRequests", JSON.stringify(updatedRequests));
+				storage.accessRequests = updatedRequests;
+				updatedItem = updatedRequests.find((r: AccessRequest) => r.id === id);
+				break;
+			}
 		}
 
 		if (!updatedItem) {
@@ -311,12 +347,24 @@ export const localDataProvider: DataProvider = {
 			case "ministries":
 				storage.ministries = storage.ministries.filter((m) => m.id !== id);
 				break;
-			case "users":
+			case "users": {
 				storage.users = storage.users.filter((u) => u.id !== id);
+				localStorage.setItem("users", JSON.stringify(storage.users));
 				break;
+			}
 			case "tenants":
 				storage.tenants = storage.tenants.filter((t) => t.id !== id);
 				break;
+			case "access-requests": {
+				const requests = localStorage.getItem("accessRequests");
+				const existingRequests = requests ? JSON.parse(requests) : [];
+				const updatedRequests = existingRequests.filter(
+					(r: AccessRequest) => r.id !== id,
+				);
+				localStorage.setItem("accessRequests", JSON.stringify(updatedRequests));
+				storage.accessRequests = updatedRequests;
+				break;
+			}
 		}
 
 		return { data: { id } } as any;
@@ -340,6 +388,7 @@ export const localDataProvider: DataProvider = {
 				ministries: [...fakeData.ministries],
 				users: [...fakeData.users],
 				tenants: [fakeData.tenant],
+				accessRequests: [],
 			};
 
 			return { data: { message: "Data reset successfully" } };
