@@ -47,6 +47,19 @@ export enum EventStatus {
 	CANCELLED = "cancelled",
 }
 
+export enum FormFieldType {
+	TEXT = "text",
+	EMAIL = "email",
+	PHONE = "phone",
+	NUMBER = "number",
+	DATE = "date",
+	SELECT = "select",
+	MULTISELECT = "multiselect",
+	TEXTAREA = "textarea",
+	CHECKBOX = "checkbox",
+	RADIO = "radio",
+}
+
 export enum ScheduleStatus {
 	PENDING = "pending",
 	CONFIRMED = "confirmed",
@@ -185,6 +198,51 @@ export interface FinancialSummary {
 	};
 }
 
+// Event Registration Form Types
+export interface EventFormField {
+	id: string;
+	label: string;
+	type: FormFieldType;
+	required: boolean;
+	placeholder?: string;
+	description?: string;
+	options?: string[]; // For select, multiselect, radio
+	validation?: {
+		min?: number;
+		max?: number;
+		pattern?: string;
+		message?: string;
+	};
+	order: number;
+}
+
+export interface EventRegistrationConfig {
+	enabled: boolean;
+	fields: EventFormField[];
+	confirmationMessage?: string;
+	requiresApproval: boolean;
+	capacity?: number;
+	registrationDeadline?: string;
+}
+
+export interface EventRegistration {
+	id: string;
+	eventId: string;
+	email: string;
+	name: string;
+	phone?: string;
+	formData: Record<string, string | number | boolean | string[]>;
+	status: "pending" | "approved" | "rejected" | "cancelled";
+	registeredAt: string;
+	approvedAt?: string;
+	approvedBy?: string;
+	rejectedAt?: string;
+	rejectedBy?: string;
+	rejectionReason?: string;
+	checkedIn: boolean;
+	checkedInAt?: string;
+}
+
 // Event Types
 export interface Event {
 	id: string;
@@ -199,6 +257,8 @@ export interface Event {
 	maxAttendees?: number;
 	status: EventStatus;
 	qrCode?: string;
+	registrationConfig?: EventRegistrationConfig;
+	publicRegistrationUrl?: string;
 	tenantId: string;
 	createdAt: string;
 	updatedAt: string;

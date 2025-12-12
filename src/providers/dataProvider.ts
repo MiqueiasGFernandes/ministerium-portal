@@ -1,6 +1,7 @@
 import type { DataProvider } from "@refinedev/core";
 import type {
 	AccessRequest,
+	EventRegistration,
 	Member,
 	MemberRegistration,
 	PaginatedResponse,
@@ -52,6 +53,7 @@ let storage = {
 	tenants: [fakeData.tenant],
 	accessRequests: [] as AccessRequest[], // Will be initialized from localStorage
 	memberRegistrations: [] as MemberRegistration[], // Will be initialized from localStorage
+	eventRegistrations: [] as EventRegistration[], // Public event registrations
 };
 
 // Helper to simulate API delay
@@ -183,6 +185,15 @@ export const localDataProvider: DataProvider = {
 					? JSON.parse(registrations)
 					: [];
 				data = storage.memberRegistrations;
+				break;
+			}
+			case "event-registrations": {
+				// Sync with localStorage
+				const eventRegistrations = localStorage.getItem("eventRegistrations");
+				storage.eventRegistrations = eventRegistrations
+					? JSON.parse(eventRegistrations)
+					: [];
+				data = storage.eventRegistrations;
 				break;
 			}
 			default:
@@ -321,6 +332,19 @@ export const localDataProvider: DataProvider = {
 				const updatedRequests = [...existingRequests, newItem];
 				localStorage.setItem("accessRequests", JSON.stringify(updatedRequests));
 				storage.accessRequests = updatedRequests;
+				break;
+			}
+			case "event-registrations": {
+				const eventRegistrations = localStorage.getItem("eventRegistrations");
+				const existingRegistrations = eventRegistrations
+					? JSON.parse(eventRegistrations)
+					: [];
+				const updatedRegistrations = [...existingRegistrations, newItem];
+				localStorage.setItem(
+					"eventRegistrations",
+					JSON.stringify(updatedRegistrations),
+				);
+				storage.eventRegistrations = updatedRegistrations;
 				break;
 			}
 		}
@@ -487,6 +511,7 @@ export const localDataProvider: DataProvider = {
 				tenants: [fakeData.tenant],
 				accessRequests: [],
 				memberRegistrations: [],
+				eventRegistrations: [],
 			};
 
 			// Clear localStorage and reset initialization flag
@@ -641,6 +666,118 @@ export const localDataProvider: DataProvider = {
 					historicalMembersData,
 				},
 			} as any;
+		}
+
+		// Get public event registration config
+		if (
+			url?.startsWith("/events/") &&
+			url.endsWith("/registration-config") &&
+			method === "get"
+		) {
+			const eventId = url.split("/")[2];
+			const event = storage.events.find((e) => e.id === eventId);
+
+			if (!event) {
+				throw new Error("Event not found");
+			}
+
+			if (!event.registrationConfig?.enabled) {
+				throw new Error("Event registration is not enabled");
+			}
+
+			return {
+				data: {
+					event: {
+						id: event.id,
+						title: event.title,
+						description: event.description,
+						date: event.date,
+						time: event.time,
+						location: event.location,
+					},
+					config: event.registrationConfig,
+				},
+			};
+		}
+
+		// Public event registration submission
+		if (url === "/public/event-registration" && method === "post") {
+			const payload = (query as Record<string, unknown>) || {};
+			const eventId = payload.eventId as string;
+
+			const event = storage.events.find((e) => e.id === eventId);
+			if (!event) {
+				throw new Error("Event not found");
+			}
+
+			if (!event.registrationConfig?.enabled) {
+				throw new Error("Event registration is not enabled");
+			}
+
+			// Check capacity
+			if (event.registrationConfig.capacity) {
+				const eventRegistrations = localStorage.getItem("eventRegistrations");
+				const registrations = eventRegistrations
+					? JSON.parse(eventRegistrations)
+					: [];
+				const eventRegCount = registrations.filter(
+					(r: EventRegistration) => r.eventId === eventId,
+				).length;
+
+				if (eventRegCount >= event.registrationConfig.capacity) {
+					throw new Error("Event is at full capacity");
+				}
+			}
+
+			// Check deadline
+			if (event.registrationConfig.registrationDeadline) {
+				const deadline = new Date(
+					event.registrationConfig.registrationDeadline,
+				);
+				if (new Date() > deadline) {
+					throw new Error("Registration deadline has passed");
+				}
+			}
+
+			const id = `event-reg-${Date.now()}`;
+			const now = new Date().toISOString();
+
+			const newRegistration: EventRegistration = {
+				id,
+				eventId,
+				email: payload.email as string,
+				name: payload.name as string,
+				phone: payload.phone as string | undefined,
+				formData: payload.formData as Record<
+					string,
+					string | number | boolean | string[]
+				>,
+				status: event.registrationConfig.requiresApproval
+					? "pending"
+					: "approved",
+				registeredAt: now,
+				checkedIn: false,
+			};
+
+			const eventRegistrations = localStorage.getItem("eventRegistrations");
+			const existingRegistrations = eventRegistrations
+				? JSON.parse(eventRegistrations)
+				: [];
+			const updatedRegistrations = [...existingRegistrations, newRegistration];
+			localStorage.setItem(
+				"eventRegistrations",
+				JSON.stringify(updatedRegistrations),
+			);
+			storage.eventRegistrations = updatedRegistrations;
+
+			return {
+				data: {
+					message:
+						event.registrationConfig.confirmationMessage ||
+						"Registration submitted successfully!",
+					registration: newRegistration,
+				},
+			};
 		}
 
 		throw new Error(`Custom endpoint ${url} not found`);
