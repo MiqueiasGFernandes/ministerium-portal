@@ -20,11 +20,19 @@ import {
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { useDelete, useInvalidate, useNavigation } from "@refinedev/core";
+import {
+	useDelete,
+	useGo,
+	useInvalidate,
+	useNavigation,
+} from "@refinedev/core";
 import { useTable } from "@refinedev/react-table";
 import {
 	IconArrowDown,
 	IconArrowUp,
+	IconCheck,
+	IconClipboardList,
+	IconCopy,
 	IconEdit,
 	IconEye,
 	IconLock,
@@ -32,6 +40,7 @@ import {
 	IconSearch,
 	IconSelector,
 	IconTrash,
+	IconX,
 } from "@tabler/icons-react";
 import { type ColumnDef, flexRender } from "@tanstack/react-table";
 import { type KeyboardEvent, useCallback, useMemo, useState } from "react";
@@ -44,6 +53,7 @@ import type { Member, MemberStatus } from "@/types";
 
 export const MemberList = () => {
 	const { create, edit, show } = useNavigation();
+	const go = useGo();
 	const { mutate: deleteMember } = useDelete();
 	const invalidate = useInvalidate();
 	const { isVolunteer, canView } = usePermissions();
@@ -351,19 +361,61 @@ export const MemberList = () => {
 		);
 	}
 
+	const handleCopyMemberInviteLink = () => {
+		const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+		const tenantId = currentUser.tenantId || "1";
+		const inviteUrl = `${window.location.origin}/member-registration/${tenantId}`;
+
+		navigator.clipboard
+			.writeText(inviteUrl)
+			.then(() => {
+				notifications.show({
+					title: "Link copiado!",
+					message:
+						"O link de convite para cadastro de membros foi copiado para a área de transferência.",
+					color: "green",
+					icon: <IconCheck />,
+				});
+			})
+			.catch(() => {
+				notifications.show({
+					title: "Erro ao copiar",
+					message: "Não foi possível copiar o link. Tente novamente.",
+					color: "red",
+					icon: <IconX />,
+				});
+			});
+	};
+
 	return (
 		<Stack gap="lg">
 			<Group justify="space-between">
 				<Title order={2}>Membros</Title>
-				<CanCreate resource="members">
+				<Group>
 					<Button
-						leftSection={<IconPlus size="1rem" />}
-						onClick={() => create("members")}
-						styles={gradientButtonStyles}
+						leftSection={<IconClipboardList size="1rem" />}
+						onClick={() => go({ to: "/members/registrations" })}
+						variant="outline"
 					>
-						Novo Membro
+						Cadastros Pendentes
 					</Button>
-				</CanCreate>
+					<Button
+						leftSection={<IconCopy size="1rem" />}
+						onClick={handleCopyMemberInviteLink}
+						variant="light"
+					>
+						Link de Cadastro
+					</Button>
+					<CanCreate resource="members">
+						<Button
+							leftSection={<IconPlus size="1rem" />}
+							onClick={() => create("members")}
+							styles={gradientButtonStyles}
+						>
+							Novo Membro
+						</Button>
+					</CanCreate>
+				</Group>
 			</Group>
 
 			{/* Filters */}

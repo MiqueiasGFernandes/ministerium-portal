@@ -65,6 +65,11 @@ export const APP_CONSTANTS = {
 		USERS_REVOKE: "users:revoke",
 		USERS_EDIT_ROLE: "users:edit_role",
 
+		// Member Registrations
+		MEMBER_REGISTRATIONS_VIEW: "member-registrations:view",
+		MEMBER_REGISTRATIONS_APPROVE: "member-registrations:approve",
+		MEMBER_REGISTRATIONS_DENY: "member-registrations:deny",
+
 		// Analytics
 		ANALYTICS_VIEW: "analytics:view",
 	},
@@ -75,6 +80,7 @@ export const APP_CONSTANTS = {
 		leader: [
 			"members:view",
 			"members:create",
+			"member-registrations:*", // Full access to member registrations
 			"events:*", // Full access to events
 			"schedules:*", // Full access to schedules
 			"analytics:view", // Leaders can view analytics
@@ -85,6 +91,7 @@ export const APP_CONSTANTS = {
 		],
 		secretary: [
 			"members:*", // Full access to members
+			"member-registrations:*", // Full access to member registrations
 			"events:view",
 			"schedules:view",
 		],
@@ -159,4 +166,23 @@ export const USER_ACCESS_STATUS_OPTIONS = [
 	{ value: "active", label: "Ativo", color: "green" },
 	{ value: "revoked", label: "Revogado", color: "red" },
 	{ value: "denied", label: "Negado", color: "gray" },
+];
+
+export const MEMBER_REGISTRATION_STATUS_OPTIONS = [
+	{ value: "pending", label: "Pendente", color: "yellow" },
+	{ value: "approved", label: "Aprovado", color: "green" },
+	{ value: "denied", label: "Negado", color: "red" },
+];
+
+export const MARITAL_STATUS_OPTIONS = [
+	{ value: "single", label: "Solteiro(a)" },
+	{ value: "married", label: "Casado(a)" },
+	{ value: "divorced", label: "Divorciado(a)" },
+	{ value: "widowed", label: "Viúvo(a)" },
+];
+
+export const GENDER_OPTIONS = [
+	{ value: "male", label: "Masculino" },
+	{ value: "female", label: "Feminino" },
+	{ value: "other", label: "Outro" },
 ];

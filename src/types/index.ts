@@ -14,6 +14,12 @@ export enum UserAccessStatus {
 	DENIED = "denied",
 }
 
+export enum MemberRegistrationStatus {
+	PENDING = "pending",
+	APPROVED = "approved",
+	DENIED = "denied",
+}
+
 export enum MemberStatus {
 	ACTIVE = "active",
 	VISITOR = "visitor",
@@ -82,6 +88,31 @@ export interface AccessRequest {
 	respondedAt?: string;
 	respondedBy?: string;
 	assignedRole?: UserRole;
+}
+
+export interface MemberRegistration {
+	id: string;
+	name: string;
+	email: string;
+	phone: string;
+	birthDate: string;
+	address?: string;
+	city?: string;
+	state?: string;
+	zipCode?: string;
+	maritalStatus?: "single" | "married" | "divorced" | "widowed";
+	gender?: "male" | "female" | "other";
+	notes?: string;
+	acceptedTerms: boolean;
+	acceptedAt: string;
+	status: MemberRegistrationStatus;
+	tenantId: string;
+	registeredAt: string;
+	approvedAt?: string;
+	approvedBy?: string;
+	deniedAt?: string;
+	deniedBy?: string;
+	denialReason?: string;
 }
 
 export interface LoginCredentials {

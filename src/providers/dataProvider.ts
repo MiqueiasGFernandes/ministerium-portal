@@ -1,5 +1,9 @@
 import type { DataProvider } from "@refinedev/core";
-import type { AccessRequest, PaginatedResponse } from "@/types";
+import type {
+	AccessRequest,
+	MemberRegistration,
+	PaginatedResponse,
+} from "@/types";
 import { fakeData } from "@/utils/fakeData";
 
 /**
@@ -17,6 +21,7 @@ let storage = {
 	users: [...fakeData.users],
 	tenants: [fakeData.tenant],
 	accessRequests: [] as AccessRequest[], // Will be initialized from localStorage
+	memberRegistrations: [] as MemberRegistration[], // Will be initialized from localStorage
 };
 
 // Helper to simulate API delay
@@ -130,6 +135,15 @@ export const localDataProvider: DataProvider = {
 				const requests = localStorage.getItem("accessRequests");
 				storage.accessRequests = requests ? JSON.parse(requests) : [];
 				data = storage.accessRequests;
+				break;
+			}
+			case "member-registrations": {
+				// Sync with localStorage
+				const registrations = localStorage.getItem("memberRegistrations");
+				storage.memberRegistrations = registrations
+					? JSON.parse(registrations)
+					: [];
+				data = storage.memberRegistrations;
 				break;
 			}
 			default:
@@ -389,6 +403,7 @@ export const localDataProvider: DataProvider = {
 				users: [...fakeData.users],
 				tenants: [fakeData.tenant],
 				accessRequests: [],
+				memberRegistrations: [],
 			};
 
 			return { data: { message: "Data reset successfully" } };

@@ -39,6 +39,8 @@ import { TransactionList } from "@/pages/finance/TransactionList";
 import { MemberCreate } from "@/pages/members/MemberCreate";
 import { MemberEdit } from "@/pages/members/MemberEdit";
 import { MemberList } from "@/pages/members/MemberList";
+import { MemberRegistrationPage } from "@/pages/members/MemberRegistration";
+import { MemberRegistrationManagement } from "@/pages/members/MemberRegistrationManagement";
 import { MemberShow } from "@/pages/members/MemberShow";
 import {
 	MinistryCreate,
@@ -203,6 +205,10 @@ function App() {
 										<Route path="create" element={<MemberCreate />} />
 										<Route path="edit/:id" element={<MemberEdit />} />
 										<Route path="show/:id" element={<MemberShow />} />
+										<Route
+											path="registrations"
+											element={<MemberRegistrationManagement />}
+										/>
 									</Route>
 								)}
 
@@ -279,6 +285,10 @@ function App() {
 							<Route
 								path="/request-access/:tenantId"
 								element={<RequestAccess />}
+							/>
+							<Route
+								path="/member-registration/:tenantId"
+								element={<MemberRegistrationPage />}
 							/>
 							<Route path="/onboarding" element={<Onboarding />} />
 						</Routes>
