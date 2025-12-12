@@ -72,6 +72,32 @@ export const EventRegistrationFormBuilder = ({
 
 	return (
 		<Stack gap="md">
+			<Card padding="md" withBorder>
+				<Stack gap="md">
+					<Text fw={500}>Configurações Gerais</Text>
+
+					<NumberInput
+						label="Capacidade máxima"
+						description="Deixe vazio para capacidade ilimitada"
+						value={value.capacity || ""}
+						onChange={(val) =>
+							onChange({ ...value, capacity: Number(val) || undefined })
+						}
+						min={1}
+					/>
+
+					<Textarea
+						label="Mensagem de confirmação"
+						description="Mensagem exibida após o envio do formulário"
+						value={value.confirmationMessage || ""}
+						onChange={(e) =>
+							onChange({ ...value, confirmationMessage: e.target.value })
+						}
+						rows={3}
+					/>
+				</Stack>
+			</Card>
+
 			<Group justify="space-between">
 				<Text fw={500}>Campos do Formulário</Text>
 				<Button
@@ -129,6 +155,7 @@ export const EventRegistrationFormBuilder = ({
 									/>
 									<TextInput
 										label="Placeholder"
+										description="Texto de exemplo que aparece dentro do campo antes do usuário digitar"
 										value={field.placeholder || ""}
 										onChange={(e) =>
 											updateField(field.id, { placeholder: e.target.value })
@@ -177,41 +204,6 @@ export const EventRegistrationFormBuilder = ({
 					</Card>
 				))}
 			</Stack>
-
-			<Card padding="md" withBorder>
-				<Stack gap="md">
-					<Text fw={500}>Configurações Gerais</Text>
-
-					<Switch
-						label="Requer aprovação"
-						description="Inscrições precisam ser aprovadas manualmente"
-						checked={value.requiresApproval}
-						onChange={(e) =>
-							onChange({ ...value, requiresApproval: e.target.checked })
-						}
-					/>
-
-					<NumberInput
-						label="Capacidade máxima"
-						description="Deixe vazio para capacidade ilimitada"
-						value={value.capacity || ""}
-						onChange={(val) =>
-							onChange({ ...value, capacity: Number(val) || undefined })
-						}
-						min={1}
-					/>
-
-					<Textarea
-						label="Mensagem de confirmação"
-						description="Mensagem exibida após o envio do formulário"
-						value={value.confirmationMessage || ""}
-						onChange={(e) =>
-							onChange({ ...value, confirmationMessage: e.target.value })
-						}
-						rows={3}
-					/>
-				</Stack>
-			</Card>
 		</Stack>
 	);
 };

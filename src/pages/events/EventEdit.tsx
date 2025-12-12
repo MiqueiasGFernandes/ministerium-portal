@@ -8,7 +8,6 @@ import {
 	Paper,
 	Select,
 	Stack,
-	Switch,
 	Textarea,
 	TextInput,
 	Title,
@@ -103,47 +102,24 @@ export const EventEdit = () => {
 				</Paper>
 
 				<Paper shadow="xs" p="lg" radius="md" withBorder mt="md">
-					<Accordion>
+					<Accordion defaultValue="registration">
 						<Accordion.Item value="registration">
 							<Accordion.Control>Inscrição Pública</Accordion.Control>
 							<Accordion.Panel>
-								<Stack gap="md">
-									<Switch
-										label="Habilitar inscrição pública"
-										description="Permite que pessoas se inscrevam no evento através de um link público"
-										checked={
-											values.registrationConfig
-												? (values.registrationConfig as EventRegistrationConfig)
-														.enabled
-												: false
+								<EventRegistrationFormBuilder
+									value={
+										(values.registrationConfig as EventRegistrationConfig) || {
+											enabled: true,
+											fields: [],
 										}
-										onChange={(e) => {
-											const currentConfig: EventRegistrationConfig =
-												(values.registrationConfig as EventRegistrationConfig) || {
-													enabled: false,
-													fields: [],
-													requiresApproval: false,
-												};
-											setFieldValue("registrationConfig", {
-												...currentConfig,
-												enabled: e.target.checked,
-											});
-										}}
-									/>
-
-									{values.registrationConfig &&
-									(values.registrationConfig as EventRegistrationConfig)
-										.enabled ? (
-										<EventRegistrationFormBuilder
-											value={
-												values.registrationConfig as EventRegistrationConfig
-											}
-											onChange={(value) =>
-												setFieldValue("registrationConfig", value)
-											}
-										/>
-									) : null}
-								</Stack>
+									}
+									onChange={(value) =>
+										setFieldValue("registrationConfig", {
+											...value,
+											enabled: true,
+										})
+									}
+								/>
 							</Accordion.Panel>
 						</Accordion.Item>
 					</Accordion>

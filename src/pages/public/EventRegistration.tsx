@@ -237,14 +237,6 @@ export const EventRegistration = () => {
 							{eventData.config.confirmationMessage ||
 								"Sua inscrição foi realizada com sucesso. Você receberá mais informações em breve."}
 						</Text>
-						{eventData.config.requiresApproval && (
-							<Alert color="blue" variant="light">
-								<Text size="sm">
-									Sua inscrição está pendente de aprovação. Aguarde a
-									confirmação.
-								</Text>
-							</Alert>
-						)}
 					</Stack>
 				</Card>
 			</Container>

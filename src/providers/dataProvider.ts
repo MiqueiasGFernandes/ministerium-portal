@@ -752,9 +752,7 @@ export const localDataProvider: DataProvider = {
 					string,
 					string | number | boolean | string[]
 				>,
-				status: event.registrationConfig.requiresApproval
-					? "pending"
-					: "approved",
+				status: "approved",
 				registeredAt: now,
 				checkedIn: false,
 			};

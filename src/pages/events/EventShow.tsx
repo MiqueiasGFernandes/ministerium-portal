@@ -155,7 +155,7 @@ export const EventShow = () => {
 								</Card>
 							)}
 							<Card shadow="sm" padding="lg" radius="md" withBorder>
-								<Stack align="center">
+								<Stack align="center" gap="md">
 									<IconQrcode size={48} />
 									<Title order={4}>QR Code Check-in</Title>
 									<QRCodeSVG value={event.qrCode || event.id} size={200} />

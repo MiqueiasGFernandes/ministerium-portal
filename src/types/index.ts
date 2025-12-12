@@ -220,7 +220,6 @@ export interface EventRegistrationConfig {
 	enabled: boolean;
 	fields: EventFormField[];
 	confirmationMessage?: string;
-	requiresApproval: boolean;
 	capacity?: number;
 	registrationDeadline?: string;
 }
