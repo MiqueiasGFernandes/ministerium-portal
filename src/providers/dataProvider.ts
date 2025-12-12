@@ -1,6 +1,7 @@
 import type { DataProvider } from "@refinedev/core";
 import type {
 	AccessRequest,
+	Member,
 	MemberRegistration,
 	PaginatedResponse,
 } from "@/types";
@@ -10,6 +11,35 @@ import { fakeData } from "@/utils/fakeData";
  * Local Data Provider for development and testing
  * Simulates API calls with in-memory data
  */
+
+// Initialize localStorage by merging fakeData with any dynamically created members
+// This ensures fakeData members are always present
+let isLocalStorageInitialized = false;
+const initializeLocalStorage = () => {
+	if (isLocalStorageInitialized) return;
+
+	const membersInStorage = localStorage.getItem("members");
+
+	if (!membersInStorage) {
+		// First time - just store fakeData
+		localStorage.setItem("members", JSON.stringify(fakeData.members));
+	} else {
+		// Merge: keep fakeData members + dynamically created members
+		const existingMembers = JSON.parse(membersInStorage) as Member[];
+		const fakeDataIds = new Set(fakeData.members.map((m) => m.id));
+
+		// Keep only members that are NOT in fakeData (dynamically created)
+		const dynamicMembers = existingMembers.filter(
+			(m) => !fakeDataIds.has(m.id),
+		);
+
+		// Merge: fakeData + dynamic members
+		const mergedMembers = [...fakeData.members, ...dynamicMembers];
+		localStorage.setItem("members", JSON.stringify(mergedMembers));
+	}
+
+	isLocalStorageInitialized = true;
+};
 
 // In-memory storage
 let storage = {
@@ -109,9 +139,18 @@ export const localDataProvider: DataProvider = {
 		let data: any[] = [];
 
 		switch (resource) {
-			case "members":
+			case "members": {
+				// Initialize localStorage with fakeData on first access
+				initializeLocalStorage();
+
+				// Sync with localStorage to include dynamically created members
+				const membersFromStorage = localStorage.getItem("members");
+				if (membersFromStorage) {
+					storage.members = JSON.parse(membersFromStorage);
+				}
 				data = storage.members;
 				break;
+			}
 			case "transactions":
 				data = storage.transactions;
 				break;
@@ -182,9 +221,18 @@ export const localDataProvider: DataProvider = {
 		let data: any;
 
 		switch (resource) {
-			case "members":
+			case "members": {
+				// Initialize localStorage with fakeData on first access
+				initializeLocalStorage();
+
+				// Sync with localStorage
+				const membersFromStorage = localStorage.getItem("members");
+				if (membersFromStorage) {
+					storage.members = JSON.parse(membersFromStorage);
+				}
 				data = storage.members.find((m) => m.id === id);
 				break;
+			}
 			case "transactions":
 				data = storage.transactions.find((t) => t.id === id);
 				break;
@@ -235,9 +283,20 @@ export const localDataProvider: DataProvider = {
 		} as any;
 
 		switch (resource) {
-			case "members":
-				storage.members = [...storage.members, newItem];
+			case "members": {
+				// Initialize localStorage with fakeData on first access
+				initializeLocalStorage();
+
+				// Sync with localStorage
+				const membersFromStorage = localStorage.getItem("members");
+				const existingMembers = membersFromStorage
+					? JSON.parse(membersFromStorage)
+					: storage.members;
+				const updatedMembers = [...existingMembers, newItem];
+				localStorage.setItem("members", JSON.stringify(updatedMembers));
+				storage.members = updatedMembers;
 				break;
+			}
 			case "transactions":
 				storage.transactions = [...storage.transactions, newItem];
 				break;
@@ -277,12 +336,23 @@ export const localDataProvider: DataProvider = {
 		let updatedItem: any;
 
 		switch (resource) {
-			case "members":
-				storage.members = storage.members.map((m) =>
+			case "members": {
+				// Initialize localStorage with fakeData on first access
+				initializeLocalStorage();
+
+				// Sync with localStorage
+				const membersFromStorage = localStorage.getItem("members");
+				const existingMembers = membersFromStorage
+					? JSON.parse(membersFromStorage)
+					: storage.members;
+				const updatedMembers = existingMembers.map((m: Member) =>
 					m.id === id ? { ...m, ...variables, updatedAt: now } : m,
 				);
+				localStorage.setItem("members", JSON.stringify(updatedMembers));
+				storage.members = updatedMembers;
 				updatedItem = storage.members.find((m) => m.id === id);
 				break;
+			}
 			case "transactions":
 				storage.transactions = storage.transactions.map((t) =>
 					t.id === id ? { ...t, ...variables, updatedAt: now } : t,
@@ -346,9 +416,22 @@ export const localDataProvider: DataProvider = {
 		await simulateDelay();
 
 		switch (resource) {
-			case "members":
-				storage.members = storage.members.filter((m) => m.id !== id);
+			case "members": {
+				// Initialize localStorage with fakeData on first access
+				initializeLocalStorage();
+
+				// Sync with localStorage
+				const membersFromStorage = localStorage.getItem("members");
+				const existingMembers = membersFromStorage
+					? JSON.parse(membersFromStorage)
+					: storage.members;
+				const updatedMembers = existingMembers.filter(
+					(m: Member) => m.id !== id,
+				);
+				localStorage.setItem("members", JSON.stringify(updatedMembers));
+				storage.members = updatedMembers;
 				break;
+			}
 			case "transactions":
 				storage.transactions = storage.transactions.filter((t) => t.id !== id);
 				break;
@@ -405,6 +488,10 @@ export const localDataProvider: DataProvider = {
 				accessRequests: [],
 				memberRegistrations: [],
 			};
+
+			// Clear localStorage and reset initialization flag
+			localStorage.clear();
+			isLocalStorageInitialized = false;
 
 			return { data: { message: "Data reset successfully" } };
 		}

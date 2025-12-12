@@ -43,13 +43,20 @@ import {
 	IconX,
 } from "@tabler/icons-react";
 import { type ColumnDef, flexRender } from "@tanstack/react-table";
-import { type KeyboardEvent, useCallback, useMemo, useState } from "react";
+import {
+	type KeyboardEvent,
+	useCallback,
+	useEffect,
+	useMemo,
+	useState,
+} from "react";
 import { CanCreate, CanDelete, CanEdit } from "@/components/auth/Can";
 import { MEMBER_STATUS_OPTIONS } from "@/config/constants";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useSearchHistory } from "@/hooks/useSearchHistory";
 import { gradientButtonStyles } from "@/styles/buttonStyles";
-import type { Member, MemberStatus } from "@/types";
+import type { Member, MemberRegistration, MemberStatus } from "@/types";
+import { MemberRegistrationStatus } from "@/types";
 
 export const MemberList = () => {
 	const { create, edit, show } = useNavigation();
@@ -57,6 +64,7 @@ export const MemberList = () => {
 	const { mutate: deleteMember } = useDelete();
 	const invalidate = useInvalidate();
 	const { isVolunteer, canView } = usePermissions();
+	const [pendingCount, setPendingCount] = useState(0);
 
 	const handleDelete = useCallback(
 		(id: string, name: string) => {
@@ -102,6 +110,31 @@ export const MemberList = () => {
 		},
 		[deleteMember, invalidate],
 	);
+
+	// Load pending registrations count
+	useEffect(() => {
+		const loadPendingCount = () => {
+			const registrations = JSON.parse(
+				localStorage.getItem("memberRegistrations") || "[]",
+			) as MemberRegistration[];
+			const pending = registrations.filter(
+				(reg) => reg.status === MemberRegistrationStatus.PENDING,
+			);
+			setPendingCount(pending.length);
+		};
+
+		loadPendingCount();
+
+		// Listen for storage changes to update count
+		const handleStorageChange = (e: StorageEvent) => {
+			if (e.key === "memberRegistrations") {
+				loadPendingCount();
+			}
+		};
+
+		window.addEventListener("storage", handleStorageChange);
+		return () => window.removeEventListener("storage", handleStorageChange);
+	}, []);
 
 	// Filters state
 	const [searchInput, setSearchInput] = useState("");
@@ -396,6 +429,13 @@ export const MemberList = () => {
 						leftSection={<IconClipboardList size="1rem" />}
 						onClick={() => go({ to: "/members/registrations" })}
 						variant="outline"
+						rightSection={
+							pendingCount > 0 ? (
+								<Badge size="sm" variant="filled" color="yellow" circle>
+									{pendingCount}
+								</Badge>
+							) : undefined
+						}
 					>
 						Cadastros Pendentes
 					</Button>

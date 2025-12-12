@@ -4,8 +4,16 @@ test.describe("Member Registration Management", () => {
 	test.beforeEach(async ({ page }) => {
 		// Login as admin
 		await page.goto("/login");
-		await page.getByLabel(/email/i).fill("admin@example.com");
-		await page.getByLabel(/senha/i).fill("password");
+		await page.waitForLoadState("networkidle");
+
+		await page
+			.locator(
+				'input[name="email"]:visible, input[placeholder*="email"]:visible',
+			)
+			.first()
+			.fill("admin@example.com");
+
+		await page.locator('input[type="password"]:visible').fill("password");
 		await page.getByRole("button", { name: /entrar/i }).click();
 		await page.waitForURL("/");
 
@@ -45,7 +53,7 @@ test.describe("Member Registration Management", () => {
 
 		// Should show page title
 		await expect(
-			page.getByRole("heading", { name: /gerenciamento de cadastros/i }),
+			page.getByRole("heading", { name: /cadastros de membros/i }),
 		).toBeVisible();
 
 		// Should show tabs
@@ -107,12 +115,44 @@ test.describe("Member Registration Management", () => {
 			return JSON.parse(localStorage.getItem("members") || "[]");
 		});
 
-		const createdMember = members.find(
-			(m: any) => m.email === "joao@example.com",
-		);
+		const createdMember = members.find((m) => m.email === "joao@example.com");
 		expect(createdMember).toBeTruthy();
 		expect(createdMember.name).toBe("João Silva");
 		expect(createdMember.status).toBe("visitor");
+	});
+
+	test("should show approved member in members list", async ({ page }) => {
+		await page.goto("/members/registrations");
+		await page.waitForLoadState("networkidle");
+
+		// Approve the registration
+		await page
+			.getByRole("button", { name: /aprovar/i })
+			.first()
+			.click();
+
+		// Confirm approval
+		await page
+			.getByRole("button", { name: /confirmar/i })
+			.last()
+			.click();
+
+		// Wait for success notification
+		await expect(page.getByText(/aprovado com sucesso/i)).toBeVisible();
+
+		// Navigate to members list
+		await page.goto("/members");
+		await page.waitForLoadState("networkidle");
+
+		// Should show the approved member in the members list
+		await expect(page.getByText("João Silva")).toBeVisible();
+		await expect(page.getByText("joao@example.com")).toBeVisible();
+
+		// Verify member status is visitor
+		const visitorBadge = page
+			.locator('tr:has-text("João Silva")')
+			.locator("text=/visitante/i");
+		await expect(visitorBadge).toBeVisible();
 	});
 
 	test("should deny member registration with reason", async ({ page }) => {
@@ -149,7 +189,7 @@ test.describe("Member Registration Management", () => {
 		});
 
 		const deniedRegistration = registrations.find(
-			(r: any) => r.email === "joao@example.com",
+			(r) => r.email === "joao@example.com",
 		);
 		expect(deniedRegistration).toBeTruthy();
 		expect(deniedRegistration.status).toBe("denied");

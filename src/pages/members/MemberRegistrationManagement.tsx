@@ -16,7 +16,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { useInvalidate } from "@refinedev/core";
+import { useCreate } from "@refinedev/core";
 import { IconCheck, IconEye, IconX } from "@tabler/icons-react";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -24,7 +24,6 @@ import {
 	MEMBER_REGISTRATION_STATUS_OPTIONS,
 } from "@/config/constants";
 import type {
-	Member,
 	MemberRegistration,
 	MemberRegistrationStatus,
 	MemberStatus,
@@ -38,7 +37,7 @@ import { MemberRegistrationStatus as StatusEnum } from "@/types";
  * Single Responsibility: Manages pending member registration approvals
  */
 export const MemberRegistrationManagement = () => {
-	const invalidate = useInvalidate();
+	const { mutate: createMember } = useCreate();
 	const [activeTab, setActiveTab] = useState<string | null>("pending");
 	const [pendingRegistrations, setPendingRegistrations] = useState<
 		MemberRegistration[]
@@ -130,13 +129,8 @@ export const MemberRegistrationManagement = () => {
 				JSON.stringify(updatedRegistrations),
 			);
 
-			// Create new member
-			const members = JSON.parse(
-				localStorage.getItem("members") || "[]",
-			) as Member[];
-
-			const newMember: Member = {
-				id: `member-${Date.now()}`,
+			// Create new member using dataProvider (handles localStorage merge automatically)
+			const memberData = {
 				name: registration.name,
 				email: registration.email,
 				phone: registration.phone,
@@ -159,29 +153,35 @@ export const MemberRegistrationManagement = () => {
 					gender: registration.gender,
 					notes: registration.notes,
 				},
-				tenantId: registration.tenantId,
-				createdAt: new Date().toISOString(),
-				updatedAt: new Date().toISOString(),
 			};
 
-			members.push(newMember);
-			localStorage.setItem("members", JSON.stringify(members));
+			createMember(
+				{
+					resource: "members",
+					values: memberData,
+				},
+				{
+					onSuccess: () => {
+						// Reload data
+						loadData();
 
-			// Invalidate members cache to refresh the list
-			invalidate({
-				resource: "members",
-				invalidates: ["list"],
-			});
-
-			// Reload data
-			loadData();
-
-			notifications.show({
-				title: "Cadastro aprovado!",
-				message: `${registration.name} foi aprovado e adicionado como membro visitante.`,
-				color: "green",
-				icon: <IconCheck />,
-			});
+						notifications.show({
+							title: "Cadastro aprovado!",
+							message: `${registration.name} foi aprovado e adicionado como membro visitante.`,
+							color: "green",
+							icon: <IconCheck />,
+						});
+					},
+					onError: () => {
+						notifications.show({
+							title: "Erro ao criar membro",
+							message: "Ocorreu um erro ao criar o membro. Tente novamente.",
+							color: "red",
+							icon: <IconX />,
+						});
+					},
+				},
+			);
 		} catch (error) {
 			notifications.show({
 				title: "Erro ao aprovar",

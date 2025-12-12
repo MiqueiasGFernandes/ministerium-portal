@@ -266,4 +266,218 @@ describe("DataProvider - Dashboard Stats Consistency", () => {
 			);
 		});
 	});
+
+	describe("Members LocalStorage Synchronization", () => {
+		beforeEach(async () => {
+			// Clear localStorage and reset initialization flag
+			localStorage.clear();
+			// Use the reset endpoint to properly reset state
+			await localDataProvider.custom!({
+				url: "/reset",
+				method: "post",
+			});
+		});
+
+		it("should sync members from localStorage when calling getList", async () => {
+			// Add member directly to localStorage (simulating approval flow)
+			const newMember = {
+				id: "member-test-1",
+				name: "Test Member",
+				email: "test@example.com",
+				phone: "11999999999",
+				status: "visitor",
+				tenantId: "1",
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+			};
+
+			localStorage.setItem("members", JSON.stringify([newMember]));
+
+			// Call getList
+			const response = await localDataProvider.getList({
+				resource: "members",
+				pagination: { current: 1, pageSize: 10 },
+			});
+
+			// Should merge fakeData + new member
+			expect(response.total).toBeGreaterThan(100); // At least 100 fakeData + 1 new
+
+			// Verify the new member is included
+			const foundMember = response.data.find((m) => m.id === "member-test-1");
+			expect(foundMember).toBeDefined();
+			expect(foundMember?.name).toBe("Test Member");
+		});
+
+		it("should persist created members to localStorage", async () => {
+			// Trigger initialization by calling getList first
+			await localDataProvider.getList({
+				resource: "members",
+				pagination: { current: 1, pageSize: 10 },
+			});
+
+			// Get initial count after initialization
+			const initialMembers = JSON.parse(
+				localStorage.getItem("members") || "[]",
+			);
+			const initialCount = initialMembers.length;
+
+			// Create a member via dataProvider
+			const newMember = {
+				name: "Created Member",
+				email: "created@example.com",
+				phone: "11888888888",
+				status: "visitor",
+			};
+
+			await localDataProvider.create({
+				resource: "members",
+				variables: newMember,
+			});
+
+			// Verify it was saved to localStorage
+			const storedMembers = JSON.parse(
+				localStorage.getItem("members") || "[]",
+			) as Array<{ email: string; name: string }>;
+			expect(storedMembers.length).toBe(initialCount + 1);
+			const createdMember = storedMembers.find(
+				(m) => m.email === "created@example.com",
+			);
+			expect(createdMember).toBeDefined();
+			expect(createdMember?.name).toBe("Created Member");
+		});
+
+		it("should sync members from localStorage when calling getOne", async () => {
+			// Add member to localStorage
+			const member = {
+				id: "member-123",
+				name: "Get One Test",
+				email: "getone@example.com",
+				status: "active",
+				tenantId: "1",
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+			};
+
+			localStorage.setItem("members", JSON.stringify([member]));
+
+			// Get the member
+			const response = await localDataProvider.getOne({
+				resource: "members",
+				id: "member-123",
+			});
+
+			expect(response.data.id).toBe("member-123");
+			expect(response.data.name).toBe("Get One Test");
+		});
+
+		it("should update members in localStorage when calling update", async () => {
+			// Add member to localStorage
+			const member = {
+				id: "member-456",
+				name: "Original Name",
+				email: "original@example.com",
+				status: "visitor",
+				tenantId: "1",
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+			};
+
+			localStorage.setItem("members", JSON.stringify([member]));
+
+			// Update the member
+			await localDataProvider.update({
+				resource: "members",
+				id: "member-456",
+				variables: { name: "Updated Name" },
+			});
+
+			// Verify localStorage was updated
+			const storedMembers = JSON.parse(localStorage.getItem("members") || "[]");
+			const updatedMember = storedMembers.find(
+				(m: any) => m.id === "member-456",
+			);
+			expect(updatedMember).toBeDefined();
+			expect(updatedMember?.name).toBe("Updated Name");
+		});
+
+		it("should delete members from localStorage when calling deleteOne", async () => {
+			// Add members to localStorage
+			const members = [
+				{
+					id: "member-1",
+					name: "Member 1",
+					email: "member1@example.com",
+					status: "active",
+					tenantId: "1",
+					createdAt: new Date().toISOString(),
+					updatedAt: new Date().toISOString(),
+				},
+				{
+					id: "member-2",
+					name: "Member 2",
+					email: "member2@example.com",
+					status: "active",
+					tenantId: "1",
+					createdAt: new Date().toISOString(),
+					updatedAt: new Date().toISOString(),
+				},
+			];
+
+			localStorage.setItem("members", JSON.stringify(members));
+
+			// Delete one member
+			await localDataProvider.deleteOne({
+				resource: "members",
+				id: "member-1",
+			});
+
+			// Verify localStorage was updated - should have fakeData + member-2 (member-1 deleted)
+			const storedMembers = JSON.parse(localStorage.getItem("members") || "[]");
+
+			// Should not find deleted member
+			const deletedMember = storedMembers.find((m: any) => m.id === "member-1");
+			expect(deletedMember).toBeUndefined();
+
+			// Should still have member-2
+			const remainingMember = storedMembers.find(
+				(m: any) => m.id === "member-2",
+			);
+			expect(remainingMember).toBeDefined();
+			expect(remainingMember?.id).toBe("member-2");
+		});
+
+		it("should handle approval flow: registration -> member creation -> member appears in list", async () => {
+			// Simulate registration approval creating a member in localStorage
+			const approvedMember = {
+				id: "member-approved-1",
+				name: "Approved Member",
+				email: "approved@example.com",
+				phone: "11777777777",
+				status: "visitor",
+				tenantId: "1",
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+			};
+
+			// This simulates what MemberRegistrationManagement does
+			localStorage.setItem("members", JSON.stringify([approvedMember]));
+
+			// Now the member list should show this member merged with fakeData
+			const response = await localDataProvider.getList({
+				resource: "members",
+				pagination: { current: 1, pageSize: 10000 }, // Large page to get all
+			});
+
+			// Should have fakeData + approved member
+			expect(response.total).toBeGreaterThan(100);
+
+			// Verify the approved member is in the list
+			const foundMember = response.data.find(
+				(m) => m.id === "member-approved-1",
+			);
+			expect(foundMember).toBeDefined();
+			expect(foundMember?.name).toBe("Approved Member");
+			expect(foundMember?.status).toBe("visitor");
+		});
+	});
 });
