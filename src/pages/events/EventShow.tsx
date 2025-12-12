@@ -3,6 +3,7 @@ import {
 	Badge,
 	Button,
 	Card,
+	CopyButton,
 	Grid,
 	Group,
 	LoadingOverlay,
@@ -11,9 +12,16 @@ import {
 	Table,
 	Text,
 	Title,
+	Tooltip,
 } from "@mantine/core";
 import { useShow } from "@refinedev/core";
-import { IconEdit, IconQrcode } from "@tabler/icons-react";
+import {
+	IconCheck,
+	IconCopy,
+	IconEdit,
+	IconQrcode,
+	IconTicket,
+} from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { QRCodeSVG } from "qrcode.react";
 import { useNavigate } from "react-router-dom";
@@ -105,16 +113,58 @@ export const EventShow = () => {
 						</Stack>
 					</Grid.Col>
 					<Grid.Col span={{ base: 12, md: 4 }}>
-						<Card shadow="sm" padding="lg" radius="md" withBorder>
-							<Stack align="center">
-								<IconQrcode size={48} />
-								<Title order={4}>QR Code Check-in</Title>
-								<QRCodeSVG value={event.qrCode || event.id} size={200} />
-								<Text size="xs" c="dimmed" ta="center">
-									Escaneie para fazer check-in
-								</Text>
-							</Stack>
-						</Card>
+						<Stack gap="md">
+							{event.registrationConfig?.enabled && (
+								<Card shadow="sm" padding="lg" radius="md" withBorder>
+									<Stack align="center" gap="md">
+										<IconTicket size={48} />
+										<Title order={4}>Inscrição Pública</Title>
+										<QRCodeSVG
+											value={`${window.location.origin}/events/${event.id}/subscription`}
+											size={200}
+										/>
+										<Text size="xs" c="dimmed" ta="center">
+											Escaneie ou compartilhe o link para inscrições
+										</Text>
+										<CopyButton
+											value={`${window.location.origin}/events/${event.id}/subscription`}
+										>
+											{({ copied, copy }) => (
+												<Tooltip
+													label={copied ? "Link copiado!" : "Copiar link"}
+													withArrow
+												>
+													<Button
+														variant="light"
+														size="xs"
+														onClick={copy}
+														leftSection={
+															copied ? (
+																<IconCheck size={16} />
+															) : (
+																<IconCopy size={16} />
+															)
+														}
+													>
+														{copied ? "Copiado" : "Copiar Link"}
+													</Button>
+												</Tooltip>
+											)}
+										</CopyButton>
+									</Stack>
+								</Card>
+							)}
+							<Card shadow="sm" padding="lg" radius="md" withBorder>
+								<Stack align="center">
+									<IconQrcode size={48} />
+									<Title order={4}>QR Code Check-in</Title>
+									<QRCodeSVG value={event.qrCode || event.id} size={200} />
+									<Text size="xs" c="dimmed" ta="center">
+										Escaneie para fazer check-in
+									</Text>
+								</Stack>
+							</Card>
+						</Stack>
 					</Grid.Col>
 				</Grid>
 			)}

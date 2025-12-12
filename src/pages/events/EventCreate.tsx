@@ -1,4 +1,5 @@
 import {
+	Accordion,
 	Button,
 	Grid,
 	Group,
@@ -6,6 +7,7 @@ import {
 	Paper,
 	Select,
 	Stack,
+	Switch,
 	Textarea,
 	TextInput,
 	Title,
@@ -14,15 +16,18 @@ import { DateInput, TimeInput } from "@mantine/dates";
 import { notifications } from "@mantine/notifications";
 import { useGo } from "@refinedev/core";
 import { useForm } from "@refinedev/mantine";
+import { EventRegistrationFormBuilder } from "@/components/events/EventRegistrationFormBuilder";
 import { EVENT_STATUS_OPTIONS } from "@/config/constants";
 import { gradientButtonStyles } from "@/styles/buttonStyles";
-import { type Event, EventStatus } from "@/types";
+import { type Event, type EventRegistrationConfig, EventStatus } from "@/types";
 
 export const EventCreate = () => {
 	const go = useGo();
 	const {
 		saveButtonProps,
 		getInputProps,
+		setFieldValue,
+		values,
 		refineCore: { formLoading },
 	} = useForm<Event>({
 		refineCoreProps: {
@@ -43,6 +48,11 @@ export const EventCreate = () => {
 			location: "",
 			status: EventStatus.DRAFT,
 			attendees: [],
+			registrationConfig: {
+				enabled: false,
+				fields: [],
+				requiresApproval: false,
+			},
 		},
 	});
 
@@ -91,19 +101,67 @@ export const EventCreate = () => {
 							/>
 						</Grid.Col>
 					</Grid>
-					<Group justify="flex-end" mt="md">
-						<Button variant="default" onClick={() => go({ to: "/events" })}>
-							Cancelar
-						</Button>
-						<Button
-							{...saveButtonProps}
-							loading={formLoading}
-							styles={gradientButtonStyles}
-						>
-							Salvar
-						</Button>
-					</Group>
 				</Paper>
+
+				<Paper shadow="xs" p="lg" radius="md" withBorder mt="md">
+					<Accordion>
+						<Accordion.Item value="registration">
+							<Accordion.Control>Inscrição Pública</Accordion.Control>
+							<Accordion.Panel>
+								<Stack gap="md">
+									<Switch
+										label="Habilitar inscrição pública"
+										description="Permite que pessoas se inscrevam no evento através de um link público"
+										checked={
+											values.registrationConfig
+												? (values.registrationConfig as EventRegistrationConfig)
+														.enabled
+												: false
+										}
+										onChange={(e) => {
+											const currentConfig: EventRegistrationConfig =
+												(values.registrationConfig as EventRegistrationConfig) || {
+													enabled: false,
+													fields: [],
+													requiresApproval: false,
+												};
+											setFieldValue("registrationConfig", {
+												...currentConfig,
+												enabled: e.target.checked,
+											});
+										}}
+									/>
+
+									{values.registrationConfig &&
+									(values.registrationConfig as EventRegistrationConfig)
+										.enabled ? (
+										<EventRegistrationFormBuilder
+											value={
+												values.registrationConfig as EventRegistrationConfig
+											}
+											onChange={(value) =>
+												setFieldValue("registrationConfig", value)
+											}
+										/>
+									) : null}
+								</Stack>
+							</Accordion.Panel>
+						</Accordion.Item>
+					</Accordion>
+				</Paper>
+
+				<Group justify="flex-end" mt="md">
+					<Button variant="default" onClick={() => go({ to: "/events" })}>
+						Cancelar
+					</Button>
+					<Button
+						{...saveButtonProps}
+						loading={formLoading}
+						styles={gradientButtonStyles}
+					>
+						Salvar
+					</Button>
+				</Group>
 			</form>
 		</Stack>
 	);

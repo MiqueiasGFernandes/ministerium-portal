@@ -49,6 +49,7 @@ import {
 	MinistryShow,
 } from "@/pages/ministries";
 import { Onboarding } from "@/pages/onboarding/Onboarding";
+import { EventRegistration } from "@/pages/public/EventRegistration";
 import { ScheduleCreate } from "@/pages/schedules/ScheduleCreate";
 import { ScheduleEdit } from "@/pages/schedules/ScheduleEdit";
 import { ScheduleList } from "@/pages/schedules/ScheduleList";
@@ -289,6 +290,10 @@ function App() {
 							<Route
 								path="/member-registration/:tenantId"
 								element={<MemberRegistrationPage />}
+							/>
+							<Route
+								path="/events/:eventId/subscription"
+								element={<EventRegistration />}
 							/>
 							<Route path="/onboarding" element={<Onboarding />} />
 						</Routes>
