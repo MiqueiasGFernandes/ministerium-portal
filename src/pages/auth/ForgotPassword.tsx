@@ -60,7 +60,7 @@ export const ForgotPassword = () => {
 
 			// Navegar para página de verificação de código
 			navigate("/verify-code");
-		} catch (err) {
+		} catch (_err) {
 			setError("Erro ao enviar código. Tente novamente.");
 		} finally {
 			setIsLoading(false);
