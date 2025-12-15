@@ -51,6 +51,7 @@ import {
 	useState,
 } from "react";
 import { CanCreate, CanDelete, CanEdit } from "@/components/auth/Can";
+import { TableSkeleton } from "@/components/common/TableSkeleton";
 import { MEMBER_STATUS_OPTIONS } from "@/config/constants";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useSearchHistory } from "@/hooks/useSearchHistory";
@@ -301,7 +302,14 @@ export const MemberList = () => {
 	const {
 		getHeaderGroups,
 		getRowModel,
-		refineCore: { setCurrent, pageCount, current, sorters, setSorters },
+		refineCore: {
+			setCurrent,
+			pageCount,
+			current,
+			sorters,
+			setSorters,
+			tableQueryResult,
+		},
 		setPageSize,
 		getState,
 	} = useTable({
@@ -337,6 +345,8 @@ export const MemberList = () => {
 		enableSorting: true,
 		manualSorting: true,
 	});
+
+	const isLoading = tableQueryResult?.isLoading ?? false;
 
 	// Helper to get sort icon
 	const getSortIcon = (columnId: string) => {
@@ -534,18 +544,22 @@ export const MemberList = () => {
 							))}
 						</Table.Thead>
 						<Table.Tbody>
-							{getRowModel().rows.map((row) => (
-								<Table.Tr key={row.id}>
-									{row.getVisibleCells().map((cell) => (
-										<Table.Td key={cell.id}>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext(),
-											)}
-										</Table.Td>
-									))}
-								</Table.Tr>
-							))}
+							{isLoading ? (
+								<TableSkeleton columns={columns.length} rows={5} />
+							) : (
+								getRowModel().rows.map((row) => (
+									<Table.Tr key={row.id}>
+										{row.getVisibleCells().map((cell) => (
+											<Table.Td key={cell.id}>
+												{flexRender(
+													cell.column.columnDef.cell,
+													cell.getContext(),
+												)}
+											</Table.Td>
+										))}
+									</Table.Tr>
+								))
+							)}
 						</Table.Tbody>
 					</Table>
 				</Box>

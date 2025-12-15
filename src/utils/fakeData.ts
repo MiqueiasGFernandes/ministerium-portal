@@ -295,6 +295,8 @@ export const generateEvents = (
 				createdAt: faker.date.past().toISOString(),
 			}));
 
+		const status = faker.helpers.arrayElement(statuses);
+
 		return {
 			id: `event-${index + 1}`,
 			title: faker.helpers.arrayElement(eventTitles),
@@ -307,8 +309,15 @@ export const generateEvents = (
 			maxAttendees: faker.helpers.maybe(() =>
 				faker.number.int({ min: 50, max: 200 }),
 			),
-			status: faker.helpers.arrayElement(statuses),
+			status,
 			qrCode: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=event-${index + 1}`,
+			registrationConfig: {
+				enabled: status === EventStatus.PUBLISHED,
+				fields: [],
+				capacity: faker.number.int({ min: 50, max: 300 }),
+				confirmationMessage:
+					"Obrigado por se inscrever! Você receberá mais informações em breve.",
+			},
 			tenantId: "1",
 			createdAt: faker.date.past().toISOString(),
 			updatedAt: faker.date.recent().toISOString(),
@@ -416,4 +425,45 @@ export const findOrCreateUser = (email: string): User => {
 	fakeData.users.push(newUser);
 
 	return newUser;
+};
+
+/**
+ * Generate fake event form data for testing/development
+ * Used for auto-filling event creation forms in test environments
+ */
+export const generateEventFormData = () => {
+	const eventTitles = [
+		"Culto de Celebração",
+		"Escola Bíblica Dominical",
+		"Culto de Oração",
+		"Reunião de Jovens",
+		"Retiro Espiritual",
+		"Conferência Anual",
+		"Vigília",
+		"Evangelismo",
+		"Culto de Libertação",
+		"Café da Manhã Comunitário",
+	];
+
+	const eventDate = faker.date.between({
+		from: new Date(),
+		to: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // Next 60 days
+	});
+
+	return {
+		title: faker.helpers.arrayElement(eventTitles),
+		description: faker.lorem.paragraph(),
+		date: eventDate,
+		time: faker.date.recent().toTimeString().slice(0, 5),
+		location: faker.location.streetAddress(),
+		maxAttendees: faker.number.int({ min: 20, max: 200 }),
+		status: EventStatus.DRAFT,
+		registrationConfig: {
+			enabled: true,
+			fields: [],
+			capacity: faker.number.int({ min: 50, max: 300 }),
+			confirmationMessage:
+				"Obrigado por se inscrever! Você receberá mais informações em breve.",
+		},
+	};
 };

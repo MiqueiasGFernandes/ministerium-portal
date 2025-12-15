@@ -72,31 +72,29 @@ export const EventRegistrationFormBuilder = ({
 
 	return (
 		<Stack gap="md">
-			<Card padding="md" withBorder>
-				<Stack gap="md">
-					<Text fw={500}>Configurações Gerais</Text>
+			<Stack gap="md">
+				<Text fw={500}>Configurações Gerais</Text>
 
-					<NumberInput
-						label="Capacidade máxima"
-						description="Deixe vazio para capacidade ilimitada"
-						value={value.capacity || ""}
-						onChange={(val) =>
-							onChange({ ...value, capacity: Number(val) || undefined })
-						}
-						min={1}
-					/>
+				<NumberInput
+					label="Capacidade máxima"
+					description="Deixe vazio para capacidade ilimitada"
+					value={value.capacity || ""}
+					onChange={(val) =>
+						onChange({ ...value, capacity: Number(val) || undefined })
+					}
+					min={1}
+				/>
 
-					<Textarea
-						label="Mensagem de confirmação"
-						description="Mensagem exibida após o envio do formulário"
-						value={value.confirmationMessage || ""}
-						onChange={(e) =>
-							onChange({ ...value, confirmationMessage: e.target.value })
-						}
-						rows={3}
-					/>
-				</Stack>
-			</Card>
+				<Textarea
+					label="Mensagem de confirmação"
+					description="Mensagem exibida após o envio do formulário"
+					value={value.confirmationMessage || ""}
+					onChange={(e) =>
+						onChange({ ...value, confirmationMessage: e.target.value })
+					}
+					rows={3}
+				/>
+			</Stack>
 
 			<Group justify="space-between">
 				<Text fw={500}>Campos do Formulário</Text>

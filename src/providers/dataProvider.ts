@@ -1,6 +1,7 @@
 import type { DataProvider } from "@refinedev/core";
 import type {
 	AccessRequest,
+	Event,
 	EventRegistration,
 	Member,
 	MemberRegistration,
@@ -156,9 +157,55 @@ export const localDataProvider: DataProvider = {
 			case "transactions":
 				data = storage.transactions;
 				break;
-			case "events":
+			case "events": {
+				// Sync with localStorage to include dynamically created events
+				const eventsFromStorage = localStorage.getItem("events");
+				if (eventsFromStorage) {
+					storage.events = JSON.parse(eventsFromStorage);
+				}
+
+				// Load event registrations to populate attendees
+				const eventRegistrations = localStorage.getItem("eventRegistrations");
+				if (eventRegistrations) {
+					const registrations = JSON.parse(
+						eventRegistrations,
+					) as EventRegistration[];
+
+					// Add attendees to each event
+					storage.events = storage.events.map((event) => {
+						const eventRegs = registrations.filter(
+							(r) => r.eventId === event.id,
+						);
+
+						return {
+							...event,
+							attendees: eventRegs.map((reg) => ({
+								id: reg.id,
+								eventId: reg.eventId,
+								memberId: reg.id,
+								member: {
+									id: reg.id,
+									name: reg.name,
+									email: reg.email,
+									phone: reg.phone,
+									photo: undefined,
+									status: "active" as const,
+									tags: [],
+									tenantId: "1",
+									createdAt: reg.registeredAt,
+									updatedAt: reg.registeredAt,
+								},
+								checkedIn: reg.checkedIn,
+								checkedInAt: reg.checkedIn ? reg.registeredAt : undefined,
+								createdAt: reg.registeredAt,
+							})),
+						};
+					});
+				}
+
 				data = storage.events;
 				break;
+			}
 			case "schedules":
 				data = storage.schedules;
 				break;
@@ -247,9 +294,50 @@ export const localDataProvider: DataProvider = {
 			case "transactions":
 				data = storage.transactions.find((t) => t.id === id);
 				break;
-			case "events":
-				data = storage.events.find((e) => e.id === id);
+			case "events": {
+				// Sync with localStorage
+				const eventsFromStorage = localStorage.getItem("events");
+				if (eventsFromStorage) {
+					storage.events = JSON.parse(eventsFromStorage);
+				}
+				const event = storage.events.find((e) => e.id === id);
+
+				if (event) {
+					// Load event registrations and convert to attendees
+					const eventRegistrations = localStorage.getItem("eventRegistrations");
+					if (eventRegistrations) {
+						const registrations = JSON.parse(
+							eventRegistrations,
+						) as EventRegistration[];
+						const eventRegs = registrations.filter((r) => r.eventId === id);
+
+						// Convert registrations to attendees format
+						event.attendees = eventRegs.map((reg) => ({
+							id: reg.id,
+							eventId: reg.eventId,
+							memberId: reg.id, // Use registration ID as member ID for now
+							member: {
+								id: reg.id,
+								name: reg.name,
+								email: reg.email,
+								phone: reg.phone,
+								photo: undefined,
+								status: "active" as const,
+								tags: [],
+								tenantId: "1",
+								createdAt: reg.registeredAt,
+								updatedAt: reg.registeredAt,
+							},
+							checkedIn: reg.checkedIn,
+							checkedInAt: reg.checkedIn ? reg.registeredAt : undefined,
+							createdAt: reg.registeredAt,
+						}));
+					}
+				}
+
+				data = event;
 				break;
+			}
 			case "schedules":
 				data = storage.schedules.find((s) => s.id === id);
 				break;
@@ -311,9 +399,16 @@ export const localDataProvider: DataProvider = {
 			case "transactions":
 				storage.transactions = [...storage.transactions, newItem];
 				break;
-			case "events":
-				storage.events = [...storage.events, newItem];
+			case "events": {
+				const eventsFromStorage = localStorage.getItem("events");
+				const existingEvents = eventsFromStorage
+					? JSON.parse(eventsFromStorage)
+					: storage.events;
+				const updatedEvents = [...existingEvents, newItem];
+				localStorage.setItem("events", JSON.stringify(updatedEvents));
+				storage.events = updatedEvents;
 				break;
+			}
 			case "schedules":
 				storage.schedules = [...storage.schedules, newItem];
 				break;
@@ -383,12 +478,20 @@ export const localDataProvider: DataProvider = {
 				);
 				updatedItem = storage.transactions.find((t) => t.id === id);
 				break;
-			case "events":
-				storage.events = storage.events.map((e) =>
+			case "events": {
+				// Sync with localStorage
+				const eventsFromStorage = localStorage.getItem("events");
+				const existingEvents = eventsFromStorage
+					? JSON.parse(eventsFromStorage)
+					: storage.events;
+				const updatedEvents = existingEvents.map((e: Event) =>
 					e.id === id ? { ...e, ...variables, updatedAt: now } : e,
 				);
+				localStorage.setItem("events", JSON.stringify(updatedEvents));
+				storage.events = updatedEvents;
 				updatedItem = storage.events.find((e) => e.id === id);
 				break;
+			}
 			case "schedules":
 				storage.schedules = storage.schedules.map((s) =>
 					s.id === id ? { ...s, ...variables, updatedAt: now } : s,
@@ -459,9 +562,17 @@ export const localDataProvider: DataProvider = {
 			case "transactions":
 				storage.transactions = storage.transactions.filter((t) => t.id !== id);
 				break;
-			case "events":
-				storage.events = storage.events.filter((e) => e.id !== id);
+			case "events": {
+				// Sync with localStorage
+				const eventsFromStorage = localStorage.getItem("events");
+				const existingEvents = eventsFromStorage
+					? JSON.parse(eventsFromStorage)
+					: storage.events;
+				const updatedEvents = existingEvents.filter((e: Event) => e.id !== id);
+				localStorage.setItem("events", JSON.stringify(updatedEvents));
+				storage.events = updatedEvents;
 				break;
+			}
 			case "schedules":
 				storage.schedules = storage.schedules.filter((s) => s.id !== id);
 				break;
@@ -675,13 +786,31 @@ export const localDataProvider: DataProvider = {
 			method === "get"
 		) {
 			const eventId = url.split("/")[2];
+
+			// Sync with localStorage first
+			const eventsFromStorage = localStorage.getItem("events");
+			if (eventsFromStorage) {
+				storage.events = JSON.parse(eventsFromStorage);
+			}
+
 			const event = storage.events.find((e) => e.id === eventId);
 
 			if (!event) {
 				throw new Error("Event not found");
 			}
 
-			if (!event.registrationConfig?.enabled) {
+			// Initialize registrationConfig if it doesn't exist (for backward compatibility)
+			if (!event.registrationConfig) {
+				event.registrationConfig = {
+					enabled: event.status === "published",
+					fields: [],
+					capacity: event.maxAttendees,
+					confirmationMessage:
+						"Obrigado por se inscrever! Você receberá mais informações em breve.",
+				};
+			}
+
+			if (!event.registrationConfig.enabled) {
 				throw new Error("Event registration is not enabled");
 			}
 

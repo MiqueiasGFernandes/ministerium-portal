@@ -13,6 +13,7 @@ import {
 	Title,
 } from "@mantine/core";
 import { DateInput, TimeInput } from "@mantine/dates";
+import { notifications } from "@mantine/notifications";
 import { useNavigation } from "@refinedev/core";
 import { useForm } from "@refinedev/mantine";
 import { useEffect } from "react";
@@ -33,6 +34,14 @@ export const EventEdit = () => {
 		refineCoreProps: {
 			action: "edit",
 			resource: "events",
+			onMutationSuccess: () => {
+				notifications.show({
+					title: "Sucesso!",
+					message: "Evento atualizado com sucesso",
+					color: "green",
+				});
+				list("events");
+			},
 		},
 	});
 
@@ -53,11 +62,17 @@ export const EventEdit = () => {
 		}
 	}, [queryResult?.data?.data, values, setFieldValue]);
 
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		console.log("Form submitted, values:", values);
+		saveButtonProps.onClick?.();
+	};
+
 	return (
 		<Stack gap="lg" pos="relative">
 			<LoadingOverlay visible={queryResult?.isLoading || false} />
 			<Title order={2}>Editar Evento</Title>
-			<form>
+			<form onSubmit={handleSubmit}>
 				<Paper shadow="xs" p="lg" radius="md" withBorder>
 					<Grid>
 						<Grid.Col span={{ base: 12, md: 8 }}>
@@ -130,6 +145,7 @@ export const EventEdit = () => {
 						Cancelar
 					</Button>
 					<Button
+						type="submit"
 						{...saveButtonProps}
 						loading={formLoading}
 						styles={gradientButtonStyles}

@@ -31,6 +31,7 @@ import {
 import { type ColumnDef, flexRender } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import { useCallback, useMemo, useState } from "react";
+import { TableSkeleton } from "@/components/common/TableSkeleton";
 import { TRANSACTION_CATEGORIES } from "@/config/constants";
 import { gradientButtonStyles } from "@/styles/buttonStyles";
 import type { Transaction, TransactionType } from "@/types";
@@ -203,7 +204,14 @@ export const TransactionList = () => {
 	const {
 		getHeaderGroups,
 		getRowModel,
-		refineCore: { setCurrent, pageCount, current, sorters, setSorters },
+		refineCore: {
+			setCurrent,
+			pageCount,
+			current,
+			sorters,
+			setSorters,
+			tableQueryResult,
+		},
 		setPageSize,
 		getState,
 	} = useTable({
@@ -230,6 +238,8 @@ export const TransactionList = () => {
 		enableSorting: true,
 		manualSorting: true,
 	});
+
+	const isLoading = tableQueryResult?.isLoading ?? false;
 
 	// Helper to get sort icon
 	const getSortIcon = (columnId: string) => {
@@ -340,18 +350,22 @@ export const TransactionList = () => {
 							))}
 						</Table.Thead>
 						<Table.Tbody>
-							{getRowModel().rows.map((row) => (
-								<Table.Tr key={row.id}>
-									{row.getVisibleCells().map((cell) => (
-										<Table.Td key={cell.id}>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext(),
-											)}
-										</Table.Td>
-									))}
-								</Table.Tr>
-							))}
+							{isLoading ? (
+								<TableSkeleton columns={columns.length} rows={5} />
+							) : (
+								getRowModel().rows.map((row) => (
+									<Table.Tr key={row.id}>
+										{row.getVisibleCells().map((cell) => (
+											<Table.Td key={cell.id}>
+												{flexRender(
+													cell.column.columnDef.cell,
+													cell.getContext(),
+												)}
+											</Table.Td>
+										))}
+									</Table.Tr>
+								))
+							)}
 						</Table.Tbody>
 					</Table>
 				</Box>

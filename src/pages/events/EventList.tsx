@@ -21,9 +21,10 @@ import { type ColumnDef, flexRender } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import { useCallback, useMemo, useState } from "react";
 import { CanCreate } from "@/components/auth/Can";
+import { TableSkeleton } from "@/components/common/TableSkeleton";
 import { EVENT_STATUS_OPTIONS } from "@/config/constants";
 import { gradientButtonStyles } from "@/styles/buttonStyles";
-import type { Event, EventAttendee } from "@/types";
+import type { Event } from "@/types";
 
 export const EventList = () => {
 	const { create, edit, show } = useNavigation();
@@ -80,24 +81,45 @@ export const EventList = () => {
 
 	const columns = useMemo<ColumnDef<Event>[]>(
 		() => [
-			{ id: "title", header: "Título", accessorKey: "title" },
+			{
+				id: "title",
+				header: "Título",
+				accessorKey: "title",
+				cell: ({ getValue }) => {
+					const value = getValue() as string;
+					return value || "-";
+				},
+			},
 			{
 				id: "date",
 				header: "Data",
 				accessorKey: "date",
-				cell: ({ getValue }) =>
-					dayjs(getValue() as string).format("DD/MM/YYYY"),
+				cell: ({ getValue }) => {
+					const value = getValue() as string;
+					return value ? dayjs(value).format("DD/MM/YYYY") : "-";
+				},
 			},
-			{ id: "time", header: "Horário", accessorKey: "time" },
+			{
+				id: "time",
+				header: "Horário",
+				accessorKey: "time",
+				cell: ({ getValue }) => {
+					const value = getValue() as string;
+					return value || "-";
+				},
+			},
 			{
 				id: "location",
 				header: "Local",
 				accessorKey: "location",
-				cell: ({ getValue }) => (
-					<Text size="sm" lineClamp={1}>
-						{getValue() as string}
-					</Text>
-				),
+				cell: ({ getValue }) => {
+					const value = getValue() as string;
+					return (
+						<Text size="sm" lineClamp={1}>
+							{value || "-"}
+						</Text>
+					);
+				},
 			},
 			{
 				id: "status",
@@ -158,7 +180,7 @@ export const EventList = () => {
 	const {
 		getHeaderGroups,
 		getRowModel,
-		refineCore: { setCurrent, pageCount, current },
+		refineCore: { setCurrent, pageCount, current, tableQueryResult },
 		setPageSize,
 		getState,
 	} = useTable({
@@ -180,6 +202,8 @@ export const EventList = () => {
 			},
 		},
 	});
+
+	const isLoading = tableQueryResult?.isLoading ?? false;
 
 	return (
 		<Stack gap="lg">
@@ -219,18 +243,22 @@ export const EventList = () => {
 							))}
 						</Table.Thead>
 						<Table.Tbody>
-							{getRowModel().rows.map((row) => (
-								<Table.Tr key={row.id}>
-									{row.getVisibleCells().map((cell) => (
-										<Table.Td key={cell.id}>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext(),
-											)}
-										</Table.Td>
-									))}
-								</Table.Tr>
-							))}
+							{isLoading ? (
+								<TableSkeleton columns={columns.length} rows={5} />
+							) : (
+								getRowModel().rows.map((row) => (
+									<Table.Tr key={row.id}>
+										{row.getVisibleCells().map((cell) => (
+											<Table.Td key={cell.id}>
+												{flexRender(
+													cell.column.columnDef.cell,
+													cell.getContext(),
+												)}
+											</Table.Td>
+										))}
+									</Table.Tr>
+								))
+							)}
 						</Table.Tbody>
 					</Table>
 				</Box>

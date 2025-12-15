@@ -1,5 +1,4 @@
 import {
-	Accordion,
 	Button,
 	Grid,
 	Group,
@@ -17,8 +16,10 @@ import { useGo } from "@refinedev/core";
 import { useForm } from "@refinedev/mantine";
 import { EventRegistrationFormBuilder } from "@/components/events/EventRegistrationFormBuilder";
 import { EVENT_STATUS_OPTIONS } from "@/config/constants";
+import { shouldShowTestData } from "@/config/env";
 import { gradientButtonStyles } from "@/styles/buttonStyles";
 import { type Event, type EventRegistrationConfig, EventStatus } from "@/types";
+import { generateEventFormData } from "@/utils/fakeData";
 
 export const EventCreate = () => {
 	const go = useGo();
@@ -54,9 +55,39 @@ export const EventCreate = () => {
 		},
 	});
 
+	const handleAutoFill = () => {
+		const fakeData = generateEventFormData();
+		setFieldValue("title", fakeData.title);
+		setFieldValue("description", fakeData.description);
+		setFieldValue("date", fakeData.date);
+		setFieldValue("time", fakeData.time);
+		setFieldValue("location", fakeData.location);
+		setFieldValue("maxAttendees", fakeData.maxAttendees);
+		setFieldValue("status", fakeData.status);
+		setFieldValue("registrationConfig", fakeData.registrationConfig);
+
+		notifications.show({
+			title: "Formulário preenchido",
+			message: "Dados de teste foram inseridos automaticamente",
+			color: "blue",
+		});
+	};
+
 	return (
 		<Stack gap="lg">
 			<Title order={2}>Novo Evento</Title>
+
+			{shouldShowTestData() && (
+				<Button
+					variant="light"
+					onClick={handleAutoFill}
+					size="xs"
+					data-testid="autofill-button"
+				>
+					🎲 Auto Preencher (Teste)
+				</Button>
+			)}
+
 			<form>
 				<Paper shadow="xs" p="lg" radius="md" withBorder>
 					<Grid>
@@ -102,27 +133,20 @@ export const EventCreate = () => {
 				</Paper>
 
 				<Paper shadow="xs" p="lg" radius="md" withBorder mt="md">
-					<Accordion defaultValue="registration">
-						<Accordion.Item value="registration">
-							<Accordion.Control>Inscrição Pública</Accordion.Control>
-							<Accordion.Panel>
-								<EventRegistrationFormBuilder
-									value={
-										(values.registrationConfig as EventRegistrationConfig) || {
-											enabled: true,
-											fields: [],
-										}
-									}
-									onChange={(value) =>
-										setFieldValue("registrationConfig", {
-											...value,
-											enabled: true,
-										})
-									}
-								/>
-							</Accordion.Panel>
-						</Accordion.Item>
-					</Accordion>
+					<EventRegistrationFormBuilder
+						value={
+							(values.registrationConfig as EventRegistrationConfig) || {
+								enabled: true,
+								fields: [],
+							}
+						}
+						onChange={(value) =>
+							setFieldValue("registrationConfig", {
+								...value,
+								enabled: true,
+							})
+						}
+					/>
 				</Paper>
 
 				<Group justify="flex-end" mt="md">

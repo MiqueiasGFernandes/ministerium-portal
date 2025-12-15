@@ -15,13 +15,7 @@ import {
 	Tooltip,
 } from "@mantine/core";
 import { useShow } from "@refinedev/core";
-import {
-	IconCheck,
-	IconCopy,
-	IconEdit,
-	IconQrcode,
-	IconTicket,
-} from "@tabler/icons-react";
+import { IconCheck, IconCopy, IconEdit } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { QRCodeSVG } from "qrcode.react";
 import { useNavigate } from "react-router-dom";
@@ -54,61 +48,69 @@ export const EventShow = () => {
 							<Paper shadow="xs" p="lg" radius="md" withBorder>
 								<Stack gap="md">
 									<Group justify="space-between">
-										<Title order={3}>{event.title}</Title>
+										<Title order={3}>{event.title || "Sem título"}</Title>
 										<Badge size="lg" color={statusOpt?.color} variant="light">
 											{statusOpt?.label}
 										</Badge>
 									</Group>
-									<Text>{event.description}</Text>
+									{event.description && <Text>{event.description}</Text>}
 									<Grid>
-										<Grid.Col span={6}>
-											<Text size="sm">
-												<strong>Data:</strong>{" "}
-												{dayjs(event.date).format("DD/MM/YYYY")}
-											</Text>
-										</Grid.Col>
-										<Grid.Col span={6}>
-											<Text size="sm">
-												<strong>Horário:</strong> {event.time}
-											</Text>
-										</Grid.Col>
-										<Grid.Col span={12}>
-											<Text size="sm">
-												<strong>Local:</strong> {event.location}
-											</Text>
-										</Grid.Col>
+										{event.date && (
+											<Grid.Col span={6}>
+												<Text size="sm">
+													<strong>Data:</strong>{" "}
+													{dayjs(event.date).format("DD/MM/YYYY")}
+												</Text>
+											</Grid.Col>
+										)}
+										{event.time && (
+											<Grid.Col span={6}>
+												<Text size="sm">
+													<strong>Horário:</strong> {event.time}
+												</Text>
+											</Grid.Col>
+										)}
+										{event.location && (
+											<Grid.Col span={12}>
+												<Text size="sm">
+													<strong>Local:</strong> {event.location}
+												</Text>
+											</Grid.Col>
+										)}
 									</Grid>
 								</Stack>
 							</Paper>
 							<Paper shadow="xs" p="lg" radius="md" withBorder>
 								<Title order={4} mb="md">
-									Inscritos ({event.attendees.length})
+									Inscritos ({event.attendees?.length || 0})
 								</Title>
-								<Table>
-									<Table.Thead>
-										<Table.Tr>
-											<Table.Th>Nome</Table.Th>
-											<Table.Th>Check-in</Table.Th>
-										</Table.Tr>
-									</Table.Thead>
-									<Table.Tbody>
-										{event.attendees.map((a) => (
-											<Table.Tr key={a.id}>
-												<Table.Td>
-													<Group>
-														<Avatar src={a.member?.photo} size="sm" />
-														<Text size="sm">{a.member?.name}</Text>
-													</Group>
-												</Table.Td>
-												<Table.Td>
-													<Badge color={a.checkedIn ? "green" : "gray"}>
-														{a.checkedIn ? "Sim" : "Não"}
-													</Badge>
-												</Table.Td>
+								{event.attendees && event.attendees.length > 0 ? (
+									<Table>
+										<Table.Thead>
+											<Table.Tr>
+												<Table.Th>Nome</Table.Th>
 											</Table.Tr>
-										))}
-									</Table.Tbody>
-								</Table>
+										</Table.Thead>
+										<Table.Tbody>
+											{event.attendees.map((a) => (
+												<Table.Tr key={a.id}>
+													<Table.Td>
+														<Group>
+															<Avatar src={a.member?.photo} size="sm" />
+															<Text size="sm">
+																{a.member?.name || "Nome não disponível"}
+															</Text>
+														</Group>
+													</Table.Td>
+												</Table.Tr>
+											))}
+										</Table.Tbody>
+									</Table>
+								) : (
+									<Text c="dimmed" size="sm">
+										Nenhum inscrito ainda
+									</Text>
+								)}
 							</Paper>
 						</Stack>
 					</Grid.Col>
@@ -117,8 +119,7 @@ export const EventShow = () => {
 							{event.registrationConfig?.enabled && (
 								<Card shadow="sm" padding="lg" radius="md" withBorder>
 									<Stack align="center" gap="md">
-										<IconTicket size={48} />
-										<Title order={4}>Inscrição Pública</Title>
+										<Title order={4}>Inscrição</Title>
 										<QRCodeSVG
 											value={`${window.location.origin}/events/${event.id}/subscription`}
 											size={200}
@@ -154,16 +155,6 @@ export const EventShow = () => {
 									</Stack>
 								</Card>
 							)}
-							<Card shadow="sm" padding="lg" radius="md" withBorder>
-								<Stack align="center" gap="md">
-									<IconQrcode size={48} />
-									<Title order={4}>QR Code Check-in</Title>
-									<QRCodeSVG value={event.qrCode || event.id} size={200} />
-									<Text size="xs" c="dimmed" ta="center">
-										Escaneie para fazer check-in
-									</Text>
-								</Stack>
-							</Card>
 						</Stack>
 					</Grid.Col>
 				</Grid>
