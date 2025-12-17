@@ -1,12 +1,18 @@
 import type { DataProvider } from "@refinedev/core";
 import type {
 	AccessRequest,
+	EnterpriseLead,
 	Event,
 	EventRegistration,
+	Invoice,
 	Member,
 	MemberRegistration,
 	PaginatedResponse,
+	PaymentMethod,
+	Subscription,
 } from "@/types";
+import { MemberStatus } from "@/types";
+import { plans } from "@/utils/billingFakeData";
 import { fakeData } from "@/utils/fakeData";
 
 /**
@@ -55,6 +61,11 @@ let storage = {
 	accessRequests: [] as AccessRequest[], // Will be initialized from localStorage
 	memberRegistrations: [] as MemberRegistration[], // Will be initialized from localStorage
 	eventRegistrations: [] as EventRegistration[], // Public event registrations
+	plans: [...plans], // Billing plans
+	subscriptions: [] as Subscription[], // Will be initialized from localStorage
+	paymentMethods: [] as PaymentMethod[], // Will be initialized from localStorage
+	invoices: [] as Invoice[], // Will be initialized from localStorage
+	enterpriseLeads: [] as EnterpriseLead[], // Will be initialized from localStorage
 };
 
 // Helper to simulate API delay
@@ -189,8 +200,9 @@ export const localDataProvider: DataProvider = {
 									email: reg.email,
 									phone: reg.phone,
 									photo: undefined,
-									status: "active" as const,
+									status: MemberStatus.ACTIVE,
 									tags: [],
+									customFields: {},
 									tenantId: "1",
 									createdAt: reg.registeredAt,
 									updatedAt: reg.registeredAt,
@@ -241,6 +253,45 @@ export const localDataProvider: DataProvider = {
 					? JSON.parse(eventRegistrations)
 					: [];
 				data = storage.eventRegistrations;
+				break;
+			}
+			case "plans": {
+				data = storage.plans;
+				break;
+			}
+			case "subscriptions": {
+				// Sync with localStorage
+				const subscriptions = localStorage.getItem("subscriptions");
+				storage.subscriptions = subscriptions ? JSON.parse(subscriptions) : [];
+
+				// Populate plan details
+				data = storage.subscriptions.map((sub) => ({
+					...sub,
+					plan: storage.plans.find((p) => p.id === sub.planId),
+				}));
+				break;
+			}
+			case "payment-methods": {
+				// Sync with localStorage
+				const paymentMethods = localStorage.getItem("paymentMethods");
+				storage.paymentMethods = paymentMethods
+					? JSON.parse(paymentMethods)
+					: [];
+				data = storage.paymentMethods;
+				break;
+			}
+			case "invoices": {
+				// Sync with localStorage
+				const invoices = localStorage.getItem("invoices");
+				storage.invoices = invoices ? JSON.parse(invoices) : [];
+				data = storage.invoices;
+				break;
+			}
+			case "enterprise-leads": {
+				// Sync with localStorage
+				const leads = localStorage.getItem("enterpriseLeads");
+				storage.enterpriseLeads = leads ? JSON.parse(leads) : [];
+				data = storage.enterpriseLeads;
 				break;
 			}
 			default:
@@ -322,8 +373,9 @@ export const localDataProvider: DataProvider = {
 								email: reg.email,
 								phone: reg.phone,
 								photo: undefined,
-								status: "active" as const,
+								status: MemberStatus.ACTIVE,
 								tags: [],
+								customFields: {},
 								tenantId: "1",
 								createdAt: reg.registeredAt,
 								updatedAt: reg.registeredAt,
@@ -354,6 +406,42 @@ export const localDataProvider: DataProvider = {
 				const requests = localStorage.getItem("accessRequests");
 				storage.accessRequests = requests ? JSON.parse(requests) : [];
 				data = storage.accessRequests.find((r) => r.id === id);
+				break;
+			}
+			case "plans": {
+				data = storage.plans.find((p) => p.id === id);
+				break;
+			}
+			case "subscriptions": {
+				const subscriptions = localStorage.getItem("subscriptions");
+				storage.subscriptions = subscriptions ? JSON.parse(subscriptions) : [];
+				const subscription = storage.subscriptions.find((s) => s.id === id);
+				if (subscription) {
+					data = {
+						...subscription,
+						plan: storage.plans.find((p) => p.id === subscription.planId),
+					};
+				}
+				break;
+			}
+			case "payment-methods": {
+				const paymentMethods = localStorage.getItem("paymentMethods");
+				storage.paymentMethods = paymentMethods
+					? JSON.parse(paymentMethods)
+					: [];
+				data = storage.paymentMethods.find((pm) => pm.id === id);
+				break;
+			}
+			case "invoices": {
+				const invoices = localStorage.getItem("invoices");
+				storage.invoices = invoices ? JSON.parse(invoices) : [];
+				data = storage.invoices.find((inv) => inv.id === id);
+				break;
+			}
+			case "enterprise-leads": {
+				const leads = localStorage.getItem("enterpriseLeads");
+				storage.enterpriseLeads = leads ? JSON.parse(leads) : [];
+				data = storage.enterpriseLeads.find((lead) => lead.id === id);
 				break;
 			}
 			default:
@@ -440,6 +528,48 @@ export const localDataProvider: DataProvider = {
 					JSON.stringify(updatedRegistrations),
 				);
 				storage.eventRegistrations = updatedRegistrations;
+				break;
+			}
+			case "subscriptions": {
+				const subscriptions = localStorage.getItem("subscriptions");
+				const existingSubscriptions = subscriptions
+					? JSON.parse(subscriptions)
+					: [];
+				const updatedSubscriptions = [...existingSubscriptions, newItem];
+				localStorage.setItem(
+					"subscriptions",
+					JSON.stringify(updatedSubscriptions),
+				);
+				storage.subscriptions = updatedSubscriptions;
+				break;
+			}
+			case "payment-methods": {
+				const paymentMethods = localStorage.getItem("paymentMethods");
+				const existingPaymentMethods = paymentMethods
+					? JSON.parse(paymentMethods)
+					: [];
+				const updatedPaymentMethods = [...existingPaymentMethods, newItem];
+				localStorage.setItem(
+					"paymentMethods",
+					JSON.stringify(updatedPaymentMethods),
+				);
+				storage.paymentMethods = updatedPaymentMethods;
+				break;
+			}
+			case "invoices": {
+				const invoices = localStorage.getItem("invoices");
+				const existingInvoices = invoices ? JSON.parse(invoices) : [];
+				const updatedInvoices = [...existingInvoices, newItem];
+				localStorage.setItem("invoices", JSON.stringify(updatedInvoices));
+				storage.invoices = updatedInvoices;
+				break;
+			}
+			case "enterprise-leads": {
+				const leads = localStorage.getItem("enterpriseLeads");
+				const existingLeads = leads ? JSON.parse(leads) : [];
+				const updatedLeads = [...existingLeads, newItem];
+				localStorage.setItem("enterpriseLeads", JSON.stringify(updatedLeads));
+				storage.enterpriseLeads = updatedLeads;
 				break;
 			}
 		}
@@ -530,6 +660,68 @@ export const localDataProvider: DataProvider = {
 				updatedItem = updatedRequests.find((r: AccessRequest) => r.id === id);
 				break;
 			}
+			case "subscriptions": {
+				const subscriptions = localStorage.getItem("subscriptions");
+				const existingSubscriptions = subscriptions
+					? JSON.parse(subscriptions)
+					: [];
+				const updatedSubscriptions = existingSubscriptions.map(
+					(s: Subscription) =>
+						s.id === id ? { ...s, ...variables, updatedAt: now } : s,
+				);
+				localStorage.setItem(
+					"subscriptions",
+					JSON.stringify(updatedSubscriptions),
+				);
+				storage.subscriptions = updatedSubscriptions;
+				updatedItem = updatedSubscriptions.find(
+					(s: Subscription) => s.id === id,
+				);
+				break;
+			}
+			case "payment-methods": {
+				const paymentMethods = localStorage.getItem("paymentMethods");
+				const existingPaymentMethods = paymentMethods
+					? JSON.parse(paymentMethods)
+					: [];
+				const updatedPaymentMethods = existingPaymentMethods.map(
+					(pm: PaymentMethod) =>
+						pm.id === id ? { ...pm, ...variables, updatedAt: now } : pm,
+				);
+				localStorage.setItem(
+					"paymentMethods",
+					JSON.stringify(updatedPaymentMethods),
+				);
+				storage.paymentMethods = updatedPaymentMethods;
+				updatedItem = updatedPaymentMethods.find(
+					(pm: PaymentMethod) => pm.id === id,
+				);
+				break;
+			}
+			case "invoices": {
+				const invoices = localStorage.getItem("invoices");
+				const existingInvoices = invoices ? JSON.parse(invoices) : [];
+				const updatedInvoices = existingInvoices.map((inv: Invoice) =>
+					inv.id === id ? { ...inv, ...variables, updatedAt: now } : inv,
+				);
+				localStorage.setItem("invoices", JSON.stringify(updatedInvoices));
+				storage.invoices = updatedInvoices;
+				updatedItem = updatedInvoices.find((inv: Invoice) => inv.id === id);
+				break;
+			}
+			case "enterprise-leads": {
+				const leads = localStorage.getItem("enterpriseLeads");
+				const existingLeads = leads ? JSON.parse(leads) : [];
+				const updatedLeads = existingLeads.map((lead: EnterpriseLead) =>
+					lead.id === id ? { ...lead, ...variables, updatedAt: now } : lead,
+				);
+				localStorage.setItem("enterpriseLeads", JSON.stringify(updatedLeads));
+				storage.enterpriseLeads = updatedLeads;
+				updatedItem = updatedLeads.find(
+					(lead: EnterpriseLead) => lead.id === id,
+				);
+				break;
+			}
 		}
 
 		if (!updatedItem) {
@@ -597,6 +789,31 @@ export const localDataProvider: DataProvider = {
 				storage.accessRequests = updatedRequests;
 				break;
 			}
+			case "payment-methods": {
+				const paymentMethods = localStorage.getItem("paymentMethods");
+				const existingPaymentMethods = paymentMethods
+					? JSON.parse(paymentMethods)
+					: [];
+				const updatedPaymentMethods = existingPaymentMethods.filter(
+					(pm: PaymentMethod) => pm.id !== id,
+				);
+				localStorage.setItem(
+					"paymentMethods",
+					JSON.stringify(updatedPaymentMethods),
+				);
+				storage.paymentMethods = updatedPaymentMethods;
+				break;
+			}
+			case "enterprise-leads": {
+				const leads = localStorage.getItem("enterpriseLeads");
+				const existingLeads = leads ? JSON.parse(leads) : [];
+				const updatedLeads = existingLeads.filter(
+					(lead: EnterpriseLead) => lead.id !== id,
+				);
+				localStorage.setItem("enterpriseLeads", JSON.stringify(updatedLeads));
+				storage.enterpriseLeads = updatedLeads;
+				break;
+			}
 		}
 
 		return { data: { id } } as any;
@@ -623,6 +840,11 @@ export const localDataProvider: DataProvider = {
 				accessRequests: [],
 				memberRegistrations: [],
 				eventRegistrations: [],
+				plans: [],
+				subscriptions: [],
+				paymentMethods: [],
+				invoices: [],
+				enterpriseLeads: [],
 			};
 
 			// Clear localStorage and reset initialization flag
@@ -903,6 +1125,321 @@ export const localDataProvider: DataProvider = {
 						event.registrationConfig.confirmationMessage ||
 						"Registration submitted successfully!",
 					registration: newRegistration,
+				},
+			};
+		}
+
+		// Billing: Process checkout
+		if (url === "/billing/checkout" && method === "post") {
+			const payload = (query as Record<string, unknown>) || {};
+			const { planId, billingCycle, tenantId } = payload as {
+				planId: string;
+				billingCycle: string;
+				tenantId: string;
+			};
+
+			const plan = storage.plans.find((p) => p.id === planId);
+			if (!plan) {
+				throw new Error("Plan not found");
+			}
+
+			if (plan.isCustom) {
+				throw new Error("Custom plans must be contracted through consultation");
+			}
+
+			const now = new Date();
+			const periodEnd = new Date(
+				now.getTime() +
+					(billingCycle === "annual" ? 365 : 30) * 24 * 60 * 60 * 1000,
+			);
+
+			// Check if there's an existing subscription
+			const subscriptions = localStorage.getItem("subscriptions");
+			const existingSubscriptions = subscriptions
+				? JSON.parse(subscriptions)
+				: [];
+			const existingSubscription = existingSubscriptions.find(
+				(s: Subscription) => s.tenantId === tenantId,
+			);
+
+			if (existingSubscription) {
+				// Update existing subscription
+				const updatedSubscription = {
+					...existingSubscription,
+					planId,
+					status: "active",
+					billingCycle,
+					currentPeriodStart: now.toISOString(),
+					currentPeriodEnd: periodEnd.toISOString(),
+					trialEndsAt: undefined,
+					updatedAt: now.toISOString(),
+				};
+
+				const updatedSubscriptions = existingSubscriptions.map(
+					(s: Subscription) =>
+						s.id === existingSubscription.id ? updatedSubscription : s,
+				);
+
+				localStorage.setItem(
+					"subscriptions",
+					JSON.stringify(updatedSubscriptions),
+				);
+				storage.subscriptions = updatedSubscriptions;
+
+				return {
+					data: {
+						subscription: updatedSubscription,
+						message: "Subscription activated successfully",
+					},
+				};
+			}
+
+			// Create new subscription
+			const newSubscription: Subscription = {
+				id: `subscription-${tenantId}`,
+				tenantId,
+				planId,
+				status: "active" as const,
+				billingCycle:
+					billingCycle === "annual"
+						? ("annual" as const)
+						: ("monthly" as const),
+				currentPeriodStart: now.toISOString(),
+				currentPeriodEnd: periodEnd.toISOString(),
+				cancelAtPeriodEnd: false,
+				createdAt: now.toISOString(),
+				updatedAt: now.toISOString(),
+			};
+
+			const updatedSubscriptions = [...existingSubscriptions, newSubscription];
+			localStorage.setItem(
+				"subscriptions",
+				JSON.stringify(updatedSubscriptions),
+			);
+			storage.subscriptions = updatedSubscriptions;
+
+			return {
+				data: {
+					subscription: newSubscription,
+					message: "Subscription created successfully",
+				},
+			};
+		}
+
+		// Billing: Upgrade subscription
+		if (url === "/billing/upgrade" && method === "post") {
+			const payload = (query as Record<string, unknown>) || {};
+			const { subscriptionId, planId } = payload as {
+				subscriptionId: string;
+				planId: string;
+			};
+
+			const subscriptions = localStorage.getItem("subscriptions");
+			const existingSubscriptions = subscriptions
+				? JSON.parse(subscriptions)
+				: [];
+			const subscription = existingSubscriptions.find(
+				(s: Subscription) => s.id === subscriptionId,
+			);
+
+			if (!subscription) {
+				throw new Error("Subscription not found");
+			}
+
+			const plan = storage.plans.find((p) => p.id === planId);
+			if (!plan) {
+				throw new Error("Plan not found");
+			}
+
+			if (plan.isCustom) {
+				throw new Error(
+					"Cannot upgrade to custom plans. Please contact sales.",
+				);
+			}
+
+			const now = new Date();
+			const updatedSubscription = {
+				...subscription,
+				planId,
+				updatedAt: now.toISOString(),
+			};
+
+			const updatedSubscriptions = existingSubscriptions.map(
+				(s: Subscription) =>
+					s.id === subscriptionId ? updatedSubscription : s,
+			);
+
+			localStorage.setItem(
+				"subscriptions",
+				JSON.stringify(updatedSubscriptions),
+			);
+			storage.subscriptions = updatedSubscriptions;
+
+			return {
+				data: {
+					subscription: updatedSubscription,
+					message: "Subscription upgraded successfully",
+				},
+			};
+		}
+
+		// Billing: Change billing cycle
+		if (url === "/billing/change-cycle" && method === "post") {
+			const payload = (query as Record<string, unknown>) || {};
+			const { subscriptionId, billingCycle } = payload as {
+				subscriptionId: string;
+				billingCycle: string;
+			};
+
+			const subscriptions = localStorage.getItem("subscriptions");
+			const existingSubscriptions = subscriptions
+				? JSON.parse(subscriptions)
+				: [];
+			const subscription = existingSubscriptions.find(
+				(s: Subscription) => s.id === subscriptionId,
+			);
+
+			if (!subscription) {
+				throw new Error("Subscription not found");
+			}
+
+			const now = new Date();
+			const updatedSubscription = {
+				...subscription,
+				billingCycle,
+				updatedAt: now.toISOString(),
+			};
+
+			const updatedSubscriptions = existingSubscriptions.map(
+				(s: Subscription) =>
+					s.id === subscriptionId ? updatedSubscription : s,
+			);
+
+			localStorage.setItem(
+				"subscriptions",
+				JSON.stringify(updatedSubscriptions),
+			);
+			storage.subscriptions = updatedSubscriptions;
+
+			return {
+				data: {
+					subscription: updatedSubscription,
+					message: "Billing cycle changed successfully",
+				},
+			};
+		}
+
+		// Billing: Cancel subscription
+		if (url === "/billing/cancel" && method === "post") {
+			const payload = (query as Record<string, unknown>) || {};
+			const { subscriptionId } = payload as { subscriptionId: string };
+
+			const subscriptions = localStorage.getItem("subscriptions");
+			const existingSubscriptions = subscriptions
+				? JSON.parse(subscriptions)
+				: [];
+			const subscription = existingSubscriptions.find(
+				(s: Subscription) => s.id === subscriptionId,
+			);
+
+			if (!subscription) {
+				throw new Error("Subscription not found");
+			}
+
+			const now = new Date();
+			const updatedSubscription = {
+				...subscription,
+				cancelAtPeriodEnd: true,
+				canceledAt: now.toISOString(),
+				updatedAt: now.toISOString(),
+			};
+
+			const updatedSubscriptions = existingSubscriptions.map(
+				(s: Subscription) =>
+					s.id === subscriptionId ? updatedSubscription : s,
+			);
+
+			localStorage.setItem(
+				"subscriptions",
+				JSON.stringify(updatedSubscriptions),
+			);
+			storage.subscriptions = updatedSubscriptions;
+
+			return {
+				data: {
+					subscription: updatedSubscription,
+					message: "Subscription will be canceled at period end",
+				},
+			};
+		}
+
+		// Billing: Get active subscription for tenant
+		if (url?.startsWith("/billing/subscription/tenant/") && method === "get") {
+			const tenantId = url.split("/").pop();
+
+			const subscriptions = localStorage.getItem("subscriptions");
+			const existingSubscriptions = subscriptions
+				? JSON.parse(subscriptions)
+				: [];
+			const subscription = existingSubscriptions.find(
+				(s: Subscription) => s.tenantId === tenantId,
+			);
+
+			if (!subscription) {
+				return { data: null };
+			}
+
+			const plan = storage.plans.find((p) => p.id === subscription.planId);
+
+			return {
+				data: {
+					...subscription,
+					plan,
+				},
+			};
+		}
+
+		// Billing: Check member limit
+		if (url === "/billing/check-member-limit" && method === "post") {
+			const payload = (query as Record<string, unknown>) || {};
+			const { tenantId, newMemberCount } = payload as {
+				tenantId: string;
+				newMemberCount: number;
+			};
+
+			const subscriptions = localStorage.getItem("subscriptions");
+			const existingSubscriptions = subscriptions
+				? JSON.parse(subscriptions)
+				: [];
+			const subscription = existingSubscriptions.find(
+				(s: Subscription) => s.tenantId === tenantId,
+			);
+
+			if (!subscription) {
+				throw new Error("No active subscription found");
+			}
+
+			const plan = storage.plans.find((p) => p.id === subscription.planId);
+			if (!plan) {
+				throw new Error("Plan not found");
+			}
+
+			const maxMembers = plan.features.maxMembers;
+			const exceedsLimit = maxMembers !== null && newMemberCount > maxMembers;
+
+			return {
+				data: {
+					exceedsLimit,
+					currentLimit: maxMembers,
+					currentCount: newMemberCount,
+					plan: plan.name,
+					suggestedPlans: exceedsLimit
+						? storage.plans.filter(
+								(p) =>
+									p.features.maxMembers === null ||
+									p.features.maxMembers > newMemberCount,
+							)
+						: [],
 				},
 			};
 		}

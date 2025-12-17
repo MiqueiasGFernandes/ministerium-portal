@@ -7,8 +7,9 @@ import {
 	UnstyledButton,
 	useMantineColorScheme,
 } from "@mantine/core";
-import { useGetIdentity, useLogout } from "@refinedev/core";
+import { useGetIdentity, useLogout, useNavigation } from "@refinedev/core";
 import {
+	IconCreditCard,
 	IconLogout,
 	IconMoon,
 	IconSettings,
@@ -22,6 +23,7 @@ import type { User } from "@/types";
 export const Header = () => {
 	const { data: user } = useGetIdentity<User>();
 	const { mutate: logout } = useLogout();
+	const { push } = useNavigation();
 	const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 	const styles = useMemo(() => createHeaderStyles(), []);
 
@@ -71,11 +73,27 @@ export const Header = () => {
 
 				<Menu.Dropdown>
 					<Menu.Label>Conta</Menu.Label>
-					<Menu.Item leftSection={<IconUser style={styles.iconWrapper} />}>
+					<Menu.Item
+						leftSection={<IconUser style={styles.iconWrapper} />}
+						onClick={() => push("/profile")}
+					>
 						Perfil
 					</Menu.Item>
-					<Menu.Item leftSection={<IconSettings style={styles.iconWrapper} />}>
+					<Menu.Item
+						leftSection={<IconSettings style={styles.iconWrapper} />}
+						onClick={() => push("/settings")}
+					>
 						Configurações
+					</Menu.Item>
+
+					<Menu.Divider />
+
+					<Menu.Label>Assinatura</Menu.Label>
+					<Menu.Item
+						leftSection={<IconCreditCard style={styles.iconWrapper} />}
+						onClick={() => push("/billing/subscription")}
+					>
+						Minha Assinatura
 					</Menu.Item>
 
 					<Menu.Divider />

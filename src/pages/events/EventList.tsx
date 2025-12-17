@@ -24,7 +24,7 @@ import { CanCreate } from "@/components/auth/Can";
 import { TableSkeleton } from "@/components/common/TableSkeleton";
 import { EVENT_STATUS_OPTIONS } from "@/config/constants";
 import { gradientButtonStyles } from "@/styles/buttonStyles";
-import type { Event } from "@/types";
+import type { Event, EventAttendee } from "@/types";
 
 export const EventList = () => {
 	const { create, edit, show } = useNavigation();

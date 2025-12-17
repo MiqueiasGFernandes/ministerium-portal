@@ -65,7 +65,9 @@ export const EventEdit = () => {
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		console.log("Form submitted, values:", values);
-		saveButtonProps.onClick?.();
+		if (saveButtonProps.onClick) {
+			saveButtonProps.onClick({} as React.PointerEvent<HTMLButtonElement>);
+		}
 	};
 
 	return (

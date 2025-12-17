@@ -27,6 +27,16 @@ import { Login } from "@/pages/auth/Login";
 import { RequestAccess } from "@/pages/auth/RequestAccess";
 import { ResetPassword } from "@/pages/auth/ResetPassword";
 import { VerifyCode } from "@/pages/auth/VerifyCode";
+// Billing Pages
+import {
+	Checkout,
+	CheckoutSuccess,
+	EnterpriseContact,
+	EnterpriseContactSuccess,
+	MySubscription,
+	Plans,
+} from "@/pages/billing";
+import { BillingDemo } from "@/pages/billing/BillingDemo";
 // Pages
 import { Dashboard } from "@/pages/dashboard/Dashboard";
 import { EventCreate } from "@/pages/events/EventCreate";
@@ -49,6 +59,7 @@ import {
 	MinistryShow,
 } from "@/pages/ministries";
 import { Onboarding } from "@/pages/onboarding/Onboarding";
+import { Profile } from "@/pages/profile/Profile";
 import { EventRegistration } from "@/pages/public/EventRegistration";
 import { ScheduleCreate } from "@/pages/schedules/ScheduleCreate";
 import { ScheduleEdit } from "@/pages/schedules/ScheduleEdit";
@@ -257,11 +268,34 @@ function App() {
 									</Route>
 								)}
 
+								{/* Profile */}
+								<Route path="/profile" element={<Profile />} />
+
 								{/* Settings */}
 								<Route path="/settings" element={<Settings />} />
 
 								{/* Admin Routes */}
 								<Route path="/admin/users" element={<UserManagement />} />
+
+								{/* Billing Routes */}
+								<Route path="/billing">
+									<Route path="plans" element={<Plans />} />
+									<Route path="checkout" element={<Checkout />} />
+									<Route
+										path="checkout/success"
+										element={<CheckoutSuccess />}
+									/>
+									<Route
+										path="enterprise-contact"
+										element={<EnterpriseContact />}
+									/>
+									<Route
+										path="enterprise-contact/success"
+										element={<EnterpriseContactSuccess />}
+									/>
+									<Route path="subscription" element={<MySubscription />} />
+									<Route path="demo" element={<BillingDemo />} />
+								</Route>
 
 								{/* Error Pages */}
 								<Route path="/unauthorized" element={<UnauthorizedPage />} />

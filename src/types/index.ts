@@ -474,5 +474,125 @@ export interface AnalyticsData {
 	};
 }
 
+// Billing & Subscription Types
+export type PlanType =
+	| "essencial"
+	| "comunidade"
+	| "expansao"
+	| "institucional";
+
+export type BillingCycle = "monthly" | "annual";
+
+export type SubscriptionStatus =
+	| "trial"
+	| "active"
+	| "pending"
+	| "canceled"
+	| "past_due";
+
+export interface PlanFeatures {
+	maxMembers: number | null; // null = unlimited
+	maxAdminUsers: number | null; // null = unlimited
+	maxUsers: number | null; // null = unlimited
+	multipleRoles: boolean;
+	ministryManagement: boolean;
+	advancedReports: boolean;
+	dataExport: boolean;
+	activityHistory: boolean;
+	prioritySupport: boolean;
+	fastSupport: boolean;
+	consolidatedDashboards: boolean;
+	earlyAccess: boolean;
+	customization: boolean;
+	multipleCongregations: boolean;
+	teamTraining: boolean;
+	dedicatedSLA: boolean;
+}
+
+export interface Plan {
+	id: string;
+	type: PlanType;
+	name: string;
+	description: string;
+	recommendedFor: string;
+	monthlyPrice: number;
+	annualPrice: number;
+	features: PlanFeatures;
+	isPopular?: boolean;
+	isCustom?: boolean; // For Institucional plan
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface Subscription {
+	id: string;
+	tenantId: string;
+	planId: string;
+	plan?: Plan;
+	status: SubscriptionStatus;
+	billingCycle: BillingCycle;
+	currentPeriodStart: string;
+	currentPeriodEnd: string;
+	trialEndsAt?: string;
+	canceledAt?: string;
+	cancelAtPeriodEnd: boolean;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface PaymentMethod {
+	id: string;
+	tenantId: string;
+	type: "credit_card";
+	cardBrand: string;
+	cardLast4: string;
+	cardExpMonth: number;
+	cardExpYear: number;
+	cardHolderName: string;
+	isDefault: boolean;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface Invoice {
+	id: string;
+	tenantId: string;
+	subscriptionId: string;
+	amount: number;
+	status: "pending" | "paid" | "failed" | "refunded";
+	billingCycle: BillingCycle;
+	periodStart: string;
+	periodEnd: string;
+	paidAt?: string;
+	dueDate: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface EnterpriseLead {
+	id: string;
+	churchName: string;
+	responsibleName: string;
+	email: string;
+	phone: string;
+	approximateMembers: number;
+	notes?: string;
+	status: "pending" | "contacted" | "converted" | "rejected";
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface CheckoutData {
+	planId: string;
+	billingCycle: BillingCycle;
+	paymentMethod: {
+		cardNumber: string;
+		cardHolderName: string;
+		cardExpMonth: number;
+		cardExpYear: number;
+		cardCvv: string;
+	};
+}
+
 // Tour Types
 export * from "./tour";
